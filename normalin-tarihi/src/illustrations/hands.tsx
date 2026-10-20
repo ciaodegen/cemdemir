@@ -1,5 +1,5 @@
 import React from 'react';
-import {Ink} from '../components/Ink';
+import {Ink, InkPath} from '../components/Ink';
 import {COLORS} from '../brand/theme';
 
 /*
@@ -10,7 +10,19 @@ import {COLORS} from '../brand/theme';
  * scale(-1, 1) for the partner hand.
  */
 
-export type SleeveStyle = 'modern' | 'mesopotamian' | 'greek' | 'medieval' | 'bare';
+export type SleeveStyle =
+  | 'modern'
+  | 'modernOlive'
+  | 'mesopotamian'
+  | 'royal'
+  | 'royalSand'
+  | 'greek'
+  | 'medieval'
+  | 'medievalMail'
+  | 'bare';
+
+export type Tone = 'light' | 'deep';
+export const skinOf = (tone: Tone) => (tone === 'light' ? COLORS.skin : COLORS.skinDeep);
 
 /** Open right hand offered for a handshake: thumb up, fingers forward. */
 export const OPEN_HAND: string[] = [
@@ -24,65 +36,71 @@ export const OPEN_HAND: string[] = [
   'M 96 -50 C 84 -32 66 -22 44 -16',
 ];
 
-/** Sleeve + cuff that the hand emerges from. */
-export const sleevePaths = (style: SleeveStyle): string[] => {
-  switch (style) {
-    case 'modern':
-      return [
-        // jacket sleeve
-        'M -760 -60 C -500 -60 -260 -58 -58 -56',
-        'M -760 64 C -500 62 -260 60 -58 58',
-        'M -58 -56 C -54 -20 -54 20 -58 58',
-        // shirt cuff
-        'M -58 -46 L -16 -44 C -12 -14 -12 16 -16 44 L -58 46',
-        'M -34 -45 C -31 -16 -31 16 -34 45',
-      ];
-    case 'mesopotamian':
-      return [
-        // wide woven sleeve with fringe and a bracelet
-        'M -760 -66 C -480 -64 -240 -62 -64 -58',
-        'M -760 70 C -480 68 -240 66 -64 62',
-        'M -64 -58 C -60 -20 -60 22 -64 62',
-        'M -64 -40 L -82 -40 M -64 -24 L -84 -24 M -63 -8 L -85 -8 M -63 8 L -85 8 M -63 24 L -84 24 M -64 40 L -82 40',
-        'M -28 -40 C -24 -14 -24 16 -28 42',
-        'M -18 -39 C -14 -14 -14 16 -18 41',
-      ];
-    case 'greek':
-      return [
-        // draped himation folds over a bare forearm
-        'M -760 -70 C -560 -60 -420 -52 -300 -46 C -250 -44 -220 -40 -200 -36',
-        'M -760 80 C -560 74 -420 64 -300 56 C -260 52 -230 48 -210 44',
-        'M -200 -36 C -214 -12 -216 18 -210 44',
-        'M -420 -50 C -380 -20 -350 20 -330 60',
-        'M -560 -60 C -520 -24 -500 30 -480 70',
-        // bare forearm
-        'M -200 -32 C -130 -38 -60 -38 -6 -36',
-        'M -210 40 C -140 44 -60 44 -6 40',
-      ];
-    case 'medieval':
-      return [
-        // fitted sleeve with a turned-back cuff
-        'M -760 -60 C -500 -60 -260 -56 -110 -52',
-        'M -760 62 C -500 62 -260 58 -110 54',
-        'M -110 -60 C -60 -60 -30 -56 -14 -50 C -8 -16 -8 18 -14 50 C -30 58 -60 62 -110 62 C -114 20 -114 -20 -110 -60',
-        'M -86 -58 C -82 -20 -82 22 -86 60',
-      ];
-    case 'bare':
-      return [
-        'M -760 -44 C -480 -46 -220 -42 -6 -36',
-        'M -760 54 C -480 54 -220 48 -6 40',
-      ];
-  }
+export const openHandPaths = (tone: Tone): InkPath[] => [
+  {d: OPEN_HAND[0] + ' L -6 -40 Z', fill: skinOf(tone)},
+  ...OPEN_HAND.slice(1),
+];
+
+const zigzag = (x0: number, x1: number, y: number, h: number, step = 14) => {
+  let d = `M ${x0} ${y}`;
+  for (let x = x0, up = true; x < x1; x += step, up = !up) d += ` L ${x + step} ${up ? y - h : y}`;
+  return d;
 };
 
-/** A single open hand on a sleeve. */
-export const ReachingHand: React.FC<{
-  sleeve?: SleeveStyle;
-  draw?: number;
-  color?: string;
-}> = ({sleeve = 'modern', draw = 1, color}) => (
-  <Ink paths={[...sleevePaths(sleeve), ...OPEN_HAND]} draw={draw} overlap={0.75} color={color} />
-);
+/** Sleeve + cuff that the hand emerges from, with its flat colour. */
+export const sleevePaths = (style: SleeveStyle, tone: Tone = 'light'): InkPath[] => {
+  const skin = skinOf(tone);
+  switch (style) {
+    case 'modern':
+    case 'modernOlive': {
+      const jacket = style === 'modern' ? COLORS.camel : COLORS.olive;
+      return [
+        {d: 'M -760 -60 C -500 -60 -260 -58 -58 -56 C -54 -20 -54 20 -58 58 C -260 60 -500 62 -760 64 Z', fill: jacket},
+        {d: 'M -58 -46 L -16 -44 C -12 -14 -12 16 -16 44 L -58 46 Z', fill: COLORS.linen},
+        'M -34 -45 C -31 -16 -31 16 -34 45',
+        'M -300 -58 C -296 -30 -296 0 -300 20',
+      ];
+    }
+    case 'mesopotamian':
+      return [
+        {d: 'M -760 -66 C -480 -64 -240 -62 -64 -58 C -60 -20 -60 22 -64 62 C -240 66 -480 68 -760 70 Z', fill: COLORS.terracotta},
+        'M -64 -40 L -82 -40 M -64 -24 L -84 -24 M -63 -8 L -85 -8 M -63 8 L -85 8 M -63 24 L -84 24 M -64 40 L -82 40',
+        {d: 'M -64 -36 C -40 -38 -20 -40 -6 -40 L -6 44 C -20 44 -40 42 -64 40 Z', fill: skin},
+        {d: 'M -32 -40 C -28 -14 -28 16 -32 42 L -20 42 C -16 16 -16 -14 -20 -40 Z', fill: COLORS.camel},
+      ];
+    case 'royal':
+    case 'royalSand': {
+      const cloth = style === 'royal' ? COLORS.terracotta : COLORS.sand;
+      const band = style === 'royal' ? COLORS.sand : COLORS.terracotta;
+      return [
+        {d: 'M -760 -64 C -480 -62 -240 -60 -40 -56 C -36 -20 -36 22 -40 60 C -240 64 -480 66 -760 68 Z', fill: cloth},
+        {d: 'M -120 -58 C -116 -20 -116 22 -120 61 L -76 60 C -72 22 -72 -20 -76 -57 Z', fill: band},
+        zigzag(-118, -78, 6, 12, 10),
+        {d: 'M -40 -40 L -6 -40 L -6 44 L -40 44 Z', fill: skin},
+        {d: 'M -28 -41 C -25 -14 -25 16 -28 44 L -18 44 C -15 16 -15 -14 -18 -41 Z', fill: COLORS.camel},
+      ];
+    }
+    case 'greek':
+      return [
+        {d: 'M -760 -70 C -560 -60 -420 -52 -300 -46 C -250 -44 -220 -40 -200 -36 C -214 -12 -216 18 -210 44 C -260 52 -300 56 -420 64 C -560 74 -760 80 -760 80 Z', fill: COLORS.linen},
+        'M -420 -50 C -380 -20 -350 20 -330 60',
+        'M -560 -60 C -520 -24 -500 30 -480 70',
+        {d: 'M -200 -32 C -130 -38 -60 -38 -6 -36 L -6 40 C -60 44 -140 44 -210 40 Z', fill: skin},
+      ];
+    case 'medieval':
+    case 'medievalMail': {
+      const cloth = style === 'medieval' ? COLORS.olive : COLORS.taupe;
+      return [
+        {d: 'M -760 -60 C -500 -60 -260 -56 -110 -52 L -110 54 C -260 58 -500 62 -760 62 Z', fill: cloth},
+        {d: 'M -110 -60 C -60 -60 -30 -56 -14 -50 C -8 -16 -8 18 -14 50 C -30 58 -60 62 -110 62 C -114 20 -114 -20 -110 -60 Z', fill: style === 'medieval' ? COLORS.sand : COLORS.taupeLight},
+        'M -86 -58 C -82 -20 -82 22 -86 60',
+        ...(style === 'medievalMail' ? ['M -400 -40 L -380 -20 L -360 -40 L -340 -20 L -320 -40 M -400 10 L -380 30 L -360 10 L -340 30 L -320 10'] : []),
+      ];
+    }
+    case 'bare':
+      return [{d: 'M -760 -44 C -480 -46 -220 -42 -6 -36 L -6 40 C -220 48 -480 54 -760 54 Z', fill: skin}];
+  }
+};
 
 /*
  * Clasped handshake, origin at the centre of the grip.
@@ -91,6 +109,19 @@ export const ReachingHand: React.FC<{
  */
 const CLASP_A_WRIST = {x: -150, y: 8};
 const CLASP_B_WRIST = {x: 150, y: -20};
+
+/** Skin masses behind the clasp outlines: B (near hand) then A over it. */
+export const CLASP_FILL_B =
+  'M -150 -30 C -124 -34 -100 -42 -78 -54 C -50 -74 -10 -84 26 -80 C 44 -78 58 -70 54 -60 L 50 -62 C 84 -66 118 -64 150 -58 L 150 18 C 104 22 62 36 28 54 C 2 66 -30 74 -56 74 C -76 76 -84 62 -76 52 C -94 48 -96 32 -84 24 L -90 40 C -106 46 -128 48 -150 46 Z';
+export const CLASP_FILL_A =
+  'M -150 -30 C -124 -34 -100 -42 -78 -54 C -50 -74 -10 -84 26 -80 C 44 -78 58 -70 54 -60 C 50 -52 36 -52 22 -54 C 2 -58 -18 -56 -36 -50 C -62 -44 -82 -28 -84 -8 C -98 -2 -100 18 -84 24 L -90 40 C -106 46 -128 48 -150 46 Z';
+
+export const ClaspSkin: React.FC<{a?: Tone; b?: Tone; opacity?: number}> = ({a = 'light', b = 'deep', opacity = 1}) => (
+  <g opacity={opacity}>
+    <path d={CLASP_FILL_B} fill={skinOf(b)} />
+    <path d={CLASP_FILL_A} fill={skinOf(a)} />
+  </g>
+);
 
 export const CLASP_HANDS: string[] = [
   // A: wrist rising into the grip, thumb resting across B's knuckles
@@ -115,13 +146,20 @@ export const CLASP_B_ANGLE = 7;
 export {CLASP_A_WRIST, CLASP_B_WRIST};
 
 /** Just the two sleeves of the clasp (lets scenes swap costume eras). */
-export const ClaspSleeves: React.FC<{a: SleeveStyle; b: SleeveStyle; draw?: number; opacity?: number}> = ({a, b, draw = 1, opacity = 1}) => (
+export const ClaspSleeves: React.FC<{a: SleeveStyle; b: SleeveStyle; draw?: number; opacity?: number; toneA?: Tone; toneB?: Tone}> = ({
+  a,
+  b,
+  draw = 1,
+  opacity = 1,
+  toneA = 'light',
+  toneB = 'deep',
+}) => (
   <g opacity={opacity}>
     <g transform={sleeveAt(CLASP_A_WRIST, CLASP_A_ANGLE, false)}>
-      <Ink paths={sleevePaths(a)} draw={draw} overlap={0.7} />
+      <Ink paths={sleevePaths(a, toneA)} draw={draw} overlap={0.7} />
     </g>
     <g transform={sleeveAt(CLASP_B_WRIST, CLASP_B_ANGLE, true)}>
-      <Ink paths={sleevePaths(b)} draw={draw} overlap={0.7} />
+      <Ink paths={sleevePaths(b, toneB)} draw={draw} overlap={0.7} />
     </g>
   </g>
 );
@@ -134,6 +172,7 @@ export const ClaspedHands: React.FC<{
 }> = ({sleeveA = 'modern', sleeveB = 'modern', draw = 1, sleeveOpacity = 1}) => (
   <g>
     {sleeveOpacity > 0 ? <ClaspSleeves a={sleeveA} b={sleeveB} draw={draw} opacity={sleeveOpacity} /> : null}
+    <ClaspSkin opacity={draw >= 1 ? 1 : Math.max(0, (draw - 0.5) * 2)} />
     <Ink paths={CLASP_HANDS} draw={draw} overlap={0.7} />
   </g>
 );
@@ -148,4 +187,9 @@ export const MeetSpark: React.FC<{draw?: number; opacity?: number}> = ({draw = 1
       color={COLORS.ink}
     />
   </g>
+);
+
+/** A single open hand on a sleeve. */
+export const ReachingHand: React.FC<{sleeve?: SleeveStyle; tone?: Tone; draw?: number}> = ({sleeve = 'modern', tone = 'light', draw = 1}) => (
+  <Ink paths={[...sleevePaths(sleeve, tone), ...openHandPaths(tone)]} draw={draw} overlap={0.75} />
 );

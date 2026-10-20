@@ -1,6 +1,9 @@
 import React, {useId} from 'react';
 import {Easing, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
-import {COLORS, FONT_FAMILY} from './theme';
+import {COLORS} from './theme';
+
+// The approved wordmark keeps its original typeface.
+const WORDMARK_FONT = "'Inter', 'Helvetica Neue', Arial, sans-serif";
 import {LOGO_CENTERLINE, LOGO_LEFT_DOT, LOGO_RIGHT_DOT, LOGO_STROKE_OUTLINE, LOGO_VIEWBOX} from './logoGeometry';
 
 /**
@@ -65,7 +68,7 @@ export const LogoIntro: React.FC = () => {
         <div
           style={{
             marginTop: 64,
-            fontFamily: FONT_FAMILY,
+            fontFamily: WORDMARK_FONT,
             fontWeight: 500,
             fontSize: 38,
             letterSpacing: '0.34em',

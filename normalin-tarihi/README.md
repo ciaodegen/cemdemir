@@ -22,6 +22,15 @@ The script lives in `src/episodes/ep01/script.json`. You need one audio file per
 `scripts/build-timing.mjs` measures the files. Scenes, animation beats and subtitles then re-time themselves to the real audio.
 Lines that have no audio are timed from an estimate of 15.5 characters per second.
 
+## Visual system (v2)
+- Background `#FEF9EE`, sampled from the official profile picture. The fallback is `#F7F6F2`.
+- Palette: sand `#D9C3A3`, camel `#B89470`, terracotta `#BC8066`, olive `#858B74`, taupe `#A69B8B`, outlines `#292724`. Tints are listed in `src/brand/theme.ts`.
+- Illustrations use thin charcoal outlines with flat muted fills. Fills wash in after each outline is drawn.
+- Typography:
+  - **Kalam Bold** for titles, labels and the sign-off, revealed with a soft left-to-right handwriting mask.
+  - **DM Sans** for subtitles, revealed word by word.
+  - The logo wordmark keeps its approved Inter setting.
+
 ## Layout
 | Path | Purpose |
 |---|---|

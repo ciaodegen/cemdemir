@@ -4,9 +4,10 @@ import {VIDEO} from './brand/theme';
 import {FontGate} from './components/FontGate';
 import {Cover} from './components/Cover';
 import {Episode01, EP01_TIMELINE, EP01_TITLE} from './episodes/ep01/Episode01';
-import {ClaspedHands} from './illustrations/hands';
+import {ClaspedHands, MeetSpark} from './illustrations/hands';
+import {groundMass} from './illustrations/architecture';
+import {COLORS} from './brand/theme';
 import {LogoIntro} from './brand/Logo';
-import {HAND_Y} from './episodes/ep01/scenes';
 
 const Ep01 = () => (
   <FontGate>
@@ -16,9 +17,12 @@ const Ep01 = () => (
 
 const Ep01Cover = () => (
   <FontGate>
-    <Cover title={EP01_TITLE}>
-      <g transform={`translate(540 ${HAND_Y}) scale(1.22)`}>
-        <ClaspedHands />
+    <Cover titleLines={EP01_TITLE.split(' ')}>
+      <path d={groundMass(1150, 1560)} fill={COLORS.sandPale} />
+      <circle cx={790} cy={1010} r={52} fill={COLORS.terracottaLight} opacity={0.85} />
+      <g transform="translate(540 1250) scale(1.3)">
+        <ClaspedHands sleeveA="modern" sleeveB="modernOlive" />
+        <MeetSpark />
       </g>
     </Cover>
   </FontGate>

@@ -5,14 +5,14 @@ import {
   CLASP_A_WRIST as A_WRIST,
   CLASP_B_ANGLE as B_ANGLE,
   CLASP_B_WRIST as B_WRIST,
-  ClaspedHands,
+  CLASP_HANDS,
+  ClaspSkin,
   MeetSpark,
-  OPEN_HAND,
   SleeveStyle,
+  openHandPaths,
   sleevePaths,
 } from '../illustrations/hands';
 import {Ink} from './Ink';
-import {COLORS} from '../brand/theme';
 
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
@@ -29,9 +29,10 @@ export const HandshakeMoment: React.FC<{
   enter: number;
   meet: number;
   release?: number;
-  sleeve?: SleeveStyle;
+  sleeveA?: SleeveStyle;
+  sleeveB?: SleeveStyle;
   spark?: boolean;
-}> = ({cx = 540, cy, scale = 1.25, enter, meet, release, sleeve = 'modern', spark = true}) => {
+}> = ({cx = 540, cy, scale = 1.25, enter, meet, release, sleeveA = 'modern', sleeveB = 'modernOlive', spark = true}) => {
   const frame = useCurrentFrame();
   const s = scale;
   const offscreen = 760 * s;
@@ -69,22 +70,21 @@ export const HandshakeMoment: React.FC<{
     <g>
       {/* sleeves (shared by the open and clasped states) */}
       <g transform={`translate(${ax} ${ay}) rotate(${A_ANGLE + tilt}) scale(${s})`}>
-        <Ink paths={sleevePaths(sleeve)} />
+        <Ink paths={sleevePaths(sleeveA, 'light')} />
         <g opacity={1 - clasp}>
-          <path d={OPEN_HAND[0] + ' Z'} fill={COLORS.paper} />
-          <Ink paths={OPEN_HAND} />
+          <Ink paths={openHandPaths('light')} />
         </g>
       </g>
       <g transform={`translate(${bx} ${by}) scale(-1 1) rotate(${B_ANGLE - tilt}) scale(${s})`}>
-        <Ink paths={sleevePaths(sleeve)} />
+        <Ink paths={sleevePaths(sleeveB, 'deep')} />
         <g opacity={1 - clasp}>
-          <path d={OPEN_HAND[0] + ' Z'} fill={COLORS.paper} />
-          <Ink paths={OPEN_HAND} />
+          <Ink paths={openHandPaths('deep')} />
         </g>
       </g>
       {clasp > 0 ? (
         <g transform={`translate(${cx} ${cy + rise + shake}) rotate(${tilt}) scale(${s})`} opacity={clasp}>
-          <ClaspedHands sleeveA={sleeve} sleeveB={sleeve} sleeveOpacity={0} />
+          <ClaspSkin />
+          <Ink paths={CLASP_HANDS} />
         </g>
       ) : null}
       {sparkOpacity > 0 ? (

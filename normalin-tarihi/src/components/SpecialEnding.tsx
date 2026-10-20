@@ -1,24 +1,38 @@
 import React from 'react';
 import {Easing, interpolate, useCurrentFrame} from 'remotion';
-import {COLORS, FONT_FAMILY} from '../brand/theme';
+import {COLORS, FONTS} from '../brand/theme';
+import {WipeText} from './Type';
 
-/** On-screen sign-off (never narrated) + quiet brand signature. */
+const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
+
+/** On-screen sign-off (never narrated), written on, + quiet brand signature. */
 export const SpecialEndingText: React.FC<{text: string; signature?: string; at: number; y?: number}> = ({
   text,
   signature = 'normalin tarihi',
   at,
-  y = 1120,
+  y = 1180,
 }) => {
   const frame = useCurrentFrame();
-  const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
-  const t = interpolate(frame, [at, at + 20], [0, 1], {...clamp, easing: Easing.out(Easing.quad)});
-  const sig = interpolate(frame, [at + 16, at + 36], [0, 1], clamp);
+  const t = interpolate(frame, [at, at + 40], [0, 1], {...clamp, easing: Easing.inOut(Easing.sin)});
+  const sig = interpolate(frame, [at + 38, at + 62], [0, 1], {...clamp, easing: Easing.out(Easing.quad)});
   return (
-    <div lang="tr" style={{position: 'absolute', top: y, left: 90, right: 90, textAlign: 'center', fontFamily: FONT_FAMILY}}>
-      <div style={{fontSize: 54, fontWeight: 450, color: COLORS.ink, letterSpacing: '-0.01em', opacity: t, transform: `translateY(${(1 - t) * 10}px)`}}>
+    <div lang="tr" style={{position: 'absolute', top: y, left: 30, right: 30, textAlign: 'center'}}>
+      <WipeText progress={t} style={{fontFamily: FONTS.hand, fontWeight: 700, fontSize: 70, color: COLORS.ink, whiteSpace: 'nowrap'}}>
         {text}
-      </div>
-      <div style={{marginTop: 34, fontSize: 24, fontWeight: 500, letterSpacing: '0.3em', paddingLeft: '0.3em', color: COLORS.accent, opacity: sig}}>
+      </WipeText>
+      <div
+        style={{
+          marginTop: 26,
+          fontFamily: FONTS.sans,
+          fontSize: 26,
+          fontWeight: 500,
+          letterSpacing: '0.28em',
+          paddingLeft: '0.28em',
+          color: COLORS.labelInk,
+          opacity: sig,
+          transform: `translateY(${(1 - sig) * 6}px)`,
+        }}
+      >
         {signature}
       </div>
     </div>
