@@ -36,7 +36,7 @@ const wordStarts = (text, chars, starts) => {
 const eleven = async (text) => {
   const voice = process.env.ELEVENLABS_VOICE_ID;
   if (!voice) throw new Error('Set ELEVENLABS_VOICE_ID to a native Turkish voice (Voice Library → language: Turkish).');
-  const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice}/with-timestamps?output_format=mp3_44100_192`, {
+  const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice}/with-timestamps?output_format=${process.env.ELEVENLABS_OUTPUT_FORMAT ?? 'mp3_44100_128'}`, {
     method: 'POST',
     headers: {'xi-api-key': process.env.ELEVENLABS_API_KEY, 'content-type': 'application/json'},
     body: JSON.stringify({
