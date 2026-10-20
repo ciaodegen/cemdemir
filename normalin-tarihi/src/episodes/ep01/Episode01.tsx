@@ -57,7 +57,7 @@ export const Episode01: React.FC = () => {
   return (
     <AbsoluteFill style={{background: COLORS.paper}}>
       {seq('opening', <OpeningScene s={sc('opening')} question={script.title} />, 0, 7)}
-      {seq('logo', <LogoIntro />, 0, 0)}
+      {seq('logo', <LogoIntro />, 0, 8)}
       {seq('mesopotamia', <MesopotamiaScene s={sc('mesopotamia')} />, 6, 9)}
       {seq('theory', <TheoryScene s={sc('theory')} />)}
       {seq('alliance', <AllianceScene s={sc('alliance')} />)}

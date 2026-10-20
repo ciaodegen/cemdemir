@@ -9,7 +9,8 @@ export const COLORS = {
   terracotta: '#BC8066',
   olive: '#858B74',
   taupe: '#A69B8B',
-  night: '#111111',
+  /** emblem / text anthracite, sampled from the official logo */
+  text: '#25221E',
   // derived tints (same hues, lighter) for large areas
   sandLight: '#EADCC6',
   sandPale: '#F3E9D8',
@@ -21,18 +22,19 @@ export const COLORS = {
   hair: '#5F4C3E',
   linen: '#F6EEE0',
   stone: '#DCCDB5',
-  labelInk: '#7E6A57',
 } as const;
 
-export const FONTS = {
-  /** handwritten titles, labels and sign-off */
-  hand: "'Kalam', 'Caveat', cursive",
-  /** narration subtitles and small UI text */
-  sans: "'DM Sans', 'Helvetica Neue', Arial, sans-serif",
-} as const;
+/** One typeface for the whole brand; hierarchy comes from size and weight. */
+export const FONT_FAMILY = "'DM Sans', 'Helvetica Neue', Arial, sans-serif";
 
-/** @deprecated kept for older imports — use FONTS.sans */
-export const FONT_FAMILY = FONTS.sans;
+export const TYPE = {
+  title: {fontSize: 104, fontWeight: 600, lineHeight: 1.08, letterSpacing: '-0.02em'},
+  ending: {fontSize: 64, fontWeight: 600, lineHeight: 1.15, letterSpacing: '-0.015em'},
+  label: {fontSize: 40, fontWeight: 500, lineHeight: 1.2, letterSpacing: '-0.005em'},
+  subtitle: {fontSize: 42, fontWeight: 500, lineHeight: 1.36, letterSpacing: '0em'},
+  small: {fontSize: 28, fontWeight: 500, lineHeight: 1.2, letterSpacing: '0em'},
+  wordmark: {fontSize: 36, fontWeight: 500, lineHeight: 1, letterSpacing: '0.3em'},
+} as const;
 
 export const VIDEO = {width: 1080, height: 1920, fps: 30} as const;
 

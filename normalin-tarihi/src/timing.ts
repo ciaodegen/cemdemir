@@ -13,15 +13,20 @@ export type ScriptLine = {
   subtitle: string | null;
 };
 
-export type MeasuredLine = {file: string | null; duration: number | null};
+export type MeasuredLine = {
+  file: string | null;
+  duration: number | null;
+  /** start time (s, from the line start) of each whitespace-separated word, from TTS alignment */
+  words?: number[] | null;
+};
 
 export type Block =
   | {scene: string; lines: string[]; lead?: number; tail?: number}
   | {scene: string; fixed: number};
 
-export type TimedLine = ScriptLine & {start: number; end: number; file: string | null; estimated: boolean};
+export type TimedLine = ScriptLine & {start: number; end: number; file: string | null; estimated: boolean; wordStarts: number[] | null};
 export type TimedScene = {scene: string; from: number; duration: number; lines: Record<string, TimedLine>};
-export type Cue = {text: string; from: number; to: number};
+export type Cue = {text: string; from: number; to: number; wordStarts?: number[]};
 
 export type Timeline = {
   fps: number;
@@ -63,7 +68,15 @@ export const buildTimeline = (
       if (!line) throw new Error(`Unknown script line ${id}`);
       const m = measured[id];
       const secs = m?.duration ?? estimateSeconds(line.text);
-      const tl: TimedLine = {...line, start: t, end: t + toF(secs), file: m?.file ?? null, estimated: !m?.duration};
+      const words = m?.words && m.words.length === line.text.split(/\s+/).filter(Boolean).length ? m.words : null;
+      const tl: TimedLine = {
+        ...line,
+        start: t,
+        end: t + toF(secs),
+        file: m?.file ?? null,
+        estimated: !m?.duration,
+        wordStarts: words ? words.map((w) => t + w * fps) : null,
+      };
       lines.push(tl);
       local[id] = {...tl, start: tl.start - sceneFrom, end: tl.end - sceneFrom};
       t = tl.end + (i < b.lines.length - 1 ? toF(LINE_GAP) : 0);
@@ -72,11 +85,22 @@ export const buildTimeline = (
     scenes.push({scene: b.scene, from: sceneFrom, duration: t - sceneFrom, lines: local});
     cursor = t;
   }
-  // subtitle cues: split each line at " | " and share its time by length
+  // subtitle cues: split each line at " | "; use measured word times when present
   const cues: Cue[] = [];
   for (const l of lines) {
     if (!l.subtitle) continue;
     const parts = l.subtitle.split('|').map((p) => p.trim());
+    if (l.wordStarts) {
+      let wi = 0;
+      parts.forEach((p, i) => {
+        const n = p.split(/\s+/).filter(Boolean).length;
+        const ws = l.wordStarts!.slice(wi, wi + n);
+        const next = i < parts.length - 1 ? l.wordStarts![wi + n] - 2 : l.end;
+        cues.push({text: p, from: Math.round(ws[0]), to: Math.round(next), wordStarts: ws});
+        wi += n;
+      });
+      continue;
+    }
     const total = parts.reduce((a, p) => a + p.length, 0);
     let f = l.start;
     parts.forEach((p, i) => {

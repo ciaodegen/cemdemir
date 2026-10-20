@@ -1,10 +1,10 @@
 import React from 'react';
 import {Easing, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
-import {COLORS, FONTS, LAYOUT} from '../../brand/theme';
+import {COLORS, FONT_FAMILY, LAYOUT, TYPE} from '../../brand/theme';
 import {ArtSvg, Paper, cameraTransform} from '../../components/Canvas';
 import {Ink, InkPath, Wash} from '../../components/Ink';
 import {HandshakeMoment} from '../../components/HandshakeMoment';
-import {HandLabel, HandTitle, WipeText} from '../../components/Type';
+import {Label, Title} from '../../components/Type';
 import {SpecialEndingText} from '../../components/SpecialEnding';
 import {dissolve} from '../../components/SceneFade';
 import {atLine, TimedScene} from '../../timing';
@@ -182,14 +182,13 @@ const HistoryWalk: React.FC<{start: number; opacity: number}> = ({start, opacity
 export const OpeningScene: React.FC<{s: TimedScene; question: string}> = ({s, question}) => {
   const frame = useCurrentFrame();
   const q1 = atLine(s, 'q1');
-  const words = question.split(' ');
   const meet = Math.round(atLine(s, 'q2', 0.12));
   const toWalk = Math.round(atLine(s, 'q2', 0.42));
   const walkIn = dissolve(frame, toWalk, 16);
   return (
     <Paper>
       <div style={{opacity: 1 - walkIn}}>
-        <HandTitle lines={words} from={Math.max(0, q1 - 8)} perLine={Math.round((atLine(s, 'q1', 1) - q1) / 2) + 8} top={LAYOUT.titleY - 10} size={124} />
+        <Title text={question} from={Math.max(0, q1 - 4)} to={atLine(s, 'q1', 0.7)} top={LAYOUT.titleY + 10} />
       </div>
       <ArtSvg>
         <g opacity={1 - walkIn}>
@@ -228,7 +227,7 @@ export const MesopotamiaScene: React.FC<{s: TimedScene}> = ({s}) => {
   const figDraw = progress(frame, sec(1.6), sec(2.8));
   return (
     <Paper>
-      <HandLabel text="Mezopotamya" />
+      <Label text="Mezopotamya" />
       <ArtSvg>
         <Sun x={830} y={560} opacity={land} />
         <Land horizon={930} opacity={land} />
@@ -284,7 +283,7 @@ export const TheoryScene: React.FC<{s: TimedScene}> = ({s}) => {
   const step = progress(frame, answerStart - sec(0.3), answerStart + sec(0.5));
   return (
     <Paper>
-      <HandLabel text="Yaygın bir teori" />
+      <Label text="Yaygın bir teori" />
       <ArtSvg>
         <Land horizon={930} opacity={land} />
         <Ink paths={THEORY_BACK} draw={progress(frame, sec(0.2), sec(1.6))} overlap={0.4} />
@@ -328,8 +327,8 @@ export const AllianceScene: React.FC<{s: TimedScene}> = ({s}) => {
   const shake = ct > 0 && ct < 34 ? Math.sin((ct / 17) * Math.PI * 2) * 8 * (1 - ct / 40) : 0;
   return (
     <Paper>
-      <HandLabel text="MÖ 9. yüzyıl · kabartma" to={closeAt + 8} />
-      <HandLabel text="Bir ittifak" from={closeAt + 10} />
+      <Label text="MÖ 9. yüzyıl · kabartma" to={closeAt + 8} />
+      <Label text="Bir ittifak" from={closeAt + 10} />
       <ArtSvg>
         <g opacity={1 - close}>
           <Ink paths={SLAB} draw={slab} overlap={0.4} />
@@ -389,8 +388,8 @@ export const GreeceScene: React.FC<{s: TimedScene}> = ({s}) => {
   const land = progress(frame, 0, sec(0.9));
   return (
     <Paper>
-      <HandLabel text="Antik Yunan" to={switchAt + 10} />
-      <HandLabel text="Mezar steli" from={switchAt + 8} />
+      <Label text="Antik Yunan" to={switchAt + 10} />
+      <Label text="Mezar steli" from={switchAt + 8} />
       <ArtSvg>
         <g opacity={1 - toStele}>
           <Sun x={560} y={590} opacity={land} />
@@ -463,7 +462,6 @@ export const TimeScene: React.FC<{s: TimedScene}> = ({s}) => {
   const x0 = 210;
   const x1 = 870;
   const dotX = (i: number) => x0 + ((x1 - x0) * i) / (ERAS.length - 1);
-  const lineTo = interpolate(eraFloat, [0, ERAS.length - 1], [x0, x1], clamp);
   const eraOpacity = (i: number) => {
     const at = start + span * i;
     const o = i === 0 ? 1 : dissolve(frame, at - 5, 10);
@@ -501,10 +499,8 @@ export const TimeScene: React.FC<{s: TimedScene}> = ({s}) => {
               <ClaspSkin />
               <Ink paths={CLASP_HANDS} />
             </g>
-            <line x1={x0} y1={1196} x2={x1} y2={1196} stroke={C.taupeLight} strokeWidth={3} strokeLinecap="round" />
-            <line x1={x0} y1={1196} x2={lineTo} y2={1196} stroke={C.ink} strokeWidth={3} strokeLinecap="round" />
             {ERAS.map((e, i) => (
-              <circle key={e.label} cx={dotX(i)} cy={1196} r={i <= active ? 10 : 8} fill={i <= active ? C.terracotta : C.paper} stroke={C.ink} strokeWidth={2.6} />
+              <circle key={e.label} cx={dotX(i)} cy={1196} r={i === active ? 11 : 8} fill={i <= active ? C.terracotta : C.sandLight} />
             ))}
           </g>
         ) : null}
@@ -520,11 +516,10 @@ export const TimeScene: React.FC<{s: TimedScene}> = ({s}) => {
                 left: dotX(i) - 120,
                 width: 240,
                 textAlign: 'center',
-                fontFamily: FONTS.hand,
-                fontWeight: 700,
-                fontSize: 30,
-                color: i === active ? C.ink : C.taupe,
-                opacity: toEras * progress(frame, start + span * i - 8, start + span * i + 6),
+                fontFamily: FONT_FAMILY,
+                ...TYPE.small,
+                color: C.text,
+                opacity: toEras * progress(frame, start + span * i - 8, start + span * i + 6) * (i === active ? 1 : 0.55),
               }}
             >
               {e.label}
@@ -555,7 +550,7 @@ export const ModernScene: React.FC<{s: TimedScene}> = ({s}) => {
         <HandshakeMoment cy={HAND_Y} enter={2} meet={Math.round(atLine(s, 'c1', 0.48))} spark={false} />
       </ArtSvg>
       <div style={{opacity: 1 - progress(frame, s.duration - sec(0.6), s.duration)}}>
-        <HandLabel text="Bugün" />
+        <Label text="Bugün" />
       </div>
     </Paper>
   );
@@ -585,6 +580,3 @@ export const EndingScene: React.FC<{s: TimedScene; text: string}> = ({s, text}) 
     </Paper>
   );
 };
-
-/** Re-export used by the cover. */
-export {WipeText};

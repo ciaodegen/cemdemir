@@ -12,24 +12,26 @@ npm run cover:ep01       # → out/normalin-tarihi-ep01-cover.png
 npm run studio           # preview / scrub in the browser
 ```
 
-### Narration (not yet recorded)
-The script lives in `src/episodes/ep01/script.json`. You need one audio file per line in
-`public/audio/ep01/<lineId>.(wav|mp3|m4a)`, for example `q1.mp3`, `q2.mp3` and so on through `e1.mp3`.
+### Narration (required for the final render)
+The script is in `src/episodes/ep01/script.json`. Use it exactly as written. The "Bu arada…" pause is built in through `ttsParts` and `pauses`.
 
-- **TTS:** run `ELEVENLABS_API_KEY=… ELEVENLABS_VOICE_ID=… npm run tts 01` or `GOOGLE_TTS_API_KEY=… npm run tts 01`.
-- **Recorded voice:** put the files in that folder and run `npm run timing`.
+1. Store **one** of these in the environment, never in code:
+   - `ELEVENLABS_API_KEY` together with `ELEVENLABS_VOICE_ID`, a native Turkish voice. ElevenLabs also returns word timings, which the subtitles use.
+   - `GOOGLE_TTS_API_KEY`. The default voice is `tr-TR-Chirp3-HD-Charon`.
+2. Run `npm run tts 01`. It writes `public/audio/ep01/<line>.mp3` and `<line>.words.json`, then re-times the episode.
+   A human recording also works: put `<line>.wav` files in that folder and run `npm run timing`.
+3. Run `npm run render:ep01`. It refuses to render if any line has no audio, renders the video, then checks the MP4 for an audible narration track.
 
-`scripts/build-timing.mjs` measures the files. Scenes, animation beats and subtitles then re-time themselves to the real audio.
-Lines that have no audio are timed from an estimate of 15.5 characters per second.
+`npm run preview:ep01` renders a visual-only preview that uses estimated timing.
 
-## Visual system (v2)
-- Background `#FEF9EE`, sampled from the official profile picture. The fallback is `#F7F6F2`.
+## Visual system (v3)
+- Background `#FEF9EE` and emblem/text anthracite `#25221E`, both sampled from the official logo.
+- The logo intro always plays on beige with an anthracite emblem. It never uses a dark background.
 - Palette: sand `#D9C3A3`, camel `#B89470`, terracotta `#BC8066`, olive `#858B74`, taupe `#A69B8B`, outlines `#292724`. Tints are listed in `src/brand/theme.ts`.
 - Illustrations use thin charcoal outlines with flat muted fills. Fills wash in after each outline is drawn.
-- Typography:
-  - **Kalam Bold** for titles, labels and the sign-off, revealed with a soft left-to-right handwriting mask.
-  - **DM Sans** for subtitles, revealed word by word.
-  - The logo wordmark keeps its approved Inter setting.
+- Typography uses **one family only, DM Sans**, with hierarchy from size and weight (`TYPE` in `theme.ts`).
+  - Titles, labels, subtitles, the logo wordmark and the sign-off all use the same word-by-word reveal.
+  - There are no underlines, rules or text boxes.
 
 ## Layout
 | Path | Purpose |

@@ -1,54 +1,67 @@
 {
   "q1": {
     "file": null,
-    "duration": null
+    "duration": null,
+    "words": null
   },
   "q2": {
     "file": null,
-    "duration": null
+    "duration": null,
+    "words": null
   },
   "m1": {
     "file": null,
-    "duration": null
+    "duration": null,
+    "words": null
   },
   "m2": {
     "file": null,
-    "duration": null
+    "duration": null,
+    "words": null
   },
   "t1": {
     "file": null,
-    "duration": null
+    "duration": null,
+    "words": null
   },
   "t2": {
     "file": null,
-    "duration": null
+    "duration": null,
+    "words": null
   },
   "a1": {
     "file": null,
-    "duration": null
+    "duration": null,
+    "words": null
   },
   "a2": {
     "file": null,
-    "duration": null
+    "duration": null,
+    "words": null
   },
   "g1": {
     "file": null,
-    "duration": null
+    "duration": null,
+    "words": null
   },
   "g2": {
     "file": null,
-    "duration": null
+    "duration": null,
+    "words": null
   },
   "p1": {
     "file": null,
-    "duration": null
+    "duration": null,
+    "words": null
   },
   "c1": {
     "file": null,
-    "duration": null
+    "duration": null,
+    "words": null
   },
   "e1": {
     "file": null,
-    "duration": null
+    "duration": null,
+    "words": null
   }
 }

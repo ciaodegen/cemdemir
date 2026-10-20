@@ -1,9 +1,6 @@
 import React, {useId} from 'react';
 import {Easing, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
-import {COLORS} from './theme';
-
-// The approved wordmark keeps its original typeface.
-const WORDMARK_FONT = "'Inter', 'Helvetica Neue', Arial, sans-serif";
+import {COLORS, FONT_FAMILY, TYPE} from './theme';
 import {LOGO_CENTERLINE, LOGO_LEFT_DOT, LOGO_RIGHT_DOT, LOGO_STROKE_OUTLINE, LOGO_VIEWBOX} from './logoGeometry';
 
 /**
@@ -16,7 +13,7 @@ export const LogoMark: React.FC<{
   leftDot?: number;
   line?: number;
   rightDot?: number;
-}> = ({width, color = COLORS.ink, leftDot = 1, line = 1, rightDot = 1}) => {
+}> = ({width, color = COLORS.text, leftDot = 1, line = 1, rightDot = 1}) => {
   const id = useId().replace(/:/g, '');
   const {x, y, w, h} = LOGO_VIEWBOX;
   const p = Math.min(1, Math.max(0, line));
@@ -49,36 +46,44 @@ export const LogoMark: React.FC<{
 export const LOGO_INTRO_SECONDS = 2.0;
 
 /**
- * Signature brand transition (reusable in every episode):
- * left dot → line drawn along its path → right dot → wordmark fade-in.
+ * Signature brand moment (reusable in every episode), always on the brand
+ * beige with the anthracite emblem — exactly as the official logo file:
+ * left dot → line drawn along its path → right dot → wordmark revealed.
  */
 export const LogoIntro: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const s = (t: number) => t * fps;
+  const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
   const ease = Easing.bezier(0.45, 0, 0.25, 1);
-  const leftDot = interpolate(frame, [s(0.1), s(0.3)], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic)});
-  const line = interpolate(frame, [s(0.26), s(1.08)], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: ease});
-  const rightDot = interpolate(frame, [s(1.02), s(1.22)], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic)});
-  const text = interpolate(frame, [s(1.18), s(1.6)], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.quad)});
+  const leftDot = interpolate(frame, [s(0.12), s(0.34)], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
+  const line = interpolate(frame, [s(0.28), s(1.08)], [0, 1], {...clamp, easing: ease});
+  const rightDot = interpolate(frame, [s(1.02), s(1.22)], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
+  const letters = Array.from('NORMALİN TARİHİ');
   return (
-    <div style={{position: 'absolute', inset: 0, background: COLORS.night}}>
+    <div style={{position: 'absolute', inset: 0, background: COLORS.paper}}>
       <div style={{position: 'absolute', left: 0, right: 0, top: 760, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-        <LogoMark width={540} color={COLORS.paper} leftDot={leftDot} line={line} rightDot={rightDot} />
+        <LogoMark width={540} color={COLORS.text} leftDot={leftDot} line={line} rightDot={rightDot} />
         <div
+          lang="tr"
           style={{
             marginTop: 64,
-            fontFamily: WORDMARK_FONT,
-            fontWeight: 500,
-            fontSize: 38,
-            letterSpacing: '0.34em',
-            paddingLeft: '0.34em',
-            color: COLORS.paper,
-            opacity: text,
-            transform: `translateY(${(1 - text) * 8}px)`,
+            fontFamily: FONT_FAMILY,
+            ...TYPE.wordmark,
+            paddingLeft: TYPE.wordmark.letterSpacing,
+            color: COLORS.text,
+            whiteSpace: 'pre',
           }}
         >
-          NORMALİN TARİHİ
+          {letters.map((ch, i) => {
+            const st = s(1.14) + i * 1.3;
+            const p = interpolate(frame, [st, st + 9], [0, 1], {...clamp, easing: Easing.out(Easing.quad)});
+            return (
+              <span key={i} style={{display: 'inline-block', opacity: p, transform: `translateY(${(1 - p) * 6}px)`}}>
+                {ch === ' ' ? '\u00A0' : ch}
+              </span>
+            );
+          })}
         </div>
       </div>
     </div>

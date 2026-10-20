@@ -1,6 +1,6 @@
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
-import {COLORS, FONTS} from '../brand/theme';
+import {COLORS, FONT_FAMILY, TYPE} from '../brand/theme';
 import {LogoMark} from '../brand/Logo';
 import {ArtSvg} from './Canvas';
 
@@ -11,16 +11,16 @@ import {ArtSvg} from './Canvas';
 export const Cover: React.FC<{titleLines: string[]; children: React.ReactNode}> = ({titleLines, children}) => (
   <AbsoluteFill style={{background: COLORS.paper}}>
     <div style={{position: 'absolute', top: 470, left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-      <LogoMark width={110} color={COLORS.ink} />
+      <LogoMark width={130} color={COLORS.text} />
       <div
         style={{
           marginTop: 22,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: FONT_FAMILY,
           fontWeight: 500,
-          fontSize: 24,
-          letterSpacing: '0.34em',
-          paddingLeft: '0.34em',
-          color: COLORS.ink,
+          fontSize: 26,
+          letterSpacing: '0.3em',
+          paddingLeft: '0.3em',
+          color: COLORS.text,
         }}
       >
         NORMALİN TARİHİ
@@ -34,11 +34,10 @@ export const Cover: React.FC<{titleLines: string[]; children: React.ReactNode}> 
         left: 60,
         right: 60,
         textAlign: 'center',
-        fontFamily: FONTS.hand,
-        fontWeight: 700,
-        fontSize: 132,
-        lineHeight: 1.02,
-        color: COLORS.ink,
+        fontFamily: FONT_FAMILY,
+        ...TYPE.title,
+        fontSize: 120,
+        color: COLORS.text,
       }}
     >
       {titleLines.map((l) => (
