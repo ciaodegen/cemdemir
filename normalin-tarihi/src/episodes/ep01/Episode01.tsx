@@ -25,13 +25,13 @@ export const EP01_ENDING_TEXT = 'Tanıştığımıza *memnun olduk.*';
 export const EP01_TITLE_LINES = ['Neden', '*tokalaşıyoruz?*'];
 
 const BLOCKS: Block[] = [
-  {scene: 'opening', lines: ['q1', 'q2'], lead: 0.45, tail: 1.3},
+  {scene: 'opening', lines: ['q1', 'q2'], lead: 0.4, tail: 1.0},
   {scene: 'logo', fixed: LOGO_INTRO_SECONDS},
   {scene: 'mesopotamia', lines: ['m1', 'm2'], lead: 0.5, tail: 0.5},
   {scene: 'theory', lines: ['t1', 't2'], lead: 0.5, tail: 0.6},
-  {scene: 'alliance', lines: ['a1', 'a2'], lead: 0.5, tail: 0.9},
+  {scene: 'alliance', lines: ['a1', 'a2'], lead: 0.45, tail: 0.75},
   {scene: 'greece', lines: ['g1', 'g2'], lead: 0.4, tail: 0.6},
-  {scene: 'time', lines: ['p1'], lead: 0.35, tail: 2.0},
+  {scene: 'time', lines: ['p1'], lead: 0.35, tail: 1.7},
   {scene: 'modern', lines: ['c1'], lead: 0.4, tail: 0.5},
   {scene: 'ending', lines: ['e1'], lead: 0.25, tail: ENDING_TAIL_SECONDS},
 ];

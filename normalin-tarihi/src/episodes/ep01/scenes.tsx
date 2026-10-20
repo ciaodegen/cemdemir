@@ -560,7 +560,7 @@ export const ModernScene: React.FC<{s: TimedScene}> = ({s}) => {
 /* Scene 9 — Special first-episode ending                              */
 /* ------------------------------------------------------------------ */
 
-export const ENDING_TAIL_SECONDS = 6.4;
+export const ENDING_TAIL_SECONDS = 6.0;
 
 export const EndingScene: React.FC<{s: TimedScene; text: string}> = ({s, text}) => {
   const sec = useSec();
