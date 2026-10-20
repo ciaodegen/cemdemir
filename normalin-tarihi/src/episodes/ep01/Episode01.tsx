@@ -20,7 +20,9 @@ import {
 } from './scenes';
 
 export const EP01_TITLE = script.title;
-export const EP01_ENDING_TEXT = 'Tanıştığımıza memnun olduk.';
+export const EP01_ENDING_TEXT = 'Tanıştığımıza *memnun olduk.*';
+/** Headline lines; *word* = highlight colour. */
+export const EP01_TITLE_LINES = ['Neden', '*tokalaşıyoruz?*'];
 
 const BLOCKS: Block[] = [
   {scene: 'opening', lines: ['q1', 'q2'], lead: 0.45, tail: 1.3},
@@ -56,7 +58,7 @@ export const Episode01: React.FC = () => {
   };
   return (
     <AbsoluteFill style={{background: COLORS.paper}}>
-      {seq('opening', <OpeningScene s={sc('opening')} question={script.title} />, 0, 7)}
+      {seq('opening', <OpeningScene s={sc('opening')} questionLines={EP01_TITLE_LINES} />, 0, 7)}
       {seq('logo', <LogoIntro />, 0, 8)}
       {seq('mesopotamia', <MesopotamiaScene s={sc('mesopotamia')} />, 6, 9)}
       {seq('theory', <TheoryScene s={sc('theory')} />)}

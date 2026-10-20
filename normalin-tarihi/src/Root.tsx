@@ -3,7 +3,7 @@ import {Composition, Still} from 'remotion';
 import {VIDEO} from './brand/theme';
 import {FontGate} from './components/FontGate';
 import {Cover} from './components/Cover';
-import {Episode01, EP01_TIMELINE, EP01_TITLE} from './episodes/ep01/Episode01';
+import {Episode01, EP01_TIMELINE, EP01_TITLE_LINES} from './episodes/ep01/Episode01';
 import {ClaspedHands, MeetSpark} from './illustrations/hands';
 import {groundMass} from './illustrations/architecture';
 import {COLORS} from './brand/theme';
@@ -17,7 +17,7 @@ const Ep01 = () => (
 
 const Ep01Cover = () => (
   <FontGate>
-    <Cover titleLines={EP01_TITLE.split(' ')}>
+    <Cover titleLines={EP01_TITLE_LINES}>
       <path d={groundMass(1150, 1560)} fill={COLORS.sandPale} />
       <circle cx={790} cy={1010} r={52} fill={COLORS.terracottaLight} opacity={0.85} />
       <g transform="translate(540 1250) scale(1.3)">

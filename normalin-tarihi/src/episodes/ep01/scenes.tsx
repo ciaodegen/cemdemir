@@ -179,7 +179,7 @@ const HistoryWalk: React.FC<{start: number; opacity: number}> = ({start, opacity
   );
 };
 
-export const OpeningScene: React.FC<{s: TimedScene; question: string}> = ({s, question}) => {
+export const OpeningScene: React.FC<{s: TimedScene; questionLines: string[]}> = ({s, questionLines}) => {
   const frame = useCurrentFrame();
   const q1 = atLine(s, 'q1');
   const meet = Math.round(atLine(s, 'q2', 0.12));
@@ -188,7 +188,7 @@ export const OpeningScene: React.FC<{s: TimedScene; question: string}> = ({s, qu
   return (
     <Paper>
       <div style={{opacity: 1 - walkIn}}>
-        <Title text={question} from={Math.max(0, q1 - 4)} to={atLine(s, 'q1', 0.7)} top={LAYOUT.titleY + 10} />
+        <Title lines={questionLines} from={Math.max(0, q1 - 4)} to={atLine(s, 'q1', 0.7)} top={LAYOUT.titleY + 10} />
       </div>
       <ArtSvg>
         <g opacity={1 - walkIn}>
@@ -227,7 +227,7 @@ export const MesopotamiaScene: React.FC<{s: TimedScene}> = ({s}) => {
   const figDraw = progress(frame, sec(1.6), sec(2.8));
   return (
     <Paper>
-      <Label text="Mezopotamya" />
+      <Label text="*Mezopotamya*" />
       <ArtSvg>
         <Sun x={830} y={560} opacity={land} />
         <Land horizon={930} opacity={land} />
@@ -283,7 +283,7 @@ export const TheoryScene: React.FC<{s: TimedScene}> = ({s}) => {
   const step = progress(frame, answerStart - sec(0.3), answerStart + sec(0.5));
   return (
     <Paper>
-      <Label text="Yaygın bir teori" />
+      <Label text="Yaygın bir *teori*" />
       <ArtSvg>
         <Land horizon={930} opacity={land} />
         <Ink paths={THEORY_BACK} draw={progress(frame, sec(0.2), sec(1.6))} overlap={0.4} />
@@ -327,8 +327,8 @@ export const AllianceScene: React.FC<{s: TimedScene}> = ({s}) => {
   const shake = ct > 0 && ct < 34 ? Math.sin((ct / 17) * Math.PI * 2) * 8 * (1 - ct / 40) : 0;
   return (
     <Paper>
-      <Label text="MÖ 9. yüzyıl · kabartma" to={closeAt + 8} />
-      <Label text="Bir ittifak" from={closeAt + 10} />
+      <Label text="*MÖ 9. yüzyıl* · kabartma" to={closeAt + 8} />
+      <Label text="Bir *ittifak*" from={closeAt + 10} />
       <ArtSvg>
         <g opacity={1 - close}>
           <Ink paths={SLAB} draw={slab} overlap={0.4} />
@@ -388,8 +388,8 @@ export const GreeceScene: React.FC<{s: TimedScene}> = ({s}) => {
   const land = progress(frame, 0, sec(0.9));
   return (
     <Paper>
-      <Label text="Antik Yunan" to={switchAt + 10} />
-      <Label text="Mezar steli" from={switchAt + 8} />
+      <Label text="*Antik Yunan*" to={switchAt + 10} />
+      <Label text="*Mezar* steli" from={switchAt + 8} />
       <ArtSvg>
         <g opacity={1 - toStele}>
           <Sun x={560} y={590} opacity={land} />
@@ -550,7 +550,7 @@ export const ModernScene: React.FC<{s: TimedScene}> = ({s}) => {
         <HandshakeMoment cy={HAND_Y} enter={2} meet={Math.round(atLine(s, 'c1', 0.48))} spark={false} />
       </ArtSvg>
       <div style={{opacity: 1 - progress(frame, s.duration - sec(0.6), s.duration)}}>
-        <Label text="Bugün" />
+        <Label text="*Bugün*" />
       </div>
     </Paper>
   );

@@ -22,9 +22,9 @@ export const SpecialEndingText: React.FC<{text: string; signature?: string; at: 
           marginTop: 24,
           fontFamily: FONT_FAMILY,
           ...TYPE.small,
-          letterSpacing: '0.12em',
+          letterSpacing: '0.08em',
           color: COLORS.text,
-          opacity: sig * 0.75,
+          opacity: sig,
           transform: `translateY(${(1 - sig) * 6}px)`,
         }}
       >

@@ -9,8 +9,14 @@ export const COLORS = {
   terracotta: '#BC8066',
   olive: '#858B74',
   taupe: '#A69B8B',
-  /** emblem / text anthracite, sampled from the official logo */
+  /** COLOR A — emblem / text anthracite, sampled from the official logo */
   text: '#25221E',
+  /**
+   * COLOR B — warm caramel highlight for key words.
+   * PROVISIONAL: replace with the value sampled from the approved
+   * BECAME reference screenshot once it is available.
+   */
+  highlight: '#B07D45',
   // derived tints (same hues, lighter) for large areas
   sandLight: '#EADCC6',
   sandPale: '#F3E9D8',
@@ -25,15 +31,15 @@ export const COLORS = {
 } as const;
 
 /** One typeface for the whole brand; hierarchy comes from size and weight. */
-export const FONT_FAMILY = "'DM Sans', 'Helvetica Neue', Arial, sans-serif";
+export const FONT_FAMILY = "'Montserrat', 'Helvetica Neue', Arial, sans-serif";
 
 export const TYPE = {
-  title: {fontSize: 104, fontWeight: 600, lineHeight: 1.08, letterSpacing: '-0.02em'},
-  ending: {fontSize: 64, fontWeight: 600, lineHeight: 1.15, letterSpacing: '-0.015em'},
-  label: {fontSize: 40, fontWeight: 500, lineHeight: 1.2, letterSpacing: '-0.005em'},
-  subtitle: {fontSize: 42, fontWeight: 500, lineHeight: 1.36, letterSpacing: '0em'},
-  small: {fontSize: 28, fontWeight: 500, lineHeight: 1.2, letterSpacing: '0em'},
-  wordmark: {fontSize: 36, fontWeight: 500, lineHeight: 1, letterSpacing: '0.3em'},
+  title: {fontSize: 100, fontWeight: 700, lineHeight: 1.12, letterSpacing: '-0.02em'},
+  ending: {fontSize: 58, fontWeight: 700, lineHeight: 1.2, letterSpacing: '-0.015em'},
+  label: {fontSize: 46, fontWeight: 700, lineHeight: 1.2, letterSpacing: '-0.01em'},
+  subtitle: {fontSize: 40, fontWeight: 600, lineHeight: 1.4, letterSpacing: '-0.005em'},
+  small: {fontSize: 26, fontWeight: 600, lineHeight: 1.2, letterSpacing: '0em'},
+  wordmark: {fontSize: 34, fontWeight: 700, lineHeight: 1, letterSpacing: '0.26em'},
 } as const;
 
 export const VIDEO = {width: 1080, height: 1920, fps: 30} as const;

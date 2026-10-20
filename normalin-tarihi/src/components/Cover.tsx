@@ -36,12 +36,14 @@ export const Cover: React.FC<{titleLines: string[]; children: React.ReactNode}> 
         textAlign: 'center',
         fontFamily: FONT_FAMILY,
         ...TYPE.title,
-        fontSize: 120,
+        fontSize: 104,
         color: COLORS.text,
       }}
     >
       {titleLines.map((l) => (
-        <div key={l}>{l}</div>
+        <div key={l} style={{color: l.startsWith('*') ? COLORS.highlight : COLORS.text}}>
+          {l.replace(/\*/g, '')}
+        </div>
       ))}
     </div>
     <ArtSvg>{children}</ArtSvg>

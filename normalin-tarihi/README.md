@@ -24,14 +24,18 @@ The script is in `src/episodes/ep01/script.json`. Use it exactly as written. The
 
 `npm run preview:ep01` renders a visual-only preview that uses estimated timing.
 
-## Visual system (v3)
+## Visual system (v4)
 - Background `#FEF9EE` and emblem/text anthracite `#25221E`, both sampled from the official logo.
 - The logo intro always plays on beige with an anthracite emblem. It never uses a dark background.
 - Palette: sand `#D9C3A3`, camel `#B89470`, terracotta `#BC8066`, olive `#858B74`, taupe `#A69B8B`, outlines `#292724`. Tints are listed in `src/brand/theme.ts`.
 - Illustrations use thin charcoal outlines with flat muted fills. Fills wash in after each outline is drawn.
-- Typography uses **one family only, DM Sans**, with hierarchy from size and weight (`TYPE` in `theme.ts`).
-  - Titles, labels, subtitles, the logo wordmark and the sign-off all use the same word-by-word reveal.
-  - There are no underlines, rules or text boxes.
+- Typography uses **one family, Montserrat** (600 and 700), modelled on the approved BECAME reference. Hierarchy comes from size and weight, set in `TYPE` in `theme.ts`.
+- Text uses exactly two colours:
+  - anthracite `COLORS.text` `#25221E`;
+  - caramel `COLORS.highlight` for key words.
+
+  Mark highlighted words as `*word*` in titles, labels and the `subtitle` field. The caramel `#B07D45` is **provisional** until it is measured from the reference screenshot.
+- Every piece of text appears word by word. There are no underlines, rules or text boxes.
 
 ## Layout
 | Path | Purpose |
