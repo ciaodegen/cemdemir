@@ -1,4 +1,4 @@
-"""Bölüm 1 v2 — kısaltılmış kurgu (~74 sn): telefon ve arkasını dönme sahneleri yok,
+"""Bölüm 1 v2 — kısaltılmış kurgu (~71 sn): telefon, arkasını dönme ve düğüm sahneleri yok,
 konuşmalar 1.1x, film greni/toz yok."""
 import sys, subprocess
 from PIL import Image
@@ -12,9 +12,9 @@ REP = f"{ROOT}/bolum1/replikler_hizli"
 SFX = f"{ROOT}/efektler"
 
 START = {0: 0.9, 1: 4.0, 2: 6.2, 3: 9.5, 4: 11.1, 5: 13.0, 6: 14.2, 7: 18.4, 8: 19.7, 9: 21.1,
-         10: 26.9, 11: 34.2, 12: 37.3, 13: 39.4, 14: 41.8, 15: 44.1, 16: 54.5, 17: 56.7}
+         10: 26.9, 11: 34.2, 12: 37.3, 13: 39.4, 14: 41.8, 15: 44.1, 16: 51.9, 17: 54.1}
 DUR = {i: duration(f"{REP}/{f}.mp3") for i, (f, _, _) in enumerate(LINES)}
-TOTAL = 74.0
+TOTAL = 71.4
 
 
 def speaking(t, who):
@@ -88,12 +88,11 @@ SHOTS = [
     S(39.3, 41.7, lambda t: shop(t, push(USTA_CU, t, 39.3, 41.7, 0.05), usta="E_front", bg_blur=9, deniz_blur=8, package=True)),
     S(41.7, 43.9, lambda t: shop(t, push(DENIZ_MCU, t, 41.7, 43.9, 0.05), deniz="D_whisper", deniz_blur=0, bg_blur=8, usta_blur=6, package=True)),
     S(43.9, 51.8, lambda t: shop(t, push(USTA_MCU, t, 43.9, 51.8, 0.15), usta="E_soft", bg_blur=8, deniz_blur=6, package=True, usta_blinks=False)),
-    S(51.8, 54.4, plate(lambda t: _ins("rope_halves", t >= 52.9), 51.8, 54.4, 1.0, 1.05)),
-    S(54.4, 56.6, lambda t: door(t, push(EMRE_MCU, t, 54.4, 56.6, 0.03), emre="M_soft", rope="knot")),
-    S(56.6, 60.4, lambda t: shop(t, push(USTA_MCU, t, 56.6, 60.4, 0.06), usta="E_soft", bg_blur=8, deniz_blur=6, rope="knot", package=True, usta_blinks=False)),
-    S(60.4, 63.6, plate(lambda t: _ins("phone", True, "Arkadaşlık · 12 yıl", "Murat", "aranıyor…", True), 60.4, 63.6, 1.0, 1.06)),
-    S(63.6, 70.8, plate(lambda t: _ins("ticket", round(min(1, max(0, (t - 63.9) / 5.0)) * 60) / 60, round(min(1, max(0, (t - 69.4) / 0.35)) * 8) / 8), 63.6, 70.8, 1.04, 1.0)),
-    S(70.8, 74.0, plate(lambda t: _ins("cta"), 70.8, 74.0, 1.0, 1.0)),
+    S(51.8, 54.0, lambda t: door(t, push(EMRE_MCU, t, 51.8, 54.0, 0.03), emre="M_soft", rope="none")),
+    S(54.0, 57.8, lambda t: shop(t, push(USTA_MCU, t, 54.0, 57.8, 0.06), usta="E_soft", bg_blur=8, deniz_blur=6, rope="none", package=True, usta_blinks=False)),
+    S(57.8, 61.0, plate(lambda t: _ins("phone", True, "Arkadaşlık · 12 yıl", "Murat", "aranıyor…", True), 57.8, 61.0, 1.0, 1.06)),
+    S(61.0, 68.2, plate(lambda t: _ins("ticket", round(min(1, max(0, (t - 61.3) / 5.0)) * 60) / 60, round(min(1, max(0, (t - 66.8) / 0.35)) * 8) / 8), 61.0, 68.2, 1.04, 1.0)),
+    S(68.2, 71.4, plate(lambda t: _ins("cta"), 68.2, 71.4, 1.0, 1.0)),
 ]
 
 
@@ -105,14 +104,14 @@ def frame_at(t):
     else:
         img = Image.new("RGB", (W, H))
     img = finish(img, t, dust=False, grain=False)
-    if t < 70.8:
+    if t < 68.2:
         img = subtitle(img, sub_at(t))
     if t < 0.4:
         img = Image.eval(img, lambda v, k=t / 0.4: int(v * k))
     if t > TOTAL - 0.6:
         img = Image.eval(img, lambda v, k=(TOTAL - t) / 0.6: int(v * max(k, 0)))
-    if 70.5 <= t < 71.1:
-        k = abs(t - 70.8) / 0.3
+    if 67.9 <= t < 68.5:
+        k = abs(t - 68.2) / 0.3
         img = Image.eval(img, lambda v, k=k: int(v * min(1, k)))
     return img
 
@@ -132,12 +131,11 @@ def audio_mix(out):
     add(f"{SFX}/loupe.mp3", 7.95, 0.8)
     add(f"{SFX}/loupe.mp3", 18.2, 0.5)
     add(f"{SFX}/gazete.mp3", 30.5, 0.7)
-    add(f"{SFX}/dugum.mp3", 52.0, 0.7)
-    add(f"{SFX}/telefon.mp3", 60.8, 0.45)
-    add(f"{SFX}/cingirak_cikis.mp3", 62.4, 0.45)
-    add(f"{SFX}/kalem.mp3", 63.9, 0.7)
-    add(f"{SFX}/damga.mp3", 69.4, 0.8)
-    add(f"{SFX}/muzik.mp3", 39.5, 0.30, ",afade=t=in:st=0:d=3,afade=t=out:st=31:d=3.5")
+    add(f"{SFX}/telefon.mp3", 58.2, 0.45)
+    add(f"{SFX}/cingirak_cikis.mp3", 59.8, 0.45)
+    add(f"{SFX}/kalem.mp3", 61.3, 0.7)
+    add(f"{SFX}/damga.mp3", 66.8, 0.8)
+    add(f"{SFX}/muzik.mp3", 39.5, 0.30, ",afade=t=in:st=0:d=3,afade=t=out:st=28.4:d=3.5")
     fc = ";".join(filters) + ";" + "".join(labels) + f"amix=inputs={len(labels)}:normalize=0:duration=longest,atrim=0:{TOTAL},alimiter=limit=0.95[out]"
     subprocess.run(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", fc, "-map", "[out]", "-c:a", "pcm_s16le", out], check=True)
 
