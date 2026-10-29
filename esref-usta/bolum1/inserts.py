@@ -214,7 +214,7 @@ TICKET = [
 ]
 
 
-def ticket(progress, stamp=0.0, no="001"):
+def ticket(progress, stamp=0.0, no="001", fields=None, stamp_text="TAMİR EDİLDİ"):
     """progress 0..1 reveals the handwriting; stamp 0..1 drops the stamp."""
     img = wood_top(11).copy()
     card = Image.new("RGBA", (1160, 1700), (0, 0, 0, 0))
@@ -229,10 +229,11 @@ def ticket(progress, stamp=0.0, no="001"):
     d.text((80, 200), "TAMİR FİŞİ", font=f_head, fill=(60, 36, 22, 255))
     d.text((800, 225), f"No: {no}", font=font(FONT_SERIF_B, 58), fill=(140, 40, 32, 255))
     fh = font(FONT_HAND, 60)
-    total = sum(len(v) for _, v in TICKET)
+    fields = fields or TICKET
+    total = sum(len(v) for _, v in fields)
     shown = int(progress * (total + 40))
     y = 400
-    for i, (lab, val) in enumerate(TICKET):
+    for i, (lab, val) in enumerate(fields):
         d.text((80, y), lab, font=f_lab, fill=(90, 60, 40, 255))
         y += 70
         lines = []
@@ -256,8 +257,8 @@ def ticket(progress, stamp=0.0, no="001"):
         s = Image.new("RGBA", (700, 230), (0, 0, 0, 0))
         sd = ImageDraw.Draw(s)
         sd.rounded_rectangle([8, 8, 692, 222], radius=24, outline=(176, 42, 36, 255), width=12)
-        ft = font(FONT_SERIF_B, 76); tw = sd.textlength("TAMİR EDİLDİ", font=ft)
-        sd.text(((700 - tw) / 2, 66), "TAMİR EDİLDİ", font=ft, fill=(176, 42, 36, 255))
+        ft = font(FONT_SERIF_B, 76); tw = sd.textlength(stamp_text, font=ft)
+        sd.text(((700 - tw) / 2, 66), stamp_text, font=ft, fill=(176, 42, 36, 255))
         rnd = np.random.default_rng(4).random((230, 700)) > 0.22
         a = np.asarray(s.split()[3]).copy(); a[~rnd] = (a[~rnd] * 0.3).astype(np.uint8)
         s.putalpha(Image.fromarray(a).point(lambda v: int(v * 0.85)))

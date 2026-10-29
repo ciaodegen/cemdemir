@@ -7,3 +7,5 @@ bolum1/*.mp4
 3d/sprites_hd/
 paylasim/*.mp4
 *.zip
+bolum2/*.mp4
+!bolum2/sesler/*.mp4

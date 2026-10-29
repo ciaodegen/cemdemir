@@ -90,6 +90,10 @@ def front_plate(rope="two", package=False):
     elif rope == "knot":
         draw_rope(front, [(330, 1810 + CY), (500, 1806 + CY), (680, 1810 + CY), (860, 1815 + CY)], 18, "flat", "flat", seed=2)
         ImageDraw.Draw(front).ellipse([585, 1794 + CY, 625, 1826 + CY], fill=(176, 140, 96, 255))
+    elif rope == "box":
+        d = ImageDraw.Draw(front)
+        d.rounded_rectangle([560, 1752 + CY, 760, 1818 + CY], radius=14, fill=(110, 24, 38, 255))
+        d.rectangle([560, 1772 + CY, 760, 1778 + CY], fill=(150, 120, 60, 255))
     if package:
         d = ImageDraw.Draw(front)
         d.rounded_rectangle([900, 1768 + CY, 1090, 1818 + CY], radius=8, fill=(150, 142, 126, 255))
@@ -128,8 +132,8 @@ def shop(t, cam, usta="E_front", deniz="D_listen", bg_blur=2, usta_blur=0, deniz
     world.alpha_composite(front_plate(rope, package))
     frame = crop(world, cam)
     if emre_back:
-        x, ytop, sc, bl = emre_back
-        put_screen(frame, "M_back", x, ytop, sc, bl, 0.62)
+        x, ytop, sc, bl = emre_back[:4]
+        put_screen(frame, emre_back[4] if len(emre_back) > 4 else "M_back", x, ytop, sc, bl, 0.62)
     return frame
 
 
