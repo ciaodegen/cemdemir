@@ -1,0 +1,2 @@
+[{"name":"face_front","char":0,"w":700,"h":700,"view":[0,0.98,0.2,4.0],"headYaw":-0.15,"gaze":[-0.35,-0.1],"force":true},
+ {"name":"face_serious","char":0,"w":700,"h":700,"view":[0,0.98,0.2,4.0],"headYaw":-0.12,"gaze":[-0.3,-0.15],"brow":-0.7,"force":true}]

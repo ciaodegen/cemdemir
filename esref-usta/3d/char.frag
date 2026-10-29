@@ -123,8 +123,10 @@ vec2 esref(vec3 p){
   // brows (bushy)
   for (int s = 0; s < 2; s++) {
     float sx = s == 0 ? -1.0 : 1.0;
-    float by = 0.07 + uBrow * 0.012;
-    float brow = sdC(h, hc + vec3(sx * 0.022, by - 0.004, 0.14), hc + vec3(sx * 0.098, by + 0.004, 0.11), 0.019);
+    // kept clear of the glasses rim; frowning tilts the inner ends instead of lowering the brow
+    float by = 0.104 + max(uBrow, 0.0) * 0.012;
+    float inner = by - 0.004 + min(uBrow, 0.0) * 0.016;
+    float brow = sdC(h, hc + vec3(sx * 0.024, inner, 0.138), hc + vec3(sx * 0.098, by + 0.006, 0.108), 0.0165);
     brow += 0.003 * curl(h, 80.);
     hr = U(hr, vec2(brow, M_WHITEHAIR + 0.3));
   }
