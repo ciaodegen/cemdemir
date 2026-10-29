@@ -90,6 +90,10 @@ def front_plate(rope="two", package=False):
     elif rope == "knot":
         draw_rope(front, [(330, 1810 + CY), (500, 1806 + CY), (680, 1810 + CY), (860, 1815 + CY)], 18, "flat", "flat", seed=2)
         ImageDraw.Draw(front).ellipse([585, 1794 + CY, 625, 1826 + CY], fill=(176, 140, 96, 255))
+    elif rope == "oldphone":
+        d = ImageDraw.Draw(front)
+        d.rounded_rectangle([600, 1730 + CY, 720, 1812 + CY], radius=18, fill=(52, 56, 64, 255))
+        d.rounded_rectangle([616, 1740 + CY, 704, 1772 + CY], radius=6, fill=(150, 178, 120, 255))
     elif rope == "heart":
         import math as _m
         d = ImageDraw.Draw(front)

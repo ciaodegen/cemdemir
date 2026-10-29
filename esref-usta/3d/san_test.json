@@ -1,0 +1,2 @@
+[{"name":"saniye_test","char":6,"w":800,"h":1040,"view":[0,0.625,0.725,4.0],"headYaw":0.06,"gaze":[0.1,0.0],"brow":0.4,"smile":0.3,"force":true},
+ {"name":"saniye_face","char":6,"w":600,"h":600,"view":[0,0.86,0.27,4.0],"gaze":[0.1,0],"brow":0.5,"mouth":0.3,"headYaw":0.2,"force":true}]

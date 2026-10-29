@@ -552,12 +552,78 @@ vec2 efec(vec3 p){
   return res;
 }
 
+// ---------- Saniye Teyze ----------
+vec2 saniyec(vec3 p){
+  vec3 b = bodySpace(p);
+  vec2 res = vec2(1e9, 0.);
+  float torso = sdE(b - vec3(0., 0.24, 0.), vec3(0.25, 0.35, 0.185));
+  float sh = sdE(b - vec3(0., 0.47, -0.01), vec3(0.27, 0.11, 0.16));
+  float body = smin(torso, sh, 0.08);
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    float ua = sdC(b, vec3(sx * 0.25, 0.47, -0.01), vec3(sx * 0.3, 0.22, 0.05), 0.07);
+    float fa = sdC(b, vec3(sx * 0.3, 0.22, 0.05), vec3(sx * 0.2, 0.03, 0.22), 0.058);
+    body = smin(body, min(ua, fa), 0.03);
+    float hand = sdE(b - vec3(sx * 0.18, 0.015, 0.25), vec3(0.05, 0.035, 0.062));
+    res = U(res, vec2(hand, M_SKIN));
+  }
+  res = U(res, vec2(body, 35.0));
+  // blouse visible in the cardigan opening
+  float bl = body - 0.005;
+  bl = smax(bl, abs(b.x) - (0.03 + max(0.0, b.y - 0.05) * 0.16), 0.01);
+  bl = smax(bl, 0.03 - b.z, 0.01);
+  res = U(res, vec2(bl, 36.0));
+  for (int s = 0; s < 3; s++) {
+    float by = 0.1 + float(s) * 0.1;
+    float bx = 0.03 + max(0.0, by - 0.05) * 0.16 + 0.022;
+    res = U(res, vec2(length(b - vec3(-bx, by, 0.178 - abs(by - 0.24) * 0.08)) - 0.011, M_APRON));
+  }
+
+  vec3 pivot = vec3(0., 0.6, 0.0);
+  vec3 h = headSpace(b, pivot);
+  vec2 hr = vec2(1e9, 0.);
+  vec3 hc = vec3(0., 0.8, 0.03);
+  float skull = sdE(h - hc, vec3(0.135, 0.15, 0.135));
+  float cheeks = min(length(h - (hc + vec3(-0.07, -0.045, 0.08))) - 0.058, length(h - (hc + vec3(0.07, -0.045, 0.08))) - 0.058);
+  skull = smin(skull, cheeks, 0.035);
+  float jaw = sdE(h - (hc + vec3(0., -0.075, 0.03)), vec3(0.1, 0.08, 0.1));
+  skull = smin(skull, jaw, 0.05);
+  vec3 mq = h - (hc + vec3(0., -0.085, 0.122));
+  mq.y -= (1.0 + 12.0 * uSmile) * mq.x * mq.x;
+  float mouthCav = sdE(mq, vec3(0.028, 0.003 + 0.015 * uMouth, 0.05));
+  skull = smax(skull, -mouthCav, 0.005);
+  hr = U(hr, vec2(skull, M_SKIN));
+  hr = U(hr, vec2(sdE(mq + vec3(0., 0., 0.016), vec3(0.026, 0.003 + 0.014 * uMouth, 0.03)), M_MOUTH));
+  hr = U(hr, vec2(sdE(h - (hc + vec3(0., -0.025, 0.135)), vec3(0.024, 0.03, 0.028)), M_SKIN));
+  hr = U(hr, eyes(h, hc, 0.05, 0.012, 0.105, 0.029, 0.018, true, 0.011));
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    float by = 0.055 + uBrow * 0.012;
+    float brow = sdC(h, hc + vec3(sx * 0.024, by + 0.003, 0.128), hc + vec3(sx * 0.082, by - 0.008, 0.106), 0.0055);
+    hr = U(hr, vec2(brow, 38.0));
+  }
+  // headscarf: a shell around the head with an oval face opening, gathered under the chin
+  float shell = sdE(h - (hc + vec3(0., 0.01, -0.01)), vec3(0.165, 0.18, 0.163));
+  float faceHole = sdE(h - (hc + vec3(0., -0.025, 0.11)), vec3(0.108, 0.135, 0.12));
+  float scarf = smax(shell, -faceHole, 0.015);
+  float drape = sdE(h - (hc + vec3(0., -0.2, -0.01)), vec3(0.2, 0.095, 0.165));
+  drape = smax(drape, -sdE(h - (hc + vec3(0., -0.1, 0.11)), vec3(0.09, 0.08, 0.1)), 0.02);
+  scarf = smin(scarf, drape, 0.05);
+  float knot = sdE(h - (hc + vec3(0.02, -0.2, 0.1)), vec3(0.03, 0.025, 0.022));
+  scarf = smin(scarf, knot, 0.015);
+  scarf += 0.0025 * sin(h.y * 90.0 + h.x * 40.0);
+  hr = U(hr, vec2(scarf, 37.0));
+  res = U(res, vec2(hr.x * HS, hr.y));
+  return res;
+}
+
 vec2 map(vec3 p){
   if (uChar == 0) return esref(p);
   if (uChar == 1) return deniz(p);
   if (uChar == 3) return elifc(p);
   if (uChar == 4) return efec(p);
   if (uChar == 5) return zeynepc(p);
+  if (uChar == 6) return saniyec(p);
   return emre(p);
 }
 
@@ -598,6 +664,7 @@ vec3 albedo(float id, vec3 p, vec3 n){
     }
     if (uChar == 4) return vec3(0.9, 0.62, 0.48);
     if (uChar == 5) return vec3(0.88, 0.6, 0.47);
+    if (uChar == 6) return vec3(0.86, 0.58, 0.47);
     if (uChar == 3) {
       vec3 h = headSpace(b, vec3(0., 0.62, 0.));
       vec2 f = (h.xy - vec2(0., 0.775)) * 120.0;
@@ -653,7 +720,16 @@ vec3 albedo(float id, vec3 p, vec3 n){
   if (id < 30.5) return vec3(0.07, 0.065, 0.07);
   if (id < 32.7) { float k = 0.5 + 0.5 * sin(b.x * 300.0) ; float c = id > 32.2 ? 0.85 : 1.0; return mix(vec3(0.52, 0.09, 0.09), vec3(0.58, 0.12, 0.11), k * 0.5) * c; }
   if (id < 33.5) return vec3(0.86, 0.68, 0.38);
-  return vec3(0.55, 0.38, 0.2);
+  if (id < 34.5) return vec3(0.55, 0.38, 0.2);
+  if (id < 35.5) { float k = 0.5 + 0.5 * sin(b.y * 260.0) * sin(b.x * 260.0); return mix(vec3(0.42, 0.3, 0.2), vec3(0.48, 0.35, 0.24), k * 0.6); }
+  if (id < 36.5) return vec3(0.62, 0.72, 0.84);
+  if (id < 37.5) {
+    vec3 h = headSpace(b, vec3(0., 0.6, 0.));
+    vec2 f = vec2(atan(h.x, h.z) * 9.0, h.y * 60.0);
+    float dots = smoothstep(0.24, 0.16, length(fract(f) - 0.5));
+    return mix(vec3(0.62, 0.52, 0.72), vec3(0.95, 0.9, 0.82), dots * 0.8);
+  }
+  return vec3(0.62, 0.6, 0.58);
 }
 
 void main(){
