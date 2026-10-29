@@ -2,3 +2,5 @@
 __pycache__/
 3d/test/
 3d/*.log
+bolum1/*.mp4
+!bolum1/bolum1_diyalog_taslak.mp4
