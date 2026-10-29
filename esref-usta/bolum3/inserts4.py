@@ -105,7 +105,7 @@ def heart(step=0, dark_bg=True):
 
 @functools.lru_cache(maxsize=64)
 def loupe_gear(step=0):
-    src = heart(step)
+    src = heart(step, False)
     zoom = 2.4
     w, h = BW / zoom, BH / zoom
     cx, cy = 730, 1230
