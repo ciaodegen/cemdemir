@@ -1,0 +1,6 @@
+[{"name":"esref_test","char":0,"w":600,"h":780,"view":[0,0.62,0.68,4.0],"force":true},
+ {"name":"deniz_test","char":1,"w":600,"h":780,"view":[0,0.62,0.68,4.0],"force":true},
+ {"name":"emre_test","char":2,"w":600,"h":780,"view":[0,0.62,0.68,4.0],"force":true},
+ {"name":"esref_face","char":0,"w":500,"h":500,"view":[0,0.9,0.25,4.0],"mouth":0.8,"force":true},
+ {"name":"deniz_face","char":1,"w":500,"h":500,"view":[0,0.86,0.25,4.0],"mouth":0.7,"yaw":0.3,"headYaw":0.2,"force":true},
+ {"name":"emre_face","char":2,"w":500,"h":500,"view":[0,0.87,0.25,4.0],"mouth":0.0,"force":true}]

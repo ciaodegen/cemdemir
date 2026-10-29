@@ -1,2 +1,4 @@
 *.wav
 __pycache__/
+3d/test/
+3d/*.log
