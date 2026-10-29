@@ -257,8 +257,11 @@ def ticket(progress, stamp=0.0, no="001", fields=None, stamp_text="TAMİR EDİLD
         s = Image.new("RGBA", (700, 230), (0, 0, 0, 0))
         sd = ImageDraw.Draw(s)
         sd.rounded_rectangle([8, 8, 692, 222], radius=24, outline=(176, 42, 36, 255), width=12)
-        ft = font(FONT_SERIF_B, 76); tw = sd.textlength(stamp_text, font=ft)
-        sd.text(((700 - tw) / 2, 66), stamp_text, font=ft, fill=(176, 42, 36, 255))
+        fs_ = 76
+        while sd.textlength(stamp_text, font=font(FONT_SERIF_B, fs_)) > 620:
+            fs_ -= 2
+        ft = font(FONT_SERIF_B, fs_); tw = sd.textlength(stamp_text, font=ft)
+        sd.text(((700 - tw) / 2, 115 - fs_ * 0.62), stamp_text, font=ft, fill=(176, 42, 36, 255))
         rnd = np.random.default_rng(4).random((230, 700)) > 0.22
         a = np.asarray(s.split()[3]).copy(); a[~rnd] = (a[~rnd] * 0.3).astype(np.uint8)
         s.putalpha(Image.fromarray(a).point(lambda v: int(v * 0.85)))
