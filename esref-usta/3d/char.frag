@@ -270,8 +270,22 @@ vec2 emre(vec3 p){
   float collar = sdTz(rotX(-1.35) * (b - vec3(0., 0.58, 0.0)), 0.085, 0.03);
   body = smin(body, collar, 0.02);
   res = U(res, vec2(body, M_NAVY));
-  float sweater = sdC(b, vec3(0., 0.5, 0.06), vec3(0., 0.62, 0.0), 0.06);
-  res = U(res, vec2(sweater, M_SWEATER));
+  // open coat: grey sweater visible in a V down the front
+  float vsw = body - 0.005;
+  vsw = smax(vsw, abs(b.x) - (0.012 + max(0.0, b.y - 0.02) * 0.2), 0.01);
+  vsw = smax(vsw, b.y - 0.56, 0.01);
+  vsw = smax(vsw, 0.04 - b.z, 0.01);
+  res = U(res, vec2(vsw, M_SWEATER));
+  for (int s = 0; s < 3; s++) {
+    float by = 0.08 + float(s) * 0.1;
+    float bx = 0.022 + max(0.0, by - 0.05) * 0.22 + 0.025;
+    res = U(res, vec2(length(b - vec3(-bx, by, 0.152 - abs(by - 0.25) * 0.08)) - 0.011, M_PUPIL));
+  }
+  // maroon scarf around the neck, one end hanging
+  float scarf = sdTz(rotX(-1.4) * (b - vec3(0., 0.585, 0.005)), 0.082, 0.04);
+  vec3 sq = b - vec3(0.075, 0.44, 0.15); sq.x += 0.015 * sin(sq.y * 25.0);
+  scarf = smin(scarf, sdBox(rotX(0.15) * sq, vec3(0.036, 0.12, 0.01)) - 0.01, 0.02);
+  res = U(res, vec2(scarf, 23.0));
   vec3 pivot = vec3(0., 0.62, 0.0);
   vec3 h = headSpace(b, pivot);
   vec2 hr = vec2(1e9, 0.);
@@ -292,7 +306,7 @@ vec2 emre(vec3 p){
   for (int s = 0; s < 2; s++) {
     float sx = s == 0 ? -1.0 : 1.0;
     float by = 0.055 + uBrow * 0.012;
-    float brow = sdC(h, hc + vec3(sx * 0.02, by + 0.004, 0.12), hc + vec3(sx * 0.088, by - 0.004, 0.1), 0.009);
+    float brow = sdC(h, hc + vec3(sx * 0.025, by + 0.004, 0.12), hc + vec3(sx * 0.08, by - 0.002, 0.103), 0.0065);
     hr = U(hr, vec2(brow, M_BROW_D));
   }
   float hair = sdE(h - (hc + vec3(0., 0.03, -0.012)), vec3(0.133, 0.14, 0.138));
@@ -375,7 +389,9 @@ vec3 albedo(float id, vec3 p, vec3 n){
   if (id < 18.5) return vec3(0.36, 0.2, 0.1);
   if (id < 20.5) return vec3(0.06, 0.06, 0.07);
   if (id < 21.5) return vec3(0.07, 0.05, 0.04);
-  return vec3(0.55, 0.65, 0.7);
+  if (id < 22.5) return vec3(0.55, 0.65, 0.7);
+  float st = step(0.5, fract((b.y + b.x * 0.2) * 22.0));
+  return mix(vec3(0.42, 0.1, 0.11), vec3(0.5, 0.16, 0.14), st * 0.5);
 }
 
 void main(){
