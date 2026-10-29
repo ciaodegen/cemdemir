@@ -2,11 +2,12 @@
 import sys, math, subprocess, functools
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
-from engine import W, H, FPS, ROOT, layer, draw_rope, finish, subtitle, envelope, duration, smooth
+from engine import W, H, UI, FPS, ROOT, layer, draw_rope, finish, subtitle, envelope, duration, smooth
 import inserts as ins
 from scenes import LINES, START, DUR, sub_at, audio_mix, plate, _ins
 
-SPR = f"{ROOT}/3d/sprites"
+import os
+SPR = f"{ROOT}/3d/" + os.environ.get("SPRITES", "sprites")
 SP_H = 1300
 ZERO_ROW = SP_H - 0.1 / 1.45 * SP_H   # sprite row of the counter-top line (y = 0)
 CY = 220
@@ -50,7 +51,8 @@ def spr(name):
 @functools.lru_cache(maxsize=256)
 def spr_scaled(name, scale, blur, darken):
     im = spr(name)
-    im = im.resize((int(im.size[0] * scale), int(im.size[1] * scale)), Image.LANCZOS)
+    k = scale * SP_H / im.size[1]   # scale is expressed for 1300px-tall sprites
+    im = im.resize((int(im.size[0] * k), int(im.size[1] * k)), Image.LANCZOS)
     if darken != 1.0:
         a = im.split()[3]
         im = Image.eval(im.convert("RGB"), lambda v: int(v * darken)).convert("RGBA"); im.putalpha(a)
@@ -66,7 +68,8 @@ def put(world, name, cx, scale, blur=0, darken=1.0, dy=0.0):
 
 
 def put_screen(frame, name, x, y_top, scale, blur, darken):
-    im = spr_scaled(name, round(scale, 3), blur, darken)
+    x, y_top, scale, blur = x * UI, y_top * UI, scale * UI, blur * UI
+    im = spr_scaled(name, round(scale, 3), round(blur, 2), darken)
     frame.alpha_composite(im, (int(x - im.size[0] / 2), int(y_top)))
 
 

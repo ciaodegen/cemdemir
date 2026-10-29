@@ -80,29 +80,35 @@ def phone(face_up=True, text_top="", text_main="", text_sub="", lit=True):
     return img
 
 
+def _arc(cx, cy, r, a0, a1, n=24, sx=1.0):
+    return [(cx + math.cos(math.radians(a0 + (a1 - a0) * i / n)) * r * sx,
+             cy + math.sin(math.radians(a0 + (a1 - a0) * i / n)) * r) for i in range(n + 1)]
+
+
+def reef_knot(obj, W=80, R=122, d=115, cx=720, cy=1290):
+    """Two ropes joined with a reef knot: each bight passes through the other."""
+    RB = R + W * 1.05
+    A = [(-80, cy + R + 12), (260, cy + R + 4), (cx + d, cy + R)] + _arc(cx + d, cy, R, 90, -90, 30, sx=1.1)[1:] + \
+        [(cx - 40, cy - R), (cx - d - RB * 1.1 - 60, cy - R - 12), (cx - d - RB * 1.1 - 200, cy - R - 85)]
+    B_arc = _arc(cx - d, cy, RB, -90, -270, 36, sx=1.1)
+    B_stand = [(1520, cy - RB - 12), (1180, cy - RB - 4), (cx - d + 30, cy - RB)] + B_arc[:3]
+    B_tail = B_arc[-3:] + [(cx - d + 30, cy + RB), (cx + d + R * 1.1 + 60, cy + RB + 12), (cx + d + R * 1.1 + 200, cy + RB + 85)]
+    draw_rope(obj, B_arc, W, "none", "none", seed=5)
+    draw_rope(obj, A, W, "flat", "flat", seed=3)
+    draw_rope(obj, B_stand, W, "flat", "none", seed=4)
+    draw_rope(obj, B_tail, W, "none", "flat", seed=6)
+
+
 def rope_halves(knotted=False, closeup=False):
     img = wood_top(5).copy()
     obj = Image.new("RGBA", (BW, BH), (0, 0, 0, 0))
     if not knotted:
-        a = [(-60, 1180), (200, 1150), (420, 1210), (610, 1190)]
-        b = [(1500, 1460), (1250, 1420), (1020, 1470), (830, 1430)]
-        draw_rope(obj, a, 92, end_a="flat", end_b="flat", seed=3)
-        draw_rope(obj, b, 92, end_a="flat", end_b="flat", seed=4)
+        a = [(-60, 1200), (200, 1180), (420, 1220), (600, 1200)]
+        b = [(1500, 1390), (1250, 1360), (1030, 1400), (840, 1380)]
+        draw_rope(obj, a, 80, end_a="flat", end_b="flat", seed=3)
+        draw_rope(obj, b, 80, end_a="flat", end_b="flat", seed=4)
     else:
-        a = [(-60, 1260), (200, 1240), (450, 1290), (650, 1300)]
-        b = [(1500, 1350), (1250, 1330), (1000, 1310), (790, 1300)]
-        draw_rope(obj, a, 92, end_a="flat", end_b="flat", seed=3)
-        draw_rope(obj, b, 92, end_a="flat", end_b="flat", seed=4)
-        # knot body: wraps around the joint
-        for k, (dx, dy, r, rot) in enumerate(((0, 0, 120, 0), (-40, 10, 105, 40), (45, -10, 105, -35))):
-            pts = []
-            for i in range(0, 25):
-                th = math.radians(rot + 200 * i / 24 - 100)
-                pts.append((720 + dx + math.cos(th) * r * 0.55, 1300 + dy + math.sin(th) * r))
-            draw_rope(obj, pts, 84, end_a="none", end_b="none", seed=10 + k)
-        # loose tails
-        draw_rope(obj, [(760, 1380), (800, 1480), (780, 1580)], 80, end_a="none", end_b="flat", seed=21)
-        draw_rope(obj, [(680, 1220), (640, 1120), (690, 1030)], 80, end_a="none", end_b="flat", seed=22)
+        reef_knot(obj)
     shadowed(img, obj, blur=22, off=(18, 28), alpha=160)
     return img
 
@@ -247,16 +253,16 @@ def ticket(progress, stamp=0.0, no="001"):
         y += 50
     card = card.filter(ImageFilter.GaussianBlur(0.4))
     if stamp > 0:
-        s = Image.new("RGBA", (620, 230), (0, 0, 0, 0))
+        s = Image.new("RGBA", (700, 230), (0, 0, 0, 0))
         sd = ImageDraw.Draw(s)
-        sd.rounded_rectangle([8, 8, 612, 222], radius=24, outline=(176, 42, 36, 255), width=12)
-        ft = font(FONT_SERIF_B, 84); tw = sd.textlength("TAMİR EDİLDİ", font=ft)
-        sd.text(((620 - tw) / 2, 62), "TAMİR EDİLDİ", font=ft, fill=(176, 42, 36, 255))
-        rnd = np.random.default_rng(4).random((230, 620)) > 0.22
+        sd.rounded_rectangle([8, 8, 692, 222], radius=24, outline=(176, 42, 36, 255), width=12)
+        ft = font(FONT_SERIF_B, 76); tw = sd.textlength("TAMİR EDİLDİ", font=ft)
+        sd.text(((700 - tw) / 2, 66), "TAMİR EDİLDİ", font=ft, fill=(176, 42, 36, 255))
+        rnd = np.random.default_rng(4).random((230, 700)) > 0.22
         a = np.asarray(s.split()[3]).copy(); a[~rnd] = (a[~rnd] * 0.3).astype(np.uint8)
         s.putalpha(Image.fromarray(a).point(lambda v: int(v * 0.85)))
         sc = 1.6 - 0.6 * min(1, stamp)
-        s = s.resize((int(620 * sc), int(230 * sc))).rotate(14, expand=True, resample=Image.BICUBIC)
+        s = s.resize((int(700 * sc), int(230 * sc))).rotate(12, expand=True, resample=Image.BICUBIC)
         a = s.split()[3].point(lambda v: int(v * min(1, stamp * 1.5)))
         s.putalpha(a)
         card.alpha_composite(s, (int(700 - s.size[0] / 2), int(1480 - s.size[1] / 2)))

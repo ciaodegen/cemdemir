@@ -61,8 +61,8 @@
  <rect x="345" y="345" width="750" height="160" rx="6" fill="none" stroke="#2b190c" stroke-width="4" opacity="0.6"/>
 </g>
 <line x1="420" y1="330" x2="470" y2="0" stroke="#1d120b" stroke-width="4"/><line x1="1020" y1="330" x2="970" y2="0" stroke="#1d120b" stroke-width="4"/>
-<text x="720" y="448" text-anchor="middle" font-family="Bitstream Charter, Liberation Serif, serif" font-weight="bold" font-size="66" letter-spacing="3" fill="#f1dfb8">HER ŞEY TAMİR EDİLİR</text>
-<text x="1070" y="492" text-anchor="end" font-family="FreeSerif, serif" font-style="italic" font-size="30" fill="#d9c49a" opacity="0.9">*bazı şeyler hariç</text>
+<text x="720" y="446" text-anchor="middle" font-family="Liberation Serif" font-weight="bold" font-size="64" textLength="690" lengthAdjust="spacingAndGlyphs" fill="#f1dfb8">HER ŞEY TAMİR EDİLİR</text>
+<text x="1060" y="490" text-anchor="end" font-family="FreeSerif" font-style="italic" font-size="30" fill="#d9c49a" opacity="0.9">*bazı şeyler hariç</text>
 
 <!-- shelves right -->
 <g filter="url(#shadow)">

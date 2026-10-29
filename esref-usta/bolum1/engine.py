@@ -3,7 +3,9 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageChops
 
 ROOT = "/home/user/cemdemir/esref-usta"
-W, H = 720, 1280
+import os
+W = int(os.environ.get("RES_W", "720")); H = W * 16 // 9
+UI = W / 720.0  # scale for screen-space sizes
 FPS = 24
 
 FONT_BOLD = "/usr/share/fonts/opentype/inter/Inter-Bold.otf"
@@ -222,19 +224,19 @@ def subtitle(img, text):
     if not text:
         return img
     img = img.convert("RGBA")
-    f = font(FONT_BOLD, 30)
+    f = font(FONT_BOLD, int(30 * UI))
     d = ImageDraw.Draw(img)
-    lines = wrap(text, f, W - 120, d)
-    y = int(H * 0.705) - (len(lines) - 1) * 20
+    lines = wrap(text, f, W - int(120 * UI), d)
+    y = int(H * 0.705) - (len(lines) - 1) * int(20 * UI)
     for ln in lines:
         tw = d.textlength(ln, font=f)
         x = (W - tw) / 2
         sh = Image.new("RGBA", img.size, (0, 0, 0, 0))
-        ImageDraw.Draw(sh).text((x, y + 2), ln, font=f, fill=(0, 0, 0, 230), stroke_width=3, stroke_fill=(0, 0, 0, 200))
-        img.alpha_composite(sh.filter(ImageFilter.GaussianBlur(2.2)))
+        ImageDraw.Draw(sh).text((x, y + 2 * UI), ln, font=f, fill=(0, 0, 0, 230), stroke_width=int(3 * UI), stroke_fill=(0, 0, 0, 200))
+        img.alpha_composite(sh.filter(ImageFilter.GaussianBlur(2.2 * UI)))
         d = ImageDraw.Draw(img)
         d.text((x, y), ln, font=f, fill=(255, 255, 255, 255))
-        y += 40
+        y += int(40 * UI)
     return img.convert("RGB")
 
 
