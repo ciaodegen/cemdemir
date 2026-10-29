@@ -421,26 +421,16 @@ vec2 zeynepc(vec3 p){
     float fa = sdC(b, vec3(sx * 0.245, 0.24, 0.04), vec3(sx * 0.17, 0.05, 0.2), 0.05);
     body = smin(body, min(ua, fa), 0.025);
     float cuff = sdC(b, vec3(sx * 0.19, 0.075, 0.17), vec3(sx * 0.175, 0.055, 0.195), 0.056);
-    res = U(res, vec2(cuff, 29.0));
+    res = U(res, vec2(cuff, 32.0));
     float hand = sdE(b - vec3(sx * 0.16, 0.012, 0.22), vec3(0.042, 0.032, 0.056));
     res = U(res, vec2(hand, M_SKIN));
   }
-  res = U(res, vec2(body, 29.0));
-  // white tee visible down the open cardigan
-  float tee = body - 0.005;
-  tee = smax(tee, abs(b.x) - (0.02 + max(0.0, b.y - 0.05) * 0.13), 0.01);
-  tee = smax(tee, 0.03 - b.z, 0.01);
-  res = U(res, vec2(tee, 30.0));
-  float neck = sdC(b, vec3(0., 0.5, 0.0), vec3(0., 0.6, 0.005), 0.05);
-  res = U(res, vec2(neck, 30.0));
-  float neck2 = sdC(b, vec3(0., 0.6, 0.005), vec3(0., 0.66, 0.01), 0.04);
-  res = U(res, vec2(neck2, M_SKIN));
-  // coat buttons
-  for (int s = 0; s < 2; s++) {
-    float by = 0.12 + float(s) * 0.11;
-    res = U(res, vec2(length(b - vec3(-0.09, by, 0.13 - abs(by - 0.26) * 0.06)) - 0.011, M_APRON));
-    res = U(res, vec2(length(b - vec3(0.09, by, 0.13 - abs(by - 0.26) * 0.06)) - 0.011, M_APRON));
-  }
+  res = U(res, vec2(body, 32.0));
+  // plain crew-neck sweater: ribbed collar, bare neck
+  float collar = sdTz(rotX(-1.45) * (b - vec3(0., 0.555, 0.0)), 0.06, 0.016);
+  res = U(res, vec2(collar, 32.5));
+  float neck = sdC(b, vec3(0., 0.5, 0.0), vec3(0., 0.66, 0.01), 0.042);
+  res = U(res, vec2(neck, M_SKIN));
 
   vec3 pivot = vec3(0., 0.62, 0.0);
   vec3 h = headSpace(b, pivot);
@@ -472,21 +462,27 @@ vec2 zeynepc(vec3 p){
     vec3 c = hc + vec3(sx * 0.048, 0.012, 0.096);
     float by = 0.056 + uBrow * 0.01;
     float brow = sdC(h, hc + vec3(sx * 0.024, by + 0.004, 0.12), hc + vec3(sx * 0.078, by + 0.0, 0.1), 0.004);
-    hr = U(hr, vec2(brow, 11.5));
+    hr = U(hr, vec2(brow, 34.0));
     // gold hoop earrings
     hr = U(hr, vec2(length(h - (hc + vec3(sx * 0.123, -0.045, 0.01))) - 0.007, 27.0));
   }
-  // hair: one-piece jaw-length bob framing the face, side-swept fringe
-  float shell = sdE(h - (hc + vec3(0., 0.0, -0.012)), vec3(0.152, 0.168, 0.152));
-  float face = sdE(h - (hc + vec3(0., -0.06, 0.1)), vec3(0.103, 0.16, 0.12));
-  float hair = smax(shell, -face, 0.02);
-  hair = smax(hair, (hc.y - 0.125 + 0.15 * max(0.0, -(h.z - hc.z))) - h.y, 0.02);
-  vec3 fq = h - (hc + vec3(-0.035, 0.078, 0.112));
-  fq.xy = mat2(cos(0.28), -sin(0.28), sin(0.28), cos(0.28)) * fq.xy;
-  float fringe = sdE(fq, vec3(0.085, 0.026, 0.03));
-  hair = smin(hair, fringe, 0.02);
-  hair += 0.0015 * sin(h.y * 180.0 + h.x * 30.0);
-  hr = U(hr, vec2(hair, 11.5));
+  // hair: pulled back into a blonde ponytail, soft side-swept fringe
+  float hair = sdE(h - (hc + vec3(0., 0.03, -0.012)), vec3(0.136, 0.143, 0.14));
+  hair = smax(hair, (hc.y + 0.075) - h.y - 0.9 * max(0.0, -(h.z - hc.z + 0.02)), 0.025);
+  vec3 fq = h - (hc + vec3(-0.035, 0.088, 0.1));
+  fq.xy = mat2(cos(0.3), -sin(0.3), sin(0.3), cos(0.3)) * fq.xy;
+  hair = smin(hair, sdE(fq, vec3(0.08, 0.022, 0.03)), 0.02);
+  // ponytail: gathered at the crown-back, swinging down behind the neck
+  vec3 tq = h - (hc + vec3(0., 0.07, -0.15));
+  float tail = sdE(tq - vec3(-0.04, -0.07, -0.02), vec3(0.055, 0.09, 0.05));
+  tail = sdC(tq, vec3(-0.04, -0.07, -0.02), vec3(-0.12, -0.17, 0.06), 0.05);
+  tail = smin(tail, sdC(tq, vec3(-0.12, -0.17, 0.06), vec3(-0.13, -0.32, 0.17), 0.042), 0.04);
+  tail = smin(tail, sdE(tq - vec3(-0.125, -0.38, 0.19), vec3(0.028, 0.06, 0.028)), 0.03);
+  hair = smin(hair, tail, 0.03);
+  hair += 0.002 * sin(h.y * 160.0 + h.x * 40.0);
+  hr = U(hr, vec2(hair, 33.0));
+  float tie = sdTz(rotX(1.2) * (h - (hc + vec3(0., 0.05, -0.155))), 0.03, 0.009);
+  hr = U(hr, vec2(tie, 32.0));
   res = U(res, vec2(hr.x * HS, hr.y));
   return res;
 }
@@ -654,7 +650,10 @@ vec3 albedo(float id, vec3 p, vec3 n){
   if (id < 27.5) return vec3(0.9, 0.7, 0.3);
   if (id < 28.5) return vec3(0.82, 0.42, 0.4);
   if (id < 29.5) { float k = 0.5 + 0.5 * sin(b.x * 220.0 + b.y * 220.0); return mix(vec3(0.62, 0.5, 0.33), vec3(0.67, 0.55, 0.37), k * 0.5); }
-  return vec3(0.07, 0.065, 0.07);
+  if (id < 30.5) return vec3(0.07, 0.065, 0.07);
+  if (id < 32.7) { float k = 0.5 + 0.5 * sin(b.x * 300.0) ; float c = id > 32.2 ? 0.85 : 1.0; return mix(vec3(0.52, 0.09, 0.09), vec3(0.58, 0.12, 0.11), k * 0.5) * c; }
+  if (id < 33.5) return vec3(0.86, 0.68, 0.38);
+  return vec3(0.55, 0.38, 0.2);
 }
 
 void main(){
@@ -696,7 +695,7 @@ void main(){
   col += vec3(1.0, 0.75, 0.5) * rim * 0.28 * a;
   if (isSkin) col += vec3(0.25, 0.05, 0.02) * dk * 0.15;  // warm subsurface tint
   vec3 hv = normalize(keyDir - rd);
-  float specK = (hit.y > 26.5 && hit.y < 27.5) ? 1.2 : (hit.y > 25.5 && hit.y < 26.5) ? 0.12 : (hit.y > 3.5 && hit.y < 5.5) || (hit.y > 19.5 && hit.y < 20.5) || hit.y > 21.5 ? 0.9 : (hit.y > 10.5 && hit.y < 11.8 ? 0.12 : (hit.y > 17.5 && hit.y < 18.5 ? 0.6 : 0.1));
+  float specK = (hit.y > 26.5 && hit.y < 27.5) ? 1.2 : (hit.y > 25.5 && hit.y < 26.5) ? 0.12 : (hit.y > 32.7 && hit.y < 33.5) ? 0.22 : (hit.y > 3.5 && hit.y < 5.5) || (hit.y > 19.5 && hit.y < 20.5) || hit.y > 21.5 ? 0.9 : (hit.y > 10.5 && hit.y < 11.8 ? 0.12 : (hit.y > 17.5 && hit.y < 18.5 ? 0.6 : 0.1));
   col += vec3(1.0, 0.85, 0.7) * pow(clamp(dot(n, hv), 0.0, 1.0), 40.0) * specK * sh;
   if ((hit.y > 3.5 && hit.y < 4.5) || (hit.y > 17.5 && hit.y < 18.5)) col += vec3(1.2) * pow(clamp(dot(n, normalize(vec3(-0.3, 0.4, 1.0) - rd)), 0.0, 1.0), 300.0);
   col = col / (1.0 + col * 0.25);
