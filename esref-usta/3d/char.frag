@@ -408,6 +408,89 @@ vec2 elifc(vec3 p){
   return res;
 }
 
+// ---------- Zeynep ----------
+vec2 zeynepc(vec3 p){
+  vec3 b = bodySpace(p);
+  vec2 res = vec2(1e9, 0.);
+  float torso = sdE(b - vec3(0., 0.26, 0.), vec3(0.19, 0.33, 0.13));
+  float sh = sdE(b - vec3(0., 0.49, -0.005), vec3(0.22, 0.095, 0.12));
+  float body = smin(torso, sh, 0.06);
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    float ua = sdC(b, vec3(sx * 0.2, 0.49, -0.005), vec3(sx * 0.245, 0.24, 0.04), 0.058);
+    float fa = sdC(b, vec3(sx * 0.245, 0.24, 0.04), vec3(sx * 0.17, 0.05, 0.2), 0.05);
+    body = smin(body, min(ua, fa), 0.025);
+    float cuff = sdC(b, vec3(sx * 0.19, 0.075, 0.17), vec3(sx * 0.175, 0.055, 0.195), 0.056);
+    res = U(res, vec2(cuff, 29.0));
+    float hand = sdE(b - vec3(sx * 0.16, 0.012, 0.22), vec3(0.042, 0.032, 0.056));
+    res = U(res, vec2(hand, M_SKIN));
+  }
+  res = U(res, vec2(body, 29.0));
+  // white tee visible down the open cardigan
+  float tee = body - 0.005;
+  tee = smax(tee, abs(b.x) - (0.02 + max(0.0, b.y - 0.05) * 0.13), 0.01);
+  tee = smax(tee, 0.03 - b.z, 0.01);
+  res = U(res, vec2(tee, 30.0));
+  float neck = sdC(b, vec3(0., 0.5, 0.0), vec3(0., 0.6, 0.005), 0.05);
+  res = U(res, vec2(neck, 30.0));
+  float neck2 = sdC(b, vec3(0., 0.6, 0.005), vec3(0., 0.66, 0.01), 0.04);
+  res = U(res, vec2(neck2, M_SKIN));
+  // coat buttons
+  for (int s = 0; s < 2; s++) {
+    float by = 0.12 + float(s) * 0.11;
+    res = U(res, vec2(length(b - vec3(-0.09, by, 0.13 - abs(by - 0.26) * 0.06)) - 0.011, M_APRON));
+    res = U(res, vec2(length(b - vec3(0.09, by, 0.13 - abs(by - 0.26) * 0.06)) - 0.011, M_APRON));
+  }
+
+  vec3 pivot = vec3(0., 0.62, 0.0);
+  vec3 h = headSpace(b, pivot);
+  vec2 hr = vec2(1e9, 0.);
+  vec3 hc = vec3(0., 0.79, 0.02);
+  float skull = sdE(h - hc, vec3(0.122, 0.138, 0.125));
+  float jaw = sdE(h - (hc + vec3(0., -0.065, 0.03)), vec3(0.09, 0.08, 0.095));
+  skull = smin(skull, jaw, 0.05);
+  float cheeks = min(length(h - (hc + vec3(-0.06, -0.035, 0.07))) - 0.045, length(h - (hc + vec3(0.06, -0.035, 0.07))) - 0.045);
+  skull = smin(skull, cheeks, 0.03);
+  float ears = min(sdE(h - (hc + vec3(-0.12, -0.01, -0.005)), vec3(0.018, 0.032, 0.022)), sdE(h - (hc + vec3(0.12, -0.01, -0.005)), vec3(0.018, 0.032, 0.022)));
+  skull = smin(skull, ears, 0.012);
+  // crooked smile: one corner sits higher than the other
+  vec3 mq = h - (hc + vec3(0., -0.078, 0.112));
+  mq.y -= (1.0 + 12.0 * uSmile) * mq.x * mq.x;
+  float mouthCav = sdE(mq, vec3(0.027, 0.003 + 0.015 * uMouth, 0.05));
+  skull = smax(skull, -mouthCav, 0.005);
+  hr = U(hr, vec2(skull, M_SKIN));
+  hr = U(hr, vec2(sdE(mq + vec3(0., 0., 0.016), vec3(0.025, 0.003 + 0.014 * uMouth, 0.03)), M_MOUTH));
+  // lips
+  vec3 lq = mq; lq.y = abs(lq.y + 0.0) - (0.004 + 0.007 * uMouth);
+  float lips = sdE(lq - vec3(0., 0.0, -0.002), vec3(0.03, 0.006, 0.012));
+  hr = U(hr, vec2(lips, 28.0));
+  hr = U(hr, vec2(sdE(h - (hc + vec3(0., -0.025, 0.126)), vec3(0.018, 0.028, 0.024)), M_SKIN));
+  hr = U(hr, eyes(h, hc, 0.048, 0.012, 0.096, 0.032, 0.02, true, 0.014));
+  // lashes: thin dark rims along the upper lids
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    vec3 c = hc + vec3(sx * 0.048, 0.012, 0.096);
+    float by = 0.056 + uBrow * 0.01;
+    float brow = sdC(h, hc + vec3(sx * 0.024, by + 0.004, 0.12), hc + vec3(sx * 0.078, by + 0.0, 0.1), 0.004);
+    hr = U(hr, vec2(brow, 11.5));
+    // gold hoop earrings
+    hr = U(hr, vec2(length(h - (hc + vec3(sx * 0.123, -0.045, 0.01))) - 0.007, 27.0));
+  }
+  // hair: one-piece jaw-length bob framing the face, side-swept fringe
+  float shell = sdE(h - (hc + vec3(0., 0.0, -0.012)), vec3(0.152, 0.168, 0.152));
+  float face = sdE(h - (hc + vec3(0., -0.06, 0.1)), vec3(0.103, 0.16, 0.12));
+  float hair = smax(shell, -face, 0.02);
+  hair = smax(hair, (hc.y - 0.125 + 0.15 * max(0.0, -(h.z - hc.z))) - h.y, 0.02);
+  vec3 fq = h - (hc + vec3(-0.035, 0.078, 0.112));
+  fq.xy = mat2(cos(0.28), -sin(0.28), sin(0.28), cos(0.28)) * fq.xy;
+  float fringe = sdE(fq, vec3(0.085, 0.026, 0.03));
+  hair = smin(hair, fringe, 0.02);
+  hair += 0.0015 * sin(h.y * 180.0 + h.x * 30.0);
+  hr = U(hr, vec2(hair, 11.5));
+  res = U(res, vec2(hr.x * HS, hr.y));
+  return res;
+}
+
 // ---------- Efe (child) ----------
 vec2 efec(vec3 p){
   vec3 b = bodySpace(p);
@@ -478,6 +561,7 @@ vec2 map(vec3 p){
   if (uChar == 1) return deniz(p);
   if (uChar == 3) return elifc(p);
   if (uChar == 4) return efec(p);
+  if (uChar == 5) return zeynepc(p);
   return emre(p);
 }
 
@@ -517,6 +601,7 @@ vec3 albedo(float id, vec3 p, vec3 n){
       return mix(vec3(0.86, 0.58, 0.44), vec3(0.6, 0.45, 0.38), jawm * 0.55);
     }
     if (uChar == 4) return vec3(0.9, 0.62, 0.48);
+    if (uChar == 5) return vec3(0.88, 0.6, 0.47);
     if (uChar == 3) {
       vec3 h = headSpace(b, vec3(0., 0.62, 0.));
       vec2 f = (h.xy - vec2(0., 0.775)) * 120.0;
@@ -567,7 +652,9 @@ vec3 albedo(float id, vec3 p, vec3 n){
   if (id < 25.5) return vec3(0.92, 0.9, 0.86);
   if (id < 26.5) return vec3(0.22, 0.13, 0.08);
   if (id < 27.5) return vec3(0.9, 0.7, 0.3);
-  return vec3(0.82, 0.42, 0.4);
+  if (id < 28.5) return vec3(0.82, 0.42, 0.4);
+  if (id < 29.5) { float k = 0.5 + 0.5 * sin(b.x * 220.0 + b.y * 220.0); return mix(vec3(0.62, 0.5, 0.33), vec3(0.67, 0.55, 0.37), k * 0.5); }
+  return vec3(0.07, 0.065, 0.07);
 }
 
 void main(){

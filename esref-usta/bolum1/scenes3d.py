@@ -90,6 +90,16 @@ def front_plate(rope="two", package=False):
     elif rope == "knot":
         draw_rope(front, [(330, 1810 + CY), (500, 1806 + CY), (680, 1810 + CY), (860, 1815 + CY)], 18, "flat", "flat", seed=2)
         ImageDraw.Draw(front).ellipse([585, 1794 + CY, 625, 1826 + CY], fill=(176, 140, 96, 255))
+    elif rope == "heart":
+        import math as _m
+        d = ImageDraw.Draw(front)
+        pts = []
+        for i in range(80):
+            t = 2 * _m.pi * i / 80
+            x = 16 * _m.sin(t) ** 3; y = 13 * _m.cos(t) - 5 * _m.cos(2 * t) - 2 * _m.cos(3 * t) - _m.cos(4 * t)
+            pts.append((660 + x * 5.2, 1735 + CY - y * 5.2))
+        d.polygon(pts, fill=(196, 150, 72, 255), outline=(120, 84, 34, 255))
+        d.ellipse([635, 1712 + CY, 685, 1762 + CY], fill=(150, 104, 44, 255))
     elif rope == "case":
         d = ImageDraw.Draw(front)
         d.rounded_rectangle([470, 1690 + CY, 860, 1818 + CY], radius=16, fill=(96, 52, 26, 255))
