@@ -1,0 +1,2 @@
+[{"name":"efe_test","char":4,"w":700,"h":910,"view":[0,0.625,0.725,4.0],"headPitch":-0.12,"gaze":[0.0,0.4],"brow":0.4,"force":true},
+ {"name":"efe_face","char":4,"w":600,"h":600,"view":[0,0.5,0.24,4.0],"headPitch":-0.12,"gaze":[0.0,0.4],"brow":0.4,"mouth":0.5,"force":true}]

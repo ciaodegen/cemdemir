@@ -408,10 +408,76 @@ vec2 elifc(vec3 p){
   return res;
 }
 
+// ---------- Efe (child) ----------
+vec2 efec(vec3 p){
+  vec3 b = bodySpace(p);
+  vec2 res = vec2(1e9, 0.);
+  // a child: the counter top (y = 0) sits at his chest
+  float torso = sdE(b - vec3(0., -0.05, 0.), vec3(0.16, 0.25, 0.115));
+  float sh = sdE(b - vec3(0., 0.13, -0.005), vec3(0.18, 0.08, 0.1));
+  float body = smin(torso, sh, 0.05);
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    float ua = sdC(b, vec3(sx * 0.16, 0.13, -0.005), vec3(sx * 0.2, 0.0, 0.08), 0.045);
+    float fa = sdC(b, vec3(sx * 0.2, 0.0, 0.08), vec3(sx * 0.13, 0.03, 0.2), 0.04);
+    body = smin(body, min(ua, fa), 0.02);
+    float hand = sdE(b - vec3(sx * 0.11, 0.035, 0.22), vec3(0.036, 0.028, 0.045));
+    res = U(res, vec2(hand, M_SKIN));
+  }
+  res = U(res, vec2(body, M_NAVY));
+  // white school shirt collar
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    vec3 cq = b - vec3(sx * 0.04, 0.2, 0.07);
+    cq.xy = mat2(cos(sx * 0.6), -sin(sx * 0.6), sin(sx * 0.6), cos(sx * 0.6)) * cq.xy;
+    float col = sdBox(cq, vec3(0.045, 0.022, 0.012)) - 0.006;
+    res = U(res, vec2(col, 25.0));
+  }
+  float neck = sdC(b, vec3(0., 0.15, 0.0), vec3(0., 0.28, 0.01), 0.038);
+  res = U(res, vec2(neck, M_SKIN));
+
+  vec3 pivot = vec3(0., 0.26, 0.0);
+  vec3 h = headSpace(b, pivot);
+  vec2 hr = vec2(1e9, 0.);
+  vec3 hc = vec3(0., 0.43, 0.02);
+  float skull = sdE(h - hc, vec3(0.13, 0.135, 0.128));
+  float jaw = sdE(h - (hc + vec3(0., -0.055, 0.03)), vec3(0.095, 0.075, 0.095));
+  skull = smin(skull, jaw, 0.05);
+  float cheeks = min(length(h - (hc + vec3(-0.062, -0.035, 0.075))) - 0.05, length(h - (hc + vec3(0.062, -0.035, 0.075))) - 0.05);
+  skull = smin(skull, cheeks, 0.03);
+  float ears = min(sdE(h - (hc + vec3(-0.128, -0.005, -0.005)), vec3(0.022, 0.036, 0.024)), sdE(h - (hc + vec3(0.128, -0.005, -0.005)), vec3(0.022, 0.036, 0.024)));
+  skull = smin(skull, ears, 0.012);
+  vec3 mq = h - (hc + vec3(0., -0.07, 0.113));
+  mq.y -= (3.0 + 14.0 * uSmile) * mq.x * mq.x;
+  float mouthCav = sdE(mq, vec3(0.025, 0.003 + 0.016 * uMouth, 0.05));
+  skull = smax(skull, -mouthCav, 0.005);
+  hr = U(hr, vec2(skull, M_SKIN));
+  hr = U(hr, vec2(sdE(mq + vec3(0., 0., 0.016), vec3(0.023, 0.003 + 0.015 * uMouth, 0.03)), M_MOUTH));
+  hr = U(hr, vec2(sdE(h - (hc + vec3(0., -0.022, 0.128)), vec3(0.018, 0.022, 0.022)), M_SKIN));
+  hr = U(hr, eyes(h, hc, 0.05, 0.01, 0.1, 0.035, 0.023, true, 0.024));
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    float by = 0.058 + uBrow * 0.012;
+    float brow = sdC(h, hc + vec3(sx * 0.024, by + 0.002, 0.12), hc + vec3(sx * 0.08, by - 0.002, 0.1), 0.006);
+    hr = U(hr, vec2(brow, 26.0));
+  }
+  float hair = sdE(h - (hc + vec3(0., 0.035, -0.01)), vec3(0.142, 0.142, 0.14));
+  hair = smax(hair, (hc.y + 0.088) - h.y - 0.8 * max(0.0, -(h.z - hc.z + 0.02)), 0.025);
+  float fringe = sdE(h - (hc + vec3(-0.02, 0.105, 0.088)), vec3(0.1, 0.026, 0.045));
+  hair = smin(hair, fringe, 0.03);
+  float cowlick = sdE(h - (hc + vec3(0.03, 0.155, -0.02)), vec3(0.03, 0.03, 0.022));
+  hair = smin(hair, cowlick, 0.02);
+  hair += 0.008 * curl(h, 48.);
+  hr = U(hr, vec2(hair, 26.0));
+  res = U(res, vec2(hr.x * HS, hr.y));
+  return res;
+}
+
 vec2 map(vec3 p){
   if (uChar == 0) return esref(p);
   if (uChar == 1) return deniz(p);
   if (uChar == 3) return elifc(p);
+  if (uChar == 4) return efec(p);
   return emre(p);
 }
 
@@ -450,6 +516,7 @@ vec3 albedo(float id, vec3 p, vec3 n){
       float jawm = smoothstep(0.75, 0.70, h.y) * smoothstep(0.02, 0.07, h.z);
       return mix(vec3(0.86, 0.58, 0.44), vec3(0.6, 0.45, 0.38), jawm * 0.55);
     }
+    if (uChar == 4) return vec3(0.9, 0.62, 0.48);
     if (uChar == 3) {
       vec3 h = headSpace(b, vec3(0., 0.62, 0.));
       vec2 f = (h.xy - vec2(0., 0.775)) * 120.0;

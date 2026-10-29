@@ -9,3 +9,5 @@ paylasim/*.mp4
 *.zip
 bolum2/*.mp4
 !bolum2/sesler/*.mp4
+bolum2b/*.mp4
+!bolum2b/sesler/*.mp4

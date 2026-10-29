@@ -90,6 +90,12 @@ def front_plate(rope="two", package=False):
     elif rope == "knot":
         draw_rope(front, [(330, 1810 + CY), (500, 1806 + CY), (680, 1810 + CY), (860, 1815 + CY)], 18, "flat", "flat", seed=2)
         ImageDraw.Draw(front).ellipse([585, 1794 + CY, 625, 1826 + CY], fill=(176, 140, 96, 255))
+    elif rope == "case":
+        d = ImageDraw.Draw(front)
+        d.rounded_rectangle([470, 1690 + CY, 860, 1818 + CY], radius=16, fill=(96, 52, 26, 255))
+        d.rounded_rectangle([600, 1652 + CY, 730, 1700 + CY], radius=20, outline=(66, 34, 16, 255), width=14)
+        for x in (520, 790):
+            d.rectangle([x, 1700 + CY, x + 30, 1722 + CY], fill=(196, 156, 78, 255))
     elif rope == "box":
         d = ImageDraw.Draw(front)
         d.rounded_rectangle([560, 1752 + CY, 760, 1818 + CY], radius=14, fill=(110, 24, 38, 255))
