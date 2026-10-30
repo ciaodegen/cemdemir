@@ -18,6 +18,7 @@ LINES = [  # file, speaker (E = Saniye Teyze), subtitle
     ("01_S", "E", "Usta, telefonum hiç çalmayi. Bozuk midur acaba?"),
     ("02_D", "D", "Teyzeciğim yenisini alalım, akıllısından."),
     ("03_U", "U", "Deniz."),
+    ("05_U", "U", "Dur bakalım, bir de ben arayayım."),
     ("06_U", "U", "Bozuk değil teyzem. Çalıyor."),
     ("07_S", "E", "Bilirum uşağum… Bayramlarda çalayi."),
     ("08_S", "E", "Çocuklar evlendiler da gittiler. Beyum da gideli beş yil oldi."),
@@ -25,9 +26,9 @@ LINES = [  # file, speaker (E = Saniye Teyze), subtitle
     ("10_U", "U", "Bunu ben tamir edemem."),
     ("11_D", "D", "Anne? Yok bir şey… Sesini duymak istedim."),
 ]
-START = {0: 0.5, 1: 4.3, 2: 6.5, 3: 14.5, 4: 17.0, 5: 19.9, 6: 23.95, 7: 26.6, 8: 30.3}
+START = {0: 0.5, 1: 4.3, 2: 6.5, 3: 11.1, 4: 15.7, 5: 18.2, 6: 21.1, 7: 25.15, 8: 27.8, 9: 31.5}
 DUR = {i: duration(f"{REP}/{f}.mp3") for i, (f, _, _) in enumerate(LINES)}
-TOTAL = 43.4
+TOTAL = 44.6
 FIELDS = (("Arıza:", "Telefon sağlam. Arayan yok."),
           ("Yapılan işlem:", "Dükkândan arandı."),
           ("Not:", "Bazı telefonlar bozulmaz, sadece unutulur."))
@@ -43,8 +44,8 @@ def speaking(t, who):
 
 
 s3.speaking = speaking
-s3.BLINKS["E"] = [3.9, 18.6, 22.2, 26.2, 34.6]
-s3.BLINKS["U"] = [2.2, 10.0, 16.2, 27.9]
+s3.BLINKS["E"] = [3.9, 19.8, 23.4, 27.4, 35.8]
+s3.BLINKS["U"] = [2.2, 10.0, 12.6, 17.4, 29.1]
 
 
 def sub_at(t):
@@ -95,18 +96,19 @@ SHOTS = [
     S(4.2, 6.4, lambda t: shop(t, push(DENIZ_MCU, t, 4.2, 6.4), deniz="D_phone", rope="oldphone", deniz_blur=0, bg_blur=8, usta_blur=6)),
     S(6.4, 8.0, lambda t: shop(t, push(USTA_MCU, t, 6.4, 8.0), usta="E_side", deniz="D_phone", rope="oldphone", bg_blur=8, deniz_blur=6)),
     S(8.0, 9.4, shotD),
-    S(9.4, 11.8, plate(lambda t: ins5.call_log(), 9.4, 11.8, 1.5, 1.7, cy=0.25)),
-    S(11.8, 14.4, plate(lambda t: ins5.ringing(int(t * 16)), 11.8, 14.4, 1.3, 1.36, cy=0.35)),
-    S(14.4, 16.9, lambda t: shop(t, push(USTA_MCU, t, 14.4, 16.9, 0.04), usta="E_front", rope="oldphone", bg_blur=8, deniz_blur=6)),
-    S(16.9, 19.8, lambda t: door(t, push(EMRE_MCU, t, 16.9, 19.8, 0.05), emre="S_smile", rope="oldphone", usta_back=USTA_BACK_OTS)),
-    S(19.8, 23.9, lambda t: door(t, push(EMRE_MCU, t, 19.8, 23.9, 0.1), emre="S_sad", rope="oldphone")),
-    S(23.9, 26.5, lambda t: door(t, push(EMRE_CU, t, 23.9, 26.5, 0.05), emre="S_smile", rope="oldphone")),
-    S(26.5, 28.5, lambda t: shop(t, push(USTA_CU, t, 26.5, 28.5, 0.05), usta="E_serious", rope="oldphone", bg_blur=9, deniz_blur=8)),
-    S(28.5, 30.2, plate(lambda t: ins5.deniz_calls_mom(), 28.5, 30.2, 1.0, 1.05)),
-    S(30.2, 34.0, lambda t: shop(t, push(DENIZ_MCU, t, 30.2, 34.0, 0.06), deniz="D_sincere", rope="oldphone", deniz_blur=0, bg_blur=8, usta_blur=6)),
-    S(34.0, 35.8, lambda t: door(t, push(EMRE_CU, t, 34.0, 35.8, 0.05), emre="S_smile", rope="none", emre_mouth=0.0)),
-    S(35.8, 40.4, plate(lambda t: _ticket(round(min(1, max(0, (t - 36.0) / 3.2)) * 60) / 60, round(min(1, max(0, (t - 39.6) / 0.35)) * 8) / 8), 35.8, 40.4, 1.04, 1.0)),
-    S(40.4, 43.4, plate(lambda t: _cta(), 40.4, 43.4, 1.0, 1.0)),
+    S(9.4, 11.0, plate(lambda t: ins5.call_log(), 9.4, 11.0, 1.5, 1.65, cy=0.25)),
+    S(11.0, 13.2, lambda t: shop(t, push(USTA_MCU, t, 11.0, 13.2, 0.04), usta="E_front", rope="oldphone", bg_blur=8, deniz_blur=6)),
+    S(13.2, 15.6, plate(lambda t: ins5.ringing(int(t * 16)), 13.2, 15.6, 1.3, 1.36, cy=0.35)),
+    S(15.6, 18.1, lambda t: shop(t, push(USTA_MCU, t, 15.6, 18.1, 0.04), usta="E_front", rope="oldphone", bg_blur=8, deniz_blur=6)),
+    S(18.1, 21.0, lambda t: door(t, push(EMRE_MCU, t, 18.1, 21.0, 0.05), emre="S_smile", rope="oldphone", usta_back=USTA_BACK_OTS)),
+    S(21.0, 25.1, lambda t: door(t, push(EMRE_MCU, t, 21.0, 25.1, 0.1), emre="S_sad", rope="oldphone")),
+    S(25.1, 27.7, lambda t: door(t, push(EMRE_CU, t, 25.1, 27.7, 0.05), emre="S_smile", rope="oldphone")),
+    S(27.7, 29.7, lambda t: shop(t, push(USTA_CU, t, 27.7, 29.7, 0.05), usta="E_serious", rope="oldphone", bg_blur=9, deniz_blur=8)),
+    S(29.7, 31.4, plate(lambda t: ins5.deniz_calls_mom(), 29.7, 31.4, 1.0, 1.05)),
+    S(31.4, 35.2, lambda t: shop(t, push(DENIZ_MCU, t, 31.4, 35.2, 0.06), deniz="D_sincere", rope="oldphone", deniz_blur=0, bg_blur=8, usta_blur=6)),
+    S(35.2, 37.0, lambda t: door(t, push(EMRE_CU, t, 35.2, 37.0, 0.05), emre="S_smile", rope="none", emre_mouth=0.0)),
+    S(37.0, 41.6, plate(lambda t: _ticket(round(min(1, max(0, (t - 37.2) / 3.2)) * 60) / 60, round(min(1, max(0, (t - 40.8) / 0.35)) * 8) / 8), 37.0, 41.6, 1.04, 1.0)),
+    S(41.6, 44.6, plate(lambda t: _cta(), 41.6, 44.6, 1.0, 1.0)),
 ]
 
 
@@ -118,12 +120,12 @@ def frame_at(t):
     else:
         img = Image.new("RGB", (W, H))
     img = finish(img, t, dust=False, grain=False)
-    if t < 35.8:
+    if t < 37.0:
         img = subtitle(img, sub_at(t))
     if t > TOTAL - 0.6:
         img = Image.eval(img, lambda v, k=(TOTAL - t) / 0.6: int(v * max(k, 0)))
-    if 40.1 <= t < 40.7:
-        k = abs(t - 40.4) / 0.3
+    if 41.3 <= t < 41.9:
+        k = abs(t - 41.6) / 0.3
         img = Image.eval(img, lambda v, k=k: int(v * min(1, k)))
     return img
 
@@ -141,12 +143,12 @@ def audio_mix(out):
     add(f"{SFX}/cingirak.mp3", 0.0, 0.6)
     add(f"{SFX}/telefon_cevir.mp3", 0.7, 0.4)
     add(f"{SFX}/loupe.mp3", 8.4, 0.8)
-    add(f"{SFX}/eski_telefon_caliyor.mp3", 11.8, 0.7, ",afade=t=out:st=2.2:d=0.4")
-    add(f"{SFX}/telefon.mp3", 28.5, 0.35)
-    add(f"{SFX}/cingirak_cikis.mp3", 34.8, 0.45)
-    add(f"{SFX}/kalem.mp3", 36.0, 0.7)
-    add(f"{SFX}/damga.mp3", 39.6, 0.8)
-    add(f"{SFX}/muzik.mp3", 19.8, 0.28, f",afade=t=in:st=0:d=2.5,afade=t=out:st={TOTAL - 19.8 - 3.0}:d=3.0")
+    add(f"{SFX}/eski_telefon_caliyor.mp3", 13.2, 0.7, ",afade=t=out:st=2.2:d=0.4")
+    add(f"{SFX}/telefon.mp3", 29.7, 0.35)
+    add(f"{SFX}/cingirak_cikis.mp3", 36.0, 0.45)
+    add(f"{SFX}/kalem.mp3", 37.2, 0.7)
+    add(f"{SFX}/damga.mp3", 40.8, 0.8)
+    add(f"{SFX}/muzik.mp3", 21.0, 0.28, f",afade=t=in:st=0:d=2.5,afade=t=out:st={TOTAL - 21.0 - 3.0}:d=3.0")
     fc = ";".join(filters) + ";" + "".join(labels) + f"amix=inputs={len(labels)}:normalize=0:duration=longest,atrim=0:{TOTAL},alimiter=limit=0.95[out]"
     subprocess.run(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", fc, "-map", "[out]", "-c:a", "pcm_s16le", out], check=True)
 
