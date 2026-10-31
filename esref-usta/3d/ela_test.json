@@ -1,0 +1,4 @@
+[{"name":"ela_test","char":7,"w":800,"h":1040,"view":[0,0.625,0.725,4.0],"gaze":[0.1,0.0],"brow":0.4,"force":true},
+ {"name":"cat_test","char":8,"w":800,"h":800,"view":[0,0.22,0.27,4.0],"gaze":[0.0,0.2],"force":true},
+ {"name":"cat_sad","char":8,"w":800,"h":800,"view":[0,0.22,0.27,4.0],"headPitch":0.25,"brow":1.0,"gaze":[0.0,-0.4],"force":true},
+ {"name":"cat_meow","char":8,"w":800,"h":800,"view":[0,0.22,0.27,4.0],"headPitch":-0.1,"mouth":1.0,"gaze":[0.0,0.4],"force":true}]

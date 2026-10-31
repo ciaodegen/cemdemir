@@ -617,6 +617,160 @@ vec2 saniyec(vec3 p){
   return res;
 }
 
+// ---------- Ela ----------
+vec2 elac(vec3 p){
+  vec3 b = bodySpace(p);
+  vec2 res = vec2(1e9, 0.);
+  float torso = sdE(b - vec3(0., 0.26, 0.), vec3(0.19, 0.33, 0.13));
+  float sh = sdE(b - vec3(0., 0.49, -0.005), vec3(0.22, 0.095, 0.12));
+  float body = smin(torso, sh, 0.06);
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    float ua = sdC(b, vec3(sx * 0.2, 0.49, -0.005), vec3(sx * 0.245, 0.24, 0.04), 0.058);
+    float fa = sdC(b, vec3(sx * 0.245, 0.24, 0.04), vec3(sx * 0.17, 0.05, 0.2), 0.05);
+    body = smin(body, min(ua, fa), 0.025);
+    float cuff = sdC(b, vec3(sx * 0.19, 0.075, 0.17), vec3(sx * 0.175, 0.055, 0.195), 0.056);
+    res = U(res, vec2(cuff, 39.0));
+    float hand = sdE(b - vec3(sx * 0.16, 0.012, 0.22), vec3(0.042, 0.032, 0.056));
+    res = U(res, vec2(hand, M_SKIN));
+  }
+  res = U(res, vec2(body, 39.0));
+  // hoodie: hood folded behind the neck, two drawstrings
+  float hood = sdTz(rotX(-1.25) * (b - vec3(0., 0.56, -0.04)), 0.09, 0.04);
+  res = U(res, vec2(hood, 39.5));
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    res = U(res, vec2(sdC(b, vec3(sx * 0.04, 0.53, 0.1), vec3(sx * 0.045, 0.38, 0.13), 0.006), 25.0));
+  }
+  float neck = sdC(b, vec3(0., 0.5, 0.0), vec3(0., 0.65, 0.01), 0.042);
+  res = U(res, vec2(neck, M_SKIN));
+
+  vec3 pivot = vec3(0., 0.62, 0.0);
+  vec3 h = headSpace(b, pivot);
+  vec2 hr = vec2(1e9, 0.);
+  vec3 hc = vec3(0., 0.79, 0.02);
+  float skull = sdE(h - hc, vec3(0.122, 0.138, 0.125));
+  float jaw = sdE(h - (hc + vec3(0., -0.065, 0.03)), vec3(0.09, 0.08, 0.095));
+  skull = smin(skull, jaw, 0.05);
+  float cheeks = min(length(h - (hc + vec3(-0.06, -0.035, 0.07))) - 0.045, length(h - (hc + vec3(0.06, -0.035, 0.07))) - 0.045);
+  skull = smin(skull, cheeks, 0.03);
+  float ears = min(sdE(h - (hc + vec3(-0.12, -0.01, -0.005)), vec3(0.018, 0.032, 0.022)), sdE(h - (hc + vec3(0.12, -0.01, -0.005)), vec3(0.018, 0.032, 0.022)));
+  skull = smin(skull, ears, 0.012);
+  // crooked smile: one corner sits higher than the other
+  vec3 mq = h - (hc + vec3(0., -0.078, 0.112));
+  mq.y -= (2.0 + 12.0 * uSmile) * mq.x * mq.x;
+  float mouthCav = sdE(mq, vec3(0.027, 0.003 + 0.015 * uMouth, 0.05));
+  skull = smax(skull, -mouthCav, 0.005);
+  hr = U(hr, vec2(skull, M_SKIN));
+  hr = U(hr, vec2(sdE(mq + vec3(0., 0., 0.016), vec3(0.025, 0.003 + 0.014 * uMouth, 0.03)), M_MOUTH));
+  // lips
+  vec3 lq = mq; lq.y = abs(lq.y + 0.0) - (0.004 + 0.007 * uMouth);
+  float lips = sdE(lq - vec3(0., 0.0, -0.002), vec3(0.03, 0.006, 0.012));
+  hr = U(hr, vec2(lips, 28.0));
+  hr = U(hr, vec2(sdE(h - (hc + vec3(0., -0.025, 0.126)), vec3(0.018, 0.028, 0.024)), M_SKIN));
+  hr = U(hr, eyes(h, hc, 0.048, 0.012, 0.096, 0.033, 0.021, true, 0.02));
+  // lashes: thin dark rims along the upper lids
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    vec3 c = hc + vec3(sx * 0.048, 0.012, 0.096);
+    float by = 0.056 + uBrow * 0.01;
+    float brow = sdC(h, hc + vec3(sx * 0.024, by + 0.004, 0.12), hc + vec3(sx * 0.078, by + 0.0, 0.1), 0.0045);
+    hr = U(hr, vec2(brow, 26.0));
+  }
+  // hair: cap, bangs, long fall behind and two front strands
+  float hair = sdE(h - (hc + vec3(0., 0.03, -0.012)), vec3(0.135, 0.14, 0.14));
+  hair = smax(hair, (hc.y + 0.085) - h.y - 0.9 * max(0.0, -(h.z - hc.z + 0.02)), 0.025);
+  float bangs = sdE(h - (hc + vec3(0., 0.072, 0.1)), vec3(0.1, 0.018, 0.035));
+  hair = smin(hair, bangs, 0.03);
+  float back = sdE(h - (hc + vec3(0., -0.12, -0.07)), vec3(0.15, 0.24, 0.08));
+  hair = smin(hair, back, 0.05);
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    float strand = sdC(h, hc + vec3(sx * 0.115, 0.0, 0.01), hc + vec3(sx * 0.13, -0.3, 0.06), 0.03);
+    hair = smin(hair, strand, 0.04);
+  }
+  hair += 0.0018 * sin(h.x * 160.0 + h.y * 20.0);
+  hr = U(hr, vec2(hair, 26.0));
+  // knitted beanie with a folded brim
+  float bean = sdE(h - (hc + vec3(0., 0.055, -0.015)), vec3(0.138, 0.13, 0.142));
+  bean = smax(bean, (hc.y + 0.075) - h.y - 0.25 * max(0.0, -(h.z - hc.z)), 0.01);
+  float brim = sdTz(rotX(1.5708 + 0.25) * (h - (hc + vec3(0., 0.088, -0.012))), 0.128, 0.022);
+  bean = smin(bean, brim, 0.01);
+  bean += 0.002 * sin(h.x * 220.0) * step(hc.y + 0.11, h.y);
+  hr = U(hr, vec2(bean, 40.0));
+  res = U(res, vec2(hr.x * HS, hr.y));
+  return res;
+}
+
+
+// ---------- Pamuk (cat) ----------
+vec2 catc(vec3 p){
+  vec3 b = bodySpace(p);
+  vec2 res = vec2(1e9, 0.);
+  float fur = 0.0006 * sin(b.x * 260.0 + b.y * 90.0) * sin(b.z * 230.0 + b.y * 50.0);
+  float body = sdE(b - vec3(0., 0.12, -0.02), vec3(0.11, 0.13, 0.14));
+  body = smin(body, sdE(b - vec3(0., 0.2, 0.05), vec3(0.085, 0.09, 0.07)), 0.05);          // chest
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    body = smin(body, sdE(b - vec3(sx * 0.07, 0.06, -0.06), vec3(0.06, 0.07, 0.09)), 0.04); // haunches
+    float leg = sdC(b, vec3(sx * 0.04, 0.16, 0.08), vec3(sx * 0.04, 0.015, 0.1), 0.023);
+    body = smin(body, leg, 0.02);
+    body = smin(body, sdE(b - vec3(sx * 0.04, 0.012, 0.115), vec3(0.025, 0.014, 0.032)), 0.01);
+  }
+  float tail = sdC(b, vec3(0.09, 0.03, -0.12), vec3(0.13, 0.02, 0.0), 0.022);
+  tail = smin(tail, sdC(b, vec3(0.13, 0.02, 0.0), vec3(0.06, 0.015, 0.12), 0.02), 0.02);
+  body = smin(body, tail, 0.02);
+  res = U(res, vec2(body + fur, 43.0));
+  // head (no cartoon head-scale for the cat)
+  vec3 pivot = vec3(0., 0.26, 0.05);
+  vec3 h = rotX(uHeadPitch) * (rotY(-uHeadYaw) * (b - pivot)) + pivot;
+  vec3 hc = vec3(0., 0.34, 0.075);
+  float head = sdE(h - hc, vec3(0.1, 0.088, 0.088));
+  head = smin(head, sdE(h - (hc + vec3(0., -0.035, 0.06)), vec3(0.05, 0.035, 0.038)), 0.03);   // muzzle
+  float sad = clamp(uBrow, 0.0, 1.0);
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    vec3 eq = h - (hc + vec3(sx * 0.058, 0.065 - sad * 0.02, -0.005));
+    float ang = sx * (0.3 + sad * 0.8);
+    eq.xy = mat2(cos(ang), -sin(ang), sin(ang), cos(ang)) * eq.xy;
+    float ear = sdE(eq - vec3(0., 0.03, 0.), vec3(0.034, 0.05, 0.012));
+    ear = smax(ear, -eq.y - 0.005, 0.005);
+    ear = smax(ear, abs(eq.x) - 0.034 * clamp(1.0 - eq.y / 0.075, 0.0, 1.0), 0.004);
+    head = smin(head, ear, 0.01);
+    float inner = sdE(eq - vec3(0., 0.03, 0.008), vec3(0.016, 0.03, 0.005));
+    inner = smax(inner, abs(eq.x) - 0.02 * clamp(1.0 - eq.y / 0.07, 0.0, 1.0), 0.003);
+    res = U(res, vec2(inner, 44.0));
+  }
+  res = U(res, vec2(head + fur * 0.6, 43.0));
+  // eyes: green with vertical slit pupils
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    vec3 c = hc + vec3(sx * 0.04, 0.01, 0.068);
+    res = U(res, vec2(length(h - c) - 0.025, 41.0));
+    vec3 pq = h - (c + vec3(uGaze.x * 0.005, uGaze.y * 0.004, 0.021));
+    res = U(res, vec2(sdE(pq, vec3(0.005, 0.016, 0.006)), M_PUPIL));
+    float lidY = mix(c.y + 0.02 - sad * 0.012, c.y - 0.03, uBlink);
+    float lid = max(length(h - c) - 0.0275, lidY - h.y);
+    res = U(res, vec2(lid, 43.0));
+  }
+  res = U(res, vec2(sdE(h - (hc + vec3(0., -0.015, 0.123)), vec3(0.013, 0.009, 0.008)), 44.0));   // nose
+  vec3 mq = h - (hc + vec3(0., -0.05, 0.1));
+  res = U(res, vec2(sdE(mq, vec3(0.016, 0.002 + 0.016 * uMouth, 0.02)), M_MOUTH));
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    for (int k = 0; k < 3; k++) {
+      float fk = float(k) - 1.0;
+      res = U(res, vec2(sdC(h, hc + vec3(sx * 0.035, -0.035 + fk * 0.006, 0.11), hc + vec3(sx * 0.125, -0.03 + fk * 0.02, 0.08), 0.0012), 25.0));
+    }
+  }
+  // old faded collar, half buried in the fur, with a round tag
+  float collar = sdTz(rotX(-1.3) * (b - vec3(0., 0.258, 0.05)), 0.064, 0.009);
+  res = U(res, vec2(collar, 42.0));
+  float tag = sdCylZ(rotX(-0.2) * (b - vec3(0., 0.215, 0.115)), 0.016, 0.003);
+  res = U(res, vec2(tag, M_METAL));
+  return res;
+}
+
 vec2 map(vec3 p){
   if (uChar == 0) return esref(p);
   if (uChar == 1) return deniz(p);
@@ -624,6 +778,8 @@ vec2 map(vec3 p){
   if (uChar == 4) return efec(p);
   if (uChar == 5) return zeynepc(p);
   if (uChar == 6) return saniyec(p);
+  if (uChar == 7) return elac(p);
+  if (uChar == 8) return catc(p);
   return emre(p);
 }
 
@@ -665,6 +821,7 @@ vec3 albedo(float id, vec3 p, vec3 n){
     if (uChar == 4) return vec3(0.9, 0.62, 0.48);
     if (uChar == 5) return vec3(0.88, 0.6, 0.47);
     if (uChar == 6) return vec3(0.86, 0.58, 0.47);
+    if (uChar == 7) return vec3(0.9, 0.62, 0.5);
     if (uChar == 3) {
       vec3 h = headSpace(b, vec3(0., 0.62, 0.));
       vec2 f = (h.xy - vec2(0., 0.775)) * 120.0;
@@ -729,7 +886,13 @@ vec3 albedo(float id, vec3 p, vec3 n){
     float dots = smoothstep(0.24, 0.16, length(fract(f) - 0.5));
     return mix(vec3(0.62, 0.52, 0.72), vec3(0.95, 0.9, 0.82), dots * 0.8);
   }
-  return vec3(0.62, 0.6, 0.58);
+  if (id < 38.5) return vec3(0.62, 0.6, 0.58);
+  if (id < 39.7) { float k = 0.5 + 0.5 * sin(b.y * 280.0); float c = id > 39.2 ? 0.88 : 1.0; return mix(vec3(0.33, 0.38, 0.24), vec3(0.37, 0.42, 0.27), k * 0.4) * c; }
+  if (id < 40.5) { float k = 0.5 + 0.5 * sin(b.x * 300.0); return mix(vec3(0.78, 0.55, 0.16), vec3(0.84, 0.6, 0.2), k * 0.6); }
+  if (id < 41.5) return vec3(0.42, 0.7, 0.36);
+  if (id < 42.5) return vec3(0.36, 0.5, 0.62);
+  if (id < 43.5) return vec3(0.94, 0.93, 0.9);
+  return vec3(0.95, 0.62, 0.62);
 }
 
 void main(){
@@ -771,9 +934,9 @@ void main(){
   col += vec3(1.0, 0.75, 0.5) * rim * 0.28 * a;
   if (isSkin) col += vec3(0.25, 0.05, 0.02) * dk * 0.15;  // warm subsurface tint
   vec3 hv = normalize(keyDir - rd);
-  float specK = (hit.y > 26.5 && hit.y < 27.5) ? 1.2 : (hit.y > 25.5 && hit.y < 26.5) ? 0.12 : (hit.y > 32.7 && hit.y < 33.5) ? 0.22 : (hit.y > 3.5 && hit.y < 5.5) || (hit.y > 19.5 && hit.y < 20.5) || hit.y > 21.5 ? 0.9 : (hit.y > 10.5 && hit.y < 11.8 ? 0.12 : (hit.y > 17.5 && hit.y < 18.5 ? 0.6 : 0.1));
+  float specK = (hit.y > 26.5 && hit.y < 27.5) ? 1.2 : (hit.y > 25.5 && hit.y < 26.5) ? 0.12 : (hit.y > 32.7 && hit.y < 33.5) ? 0.22 : (hit.y > 40.5 && hit.y < 41.5) ? 0.9 : (hit.y > 3.5 && hit.y < 5.5) || (hit.y > 19.5 && hit.y < 20.5) || hit.y > 21.5 ? 0.9 : (hit.y > 10.5 && hit.y < 11.8 ? 0.12 : (hit.y > 17.5 && hit.y < 18.5 ? 0.6 : 0.1));
   col += vec3(1.0, 0.85, 0.7) * pow(clamp(dot(n, hv), 0.0, 1.0), 40.0) * specK * sh;
-  if ((hit.y > 3.5 && hit.y < 4.5) || (hit.y > 17.5 && hit.y < 18.5)) col += vec3(1.2) * pow(clamp(dot(n, normalize(vec3(-0.3, 0.4, 1.0) - rd)), 0.0, 1.0), 300.0);
+  if ((hit.y > 3.5 && hit.y < 4.5) || (hit.y > 17.5 && hit.y < 18.5) || (hit.y > 40.5 && hit.y < 41.5)) col += vec3(1.2) * pow(clamp(dot(n, normalize(vec3(-0.3, 0.4, 1.0) - rd)), 0.0, 1.0), 300.0);
   col = col / (1.0 + col * 0.25);
   col = pow(col, vec3(1.0 / 2.2));
   fragColor = vec4(col, 1.0);

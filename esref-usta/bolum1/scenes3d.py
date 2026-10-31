@@ -34,7 +34,7 @@ BLINKS = {"U": [2.6, 6.2, 11.1, 15.9, 20.3, 26.8, 31.0, 36.1, 40.7, 44.9, 50.8, 
 def pose_name(base, who, t, mouth_level=None, can_blink=True):
     amp = speaking(t, who) if mouth_level is None else mouth_level
     lvl = int(round(min(1.0, amp * 1.15) * 4))
-    if lvl == 0 and can_blink and base not in ("E_loupe", "E_soft"):
+    if lvl == 0 and can_blink and base not in ("E_loupe", "E_soft") and who in BLINKS:
         for tb in BLINKS[who]:
             d = t - tb
             if 0 <= d < 3 / FPS:
@@ -140,8 +140,11 @@ def breathe(t, period=3.8, amp=4.0):
     return amp * math.sin(t * 2 * math.pi / period)
 
 
+CAT_X = 640
+
+
 def shop(t, cam, usta="E_front", deniz="D_listen", bg_blur=2, usta_blur=0, deniz_blur=2, show_deniz=True,
-         rope="two", package=False, emre_back=None, usta_mouth=None, usta_blinks=True):
+         rope="two", package=False, emre_back=None, usta_mouth=None, usta_blinks=True, cat=None, cat_mouth=None, cat_blur=0):
     world = back_plate("duvar", bg_blur).copy()
     if show_deniz:
         dn = pose_name(deniz, "D", t) if deniz.startswith("D_") else deniz
@@ -149,6 +152,9 @@ def shop(t, cam, usta="E_front", deniz="D_listen", bg_blur=2, usta_blur=0, deniz
     world.alpha_composite(contact_shadow(), (USTA_X - 450, COUNTER_TOP - 1000))
     un = usta if usta.startswith("E_loupe_in") or usta in ("E_back", "E_turn") else pose_name(usta, "U", t, usta_mouth, usta_blinks)
     put(world, un, USTA_X, S_USTA, blur=usta_blur, dy=breathe(t))
+    if cat:
+        cn = pose_name(cat, "C", t, 0.0 if cat_mouth is None else cat_mouth)
+        put(world, cn, CAT_X, S_USTA, blur=cat_blur, dy=breathe(t + 0.4, 2.2, 1.5))
     world.alpha_composite(front_plate(rope, package))
     frame = crop(world, cam)
     if emre_back:
