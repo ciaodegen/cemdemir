@@ -66,10 +66,10 @@ def counter_cigs(stage=0):
     img = ins.wood_top(47).copy()
     obj = Image.new("RGBA", (BW, BH), (0, 0, 0, 0))
     p = pack_img().rotate(8, expand=True, resample=Image.BICUBIC)
-    obj.alpha_composite(p, (120, 360))
+    obj.alpha_composite(p, (120, 120))
     for i in range(min(stage, 3)):
         c = cigarette(1100, 92, NOTES[i], seed=i).rotate(-3 + i * 2, expand=True, resample=Image.BICUBIC)
-        obj.alpha_composite(c, (150 + i * 20, 1320 + i * 260))
+        obj.alpha_composite(c, (150 + i * 20, 1060 + i * 240))
     ins.shadowed(img, obj, blur=26, off=(18, 28), alpha=170)
     return img
 
