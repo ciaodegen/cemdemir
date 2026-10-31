@@ -1,5 +1,5 @@
 """Bölüm 3 — "Susan Kedi" (~46 sn)."""
-import sys, subprocess, functools
+import sys, math, subprocess, functools
 sys.path.insert(0, "/home/user/cemdemir/esref-usta/bolum1")
 sys.path.insert(0, "/home/user/cemdemir/esref-usta/bolum3k")
 from PIL import Image
@@ -16,16 +16,17 @@ SFX = f"{ROOT}/efektler"
 
 LINES = [  # file, speaker (E = Ela, O = operator), subtitle
     ("01_E", "E", "Usta, bu kedi hiç miyavlamıyor. Bozuk mu?"),
-    ("02_D", "D", "Abla, pilini değiştirelim bence."),
+    ("02_D", "D", "Abla bir yaş mama verin, düzelir bence."),
     ("03_U", "U", "Deniz."),
     ("04_E", "E", "Sokakta buldum. Bir haftadır yanımda, bir kere bile ses çıkarmadı."),
+    ("10_U", "U", "Dur, bir bakalım…"),
     ("05_U", "U", "Bu kedi sokak kedisi değil kızım. Ev kedisi."),
     ("06_O", "O", "Aradığınız numara kullanılmamaktadır."),
     ("07_U", "U", "Kediler birbirine miyavlamaz. Sadece insana miyavlar."),
     ("08_U", "U", "Bu kedi miyavlamayı unutmamış… Cevap veren olmayınca susmuş."),
     ("09_E", "E", "Pamuk?"),
 ]
-START = {0: 0.5, 1: 4.1, 2: 6.15, 3: 7.9, 4: 15.9, 5: 21.0, 6: 23.3, 7: 27.9, 8: 33.1}
+START = {0: 0.5, 1: 4.1, 2: 6.15, 3: 7.9, 4: 12.65, 5: 15.9, 6: 21.0, 7: 23.3, 8: 27.9, 9: 33.1}
 DUR = {i: duration(f"{REP}/{f}.mp3") for i, (f, _, _) in enumerate(LINES)}
 TOTAL = 46.2
 FIELDS = (("Arıza:", "Miyavlamıyor."),
@@ -102,6 +103,7 @@ def meow_level(t):
 
 SHOTS = [
     S(0.0, 4.0, lambda t: shop(t, push(WIDE, t, 0, 4.0, 0.04), deniz="D_phone", rope="none", cat="C_idle",
+                               cat_dx=-300 * (1 - smooth((t - 0.6) / 0.9)), cat_dy=430 * (1 - smooth((t - 0.6) / 0.9)) - 60 * math.sin(math.pi * min(1, max(0, (t - 0.6) / 0.9))),
                                emre_back=(120 - 220 * (1 - smooth(t / 1.0)), 560, 0.95, 5, "L_back"))),
     S(4.0, 6.1, lambda t: shop(t, push(DENIZ_MCU, t, 4.0, 6.1), deniz="D_phone", rope="none", cat="C_idle", deniz_blur=0, bg_blur=8, usta_blur=6, cat_blur=4)),
     S(6.1, 7.8, lambda t: shop(t, push(USTA_MCU, t, 6.1, 7.8), usta="E_side", deniz="D_phone", rope="none", cat="C_idle", bg_blur=8, deniz_blur=6)),
@@ -151,12 +153,13 @@ def audio_mix(out):
         add(f"{REP}/{f}.mp3", START[i], 1.0)
     add(f"{SFX}/ortam.mp3", 0.0, 0.32, f",aloop=loop=4:size=2e6,atrim=0:{TOTAL},afade=t=out:st={TOTAL - 4}:d=3")
     add(f"{SFX}/cingirak.mp3", 0.0, 0.6)
-    add(f"{SFX}/loupe.mp3", 12.95, 0.8)
+    add(f"{SFX}/loupe.mp3", 12.95, 0.6)
+    add(f"{SFX}/ip.mp3", 1.35, 0.5)
     add(f"{SFX}/telefon.mp3", 19.8, 0.4, ",atrim=0:1.2")
     add(f"{SFX}/miyav_ilk.mp3", 35.0, 1.0)
     add(f"{SFX}/kedi_mirlama.mp3", 35.9, 0.5, ",afade=t=out:st=2.2:d=0.8")
     add(f"{SFX}/cingirak_cikis.mp3", 38.0, 0.45)
-    add(f"{SFX}/kalem.mp3", 38.8, 0.7)
+    add(f"{SFX}/kalem.mp3", 38.8, 0.7, ",atrim=0:3.0,afade=t=out:st=2.6:d=0.4")
     add(f"{SFX}/damga.mp3", 42.6, 0.8)
     add(f"{SFX}/muzik.mp3", 23.2, 0.28, f",afade=t=in:st=0:d=2.5,afade=t=out:st={TOTAL - 23.2 - 3.0}:d=3.0")
     fc = ";".join(filters) + ";" + "".join(labels) + f"amix=inputs={len(labels)}:normalize=0:duration=longest,atrim=0:{TOTAL},alimiter=limit=0.95[out]"

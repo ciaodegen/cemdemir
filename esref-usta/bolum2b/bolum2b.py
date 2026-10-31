@@ -141,7 +141,7 @@ def audio_mix(out):
     add(f"{SFX}/telefon_cevir.mp3", 18.45, 0.6)
     add(f"{SFX}/gazete.mp3", 19.0, 0.4)
     add(f"{SFX}/cingirak_cikis.mp3", 42.4, 0.45)
-    add(f"{SFX}/kalem.mp3", 43.9, 0.7)
+    add(f"{SFX}/kalem.mp3", 43.9, 0.7, ",atrim=0:4.5,afade=t=out:st=4.1:d=0.4")
     add(f"{SFX}/damga.mp3", 49.0, 0.8)
     add(f"{SFX}/muzik.mp3", 28.4, 0.30, f",afade=t=in:st=0:d=3,afade=t=out:st={TOTAL - 28.4 - 3.5}:d=3.5")
     fc = ";".join(filters) + ";" + "".join(labels) + f"amix=inputs={len(labels)}:normalize=0:duration=longest,atrim=0:{TOTAL},alimiter=limit=0.95[out]"

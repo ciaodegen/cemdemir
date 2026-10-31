@@ -144,7 +144,8 @@ CAT_X = 640
 
 
 def shop(t, cam, usta="E_front", deniz="D_listen", bg_blur=2, usta_blur=0, deniz_blur=2, show_deniz=True,
-         rope="two", package=False, emre_back=None, usta_mouth=None, usta_blinks=True, cat=None, cat_mouth=None, cat_blur=0):
+         rope="two", package=False, emre_back=None, usta_mouth=None, usta_blinks=True, cat=None, cat_mouth=None, cat_blur=0,
+         cat_dx=0.0, cat_dy=0.0):
     world = back_plate("duvar", bg_blur).copy()
     if show_deniz:
         dn = pose_name(deniz, "D", t) if deniz.startswith("D_") else deniz
@@ -154,7 +155,7 @@ def shop(t, cam, usta="E_front", deniz="D_listen", bg_blur=2, usta_blur=0, deniz
     put(world, un, USTA_X, S_USTA, blur=usta_blur, dy=breathe(t))
     if cat:
         cn = pose_name(cat, "C", t, 0.0 if cat_mouth is None else cat_mouth)
-        put(world, cn, CAT_X, S_USTA, blur=cat_blur, dy=breathe(t + 0.4, 2.2, 1.5))
+        put(world, cn, CAT_X + cat_dx, S_USTA, blur=cat_blur, dy=breathe(t + 0.4, 2.2, 1.5) + cat_dy)
     world.alpha_composite(front_plate(rope, package))
     frame = crop(world, cam)
     if emre_back:

@@ -730,8 +730,9 @@ vec2 catc(vec3 p){
   float sad = clamp(uBrow, 0.0, 1.0);
   for (int s = 0; s < 2; s++) {
     float sx = s == 0 ? -1.0 : 1.0;
-    vec3 eq = h - (hc + vec3(sx * 0.058, 0.065 - sad * 0.02, -0.005));
-    float ang = sx * (0.3 + sad * 0.8);
+    // sad ears fold back and out, but always stay visible above the head
+    vec3 eq = h - (hc + vec3(sx * (0.058 + sad * 0.012), 0.065 - sad * 0.008, -0.005 - sad * 0.01));
+    float ang = sx * (0.3 + sad * 0.42);
     eq.xy = mat2(cos(ang), -sin(ang), sin(ang), cos(ang)) * eq.xy;
     float ear = sdE(eq - vec3(0., 0.03, 0.), vec3(0.034, 0.05, 0.012));
     ear = smax(ear, -eq.y - 0.005, 0.005);
