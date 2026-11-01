@@ -24,10 +24,10 @@ LINES = [  # file, speaker (E = Cengiz), subtitle
     ("a_08_U", "U", "Boya tutmuyor evlat. Çünkü bu renk kumaşta değil, kalpte. Kazanmak bir gecelik iş. Kalpteki yer ömürlük."),
     ("a_09_C", "E", "Boyamayın usta. Kalsın."),
 ]
-START = {0: 0.5, 1: 5.85, 2: 8.1, 3: 12.0, 4: 13.95, 5: 18.6, 6: 22.15, 7: 23.3, 8: 32.7}
+START = {0: 0.5, 1: 5.85, 2: 8.1, 3: 12.0, 4: 13.95, 5: 18.6, 6: 22.5, 7: 23.8, 8: 33.2}
 DUR = {i: duration(f"{REP}/{f}.mp3") for i, (f, _, _) in enumerate(LINES)}
-TOTAL = 43.4
-T_TICKET, T_CTA = 36.4, 40.8
+TOTAL = 43.9
+T_TICKET, T_CTA = 36.9, 41.3
 FIELDS = (("Arıza:", "Takım değiştirme talebi."),
           ("Yapılan işlem:", "İki kat boyandı. Tutmadı."),
           ("Not:", "Kazanmak bir gecelik. Kalpteki yer ömürlük."))
@@ -43,8 +43,8 @@ def speaking(t, who):
 
 
 s3.speaking = speaking
-s3.BLINKS["E"] = [19.2, 33.0, 35.6]
-s3.BLINKS["U"] = [2.6, 15.2, 26.4, 35.4]
+s3.BLINKS["E"] = [19.0, 33.0, 35.6]
+s3.BLINKS["U"] = [2.6, 15.2, 26.9, 35.9]
 
 
 def sub_at(t):
@@ -127,25 +127,25 @@ def paint_shot(t, t0, t1, coat, t_in, ts, te, t_out, r0, r1, tipf):
 
 
 def hover_shot(t):
-    t0, t1 = 19.6, 22.0
+    t0, t1 = 20.1, 22.4
     target = (650, atki.HY0 + 3.5 * atki.STRIPE)
-    if t < 20.0:
-        pos = lerp(OFF, (target[0] + 40, target[1] - 70), smooth(k01(t, 19.6, 20.0)))
-    elif t < 21.6:
-        k = k01(t, 20.0, 21.6)
+    if t < 20.5:
+        pos = lerp(OFF, (target[0] + 40, target[1] - 70), smooth(k01(t, 20.1, 20.5)))
+    elif t < 22.05:
+        k = k01(t, 20.5, 22.05)
         base = lerp((target[0] + 40, target[1] - 70), (target[0] + 12, target[1] - 18), smooth(min(1, k * 1.6)))
         amp = 2.0 + 6.0 * k
         pos = (base[0] + amp * math.sin(t * 41) + 0.6 * amp * math.sin(t * 23), base[1] + amp * 0.8 * math.sin(t * 33 + 1))
     else:
-        pos = lerp((target[0] + 12, target[1] - 18), OFF, smooth(k01(t, 21.6, 22.0)))
+        pos = lerp((target[0] + 12, target[1] - 18), OFF, smooth(k01(t, 22.05, 22.4)))
     ov = atki.overlay(brush_on=False, brush=(pos[0], pos[1], -32))
     return shop(t, push(CU, t, t0, t1, 0.09), usta="E_serious", rope="none", usta_blur=7, deniz_blur=9, bg_blur=9, overlay=ov)
 
 
 def lift_shot(t):
-    k = 1.0 - smooth(k01(t, 31.85, 32.55))
+    k = 1.0 - smooth(k01(t, 32.35, 33.05))
     ov = atki.overlay(brush_on=True, scarf_drop=k)
-    return shop(t, push(CU, t, 31.7, 32.6, 0.03), usta="E_soft", rope="none", usta_blur=7, deniz_blur=9, bg_blur=9, usta_blinks=False, overlay=ov)
+    return shop(t, push(CU, t, 32.2, 33.1, 0.03), usta="E_soft", rope="none", usta_blur=7, deniz_blur=9, bg_blur=9, usta_blinks=False, overlay=ov)
 
 
 def arrive(t):
@@ -164,13 +164,13 @@ SHOTS = [
     S(12.0, 13.9, lambda t: shop(t, push(DENIZ_MCU, t, 12.0, 13.9), deniz="D_listen", rope="none", overlay=atki.overlay(brush_on=False), deniz_blur=0, bg_blur=8, usta_blur=6)),
     S(13.9, 15.5, lambda t: shop(t, push(USTA_MCU, t, 13.9, 15.5), usta="E_front", rope="none", overlay=atki.overlay(brush_on=False), bg_blur=8, deniz_blur=6)),
     S(15.5, 18.5, lambda t: paint_shot(t, 15.5, 18.5, 2, 15.5, 15.7, 16.9, 17.0, 17.3, 18.2, tip2)),
-    S(18.5, 19.6, lambda t: door(t, push(EMRE_MCU, t, 18.5, 19.6, 0.03), emre="Y_front", rope="none", overlay=atki.overlay(brush_on=False), usta_back=USTA_BACK_OTS)),
-    S(19.6, 22.0, hover_shot),
-    S(22.0, 23.1, lambda t: door(t, push(EMRE_CU, t, 22.0, 23.1, 0.04), emre="Y_stun", rope="none", overlay=ON)),
-    S(23.1, 31.7, lambda t: shop(t, push(USTA_CU, t, 23.1, 31.7, 0.12), usta="E_soft", rope="none", overlay=ON, bg_blur=9, deniz_blur=8, usta_blinks=False)),
-    S(31.7, 32.6, lift_shot),
-    S(32.6, 34.6, lambda t: door(t, push(EMRE_CU, t, 32.6, 34.6, 0.04), emre="Y_soft", rope="none", overlay=CAN_ONLY)),
-    S(34.6, T_TICKET, lambda t: shop(t, push(USTA_MCU, t, 34.6, T_TICKET, 0.04), usta="E_proud", rope="none", overlay=CAN_ONLY, bg_blur=8, deniz_blur=6, usta_blinks=False)),
+    S(18.5, 20.1, lambda t: door(t, push(EMRE_MCU, t, 18.5, 20.1, 0.03), emre="Y_front", rope="none", overlay=atki.overlay(brush_on=False), usta_back=USTA_BACK_OTS)),
+    S(20.1, 22.4, hover_shot),
+    S(22.4, 23.6, lambda t: door(t, push(EMRE_CU, t, 22.4, 23.6, 0.04), emre="Y_stun", rope="none", overlay=ON)),
+    S(23.6, 32.2, lambda t: shop(t, push(USTA_CU, t, 23.6, 32.2, 0.12), usta="E_soft", rope="none", overlay=ON, bg_blur=9, deniz_blur=8, usta_blinks=False)),
+    S(32.2, 33.1, lift_shot),
+    S(33.1, 35.4, lambda t: door(t, push(EMRE_CU, t, 33.1, 35.4, 0.04), emre="Y_soft", rope="none", overlay=CAN_ONLY)),
+    S(35.4, T_TICKET, lambda t: shop(t, push(USTA_MCU, t, 35.4, T_TICKET, 0.04), usta="E_proud", rope="none", overlay=CAN_ONLY, bg_blur=8, deniz_blur=6, usta_blinks=False)),
     S(T_TICKET, T_CTA, plate(lambda t: _ticket(round(k01(t, T_TICKET + 0.2, T_TICKET + 3.2) * 60) / 60, round(k01(t, T_CTA - 0.8, T_CTA - 0.45) * 8) / 8), T_TICKET, T_CTA, 1.04, 1.0)),
     S(T_CTA, TOTAL, plate(lambda t: _cta(), T_CTA, TOTAL, 1.0, 1.0)),
 ]
@@ -211,11 +211,11 @@ def audio_mix(out):
     add(f"{SFX}/firca.mp3", 15.65, 0.8)
     add(f"{SFX}/firca.mp3", 16.3, 0.5, ",atrim=0:0.7,afade=t=out:st=0.4:d=0.3")
     add(f"{SFX}/buyulu_geri.mp3", 17.3, 0.85)
-    add(f"{SFX}/kalp_guclu.mp3", 20.0, 0.35, ",atrim=0:1.8,afade=t=out:st=1.3:d=0.5")
-    add(f"{SFX}/cingirak_cikis.mp3", 34.8, 0.35)
+    add(f"{SFX}/kalp_guclu.mp3", 20.5, 0.35, ",atrim=0:1.8,afade=t=out:st=1.3:d=0.5")
+    add(f"{SFX}/cingirak_cikis.mp3", 35.6, 0.35)
     add(f"{SFX}/kalem.mp3", T_TICKET + 0.2, 0.7, ",atrim=0:3.0,afade=t=out:st=2.6:d=0.4")
     add(f"{SFX}/damga.mp3", T_CTA - 0.8, 0.8)
-    add(f"{SFX}/muzik.mp3", 23.1, 0.26, f",afade=t=in:st=0:d=2.5,afade=t=out:st={TOTAL - 23.1 - 3.0}:d=3.0")
+    add(f"{SFX}/muzik.mp3", 23.6, 0.26, f",afade=t=in:st=0:d=2.5,afade=t=out:st={TOTAL - 23.6 - 3.0}:d=3.0")
     fc = ";".join(filters) + ";" + "".join(labels) + f"amix=inputs={len(labels)}:normalize=0:duration=longest,atrim=0:{TOTAL},alimiter=limit=0.95[out]"
     subprocess.run(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", fc, "-map", "[out]", "-c:a", "pcm_s16le", out], check=True)
 
