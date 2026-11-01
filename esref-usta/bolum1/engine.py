@@ -220,14 +220,14 @@ def finish(img, t, dust=True, grain=True):
     return out
 
 
-def subtitle(img, text):
+def subtitle(img, text, yfrac=0.705):
     if not text:
         return img
     img = img.convert("RGBA")
     f = font(FONT_BOLD, int(30 * UI))
     d = ImageDraw.Draw(img)
     lines = wrap(text, f, W - int(120 * UI), d)
-    y = int(H * 0.705) - (len(lines) - 1) * int(20 * UI)
+    y = int(H * yfrac) - (len(lines) - 1) * int(20 * UI)
     for ln in lines:
         tw = d.textlength(ln, font=f)
         x = (W - tw) / 2

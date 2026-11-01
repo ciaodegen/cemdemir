@@ -186,7 +186,7 @@ def shop(t, cam, usta="E_front", deniz="D_listen", bg_blur=2, usta_blur=0, deniz
         overlay(frame, cam)
     if emre_back:
         x, ytop, sc, bl = emre_back[:4]
-        put_screen(frame, emre_back[4] if len(emre_back) > 4 else "M_back", x, ytop, sc, bl, 0.62)
+        put_screen(frame, emre_back[4] if len(emre_back) > 4 else "M_back", x, ytop, sc, bl, emre_back[5] if len(emre_back) > 5 else 0.62)
     return frame
 
 

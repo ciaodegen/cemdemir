@@ -157,7 +157,7 @@ CAN_ONLY = atki.overlay(brush_on=True, scarf=False)
 
 SHOTS = [
     S(0.0, 5.8, lambda t: shop(t, push(WIDE, t, 0, 5.8, 0.04), deniz="D_phone", rope="none", overlay=arrive(t),
-                               emre_back=(120 - 220 * (1 - smooth(t / 1.0)), 560, 0.95, 5, "Y_back"))),
+                               emre_back=(120 - 220 * (1 - smooth(t / 1.0)), 560, 0.95, 5, "Y_back", 0.82))),
     S(5.8, 8.0, lambda t: shop(t, push(DENIZ_MCU, t, 5.8, 8.0), deniz="D_sincere", rope="none", overlay=ON, deniz_blur=0, bg_blur=8, usta_blur=6)),
     S(8.0, 9.3, lambda t: shop(t, push(USTA_MCU, t, 8.0, 9.3), usta="E_side", deniz="D_sincere", rope="none", overlay=ON, bg_blur=8, deniz_blur=6)),
     S(9.3, 12.0, lambda t: paint_shot(t, 9.3, 12.0, 1, 9.3, 9.6, 10.3, 10.4, 10.8, 11.7, tip1)),
@@ -185,7 +185,7 @@ def frame_at(t):
         img = Image.new("RGB", (W, H))
     img = finish(img, t, dust=False, grain=False)
     if t < T_TICKET:
-        img = subtitle(img, sub_at(t))
+        img = subtitle(img, sub_at(t), 0.6 if t < 5.8 else 0.705)
     if t > TOTAL - 0.6:
         img = Image.eval(img, lambda v, k=(TOTAL - t) / 0.6: int(v * max(k, 0)))
     if T_CTA - 0.3 <= t < T_CTA + 0.3:
