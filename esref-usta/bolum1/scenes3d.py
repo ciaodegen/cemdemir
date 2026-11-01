@@ -90,6 +90,20 @@ def front_plate(rope="two", package=False):
     elif rope == "knot":
         draw_rope(front, [(330, 1810 + CY), (500, 1806 + CY), (680, 1810 + CY), (860, 1815 + CY)], 18, "flat", "flat", seed=2)
         ImageDraw.Draw(front).ellipse([585, 1794 + CY, 625, 1826 + CY], fill=(176, 140, 96, 255))
+    elif rope == "fbheart":
+        import math as _m
+        d = ImageDraw.Draw(front)
+        pts = []
+        for i in range(80):
+            t = 2 * _m.pi * i / 80
+            x = 16 * _m.sin(t) ** 3; y = 13 * _m.cos(t) - 5 * _m.cos(2 * t) - 2 * _m.cos(3 * t) - _m.cos(4 * t)
+            pts.append((560 + x * 5.5, 1738 + CY - y * 5.5))
+        d.polygon(pts, fill=(22, 34, 86, 255))
+        for k in range(-3, 4):
+            d.line([(520, 1726 + CY + k * 14), (600, 1712 + CY + k * 14)], fill=(246, 200, 30, 255), width=6)
+        d.polygon(pts, outline=(12, 20, 60, 255))
+        d.rounded_rectangle([760, 1740 + CY, 840, 1812 + CY], radius=6, fill=(150, 154, 160, 255))
+        d.ellipse([760, 1730 + CY, 840, 1750 + CY], fill=(200, 30, 36, 255))
     elif rope == "paper":
         d = ImageDraw.Draw(front)
         d.polygon([(560, 1800 + CY), (760, 1790 + CY), (770, 1816 + CY), (566, 1822 + CY)], fill=(240, 238, 230, 255))
