@@ -1,4 +1,4 @@
-"""Eşref Usta'ya Mektup 1 — "Hâlâ Özlüyorum" (~45 sn)."""
+"""Eşref Usta'ya Mektup 2 — "Hâlâ Özlüyorum" (~45 sn)."""
 import sys, subprocess, functools
 sys.path.insert(0, "/home/user/cemdemir/esref-usta/bolum1")
 sys.path.insert(0, "/home/user/cemdemir/esref-usta/mektup1")
@@ -80,12 +80,12 @@ def sub_at(t):
 
 @functools.lru_cache(None)
 def _ticket(progress, stamp):
-    return ins.ticket(progress, stamp, "M-01", FIELDS, "CEVAP YAZILDI")
+    return ins.ticket(progress, stamp, "M-02", FIELDS, "CEVAP YAZILDI")
 
 
 @functools.lru_cache(None)
 def _cta():
-    return ins.cta(("Ayrılsa da çocuğu için", "güçlü kalan birine gönder."), "Arızanı yaz, Eşref Usta okusun · Mektup 1")
+    return ins.cta(("Ayrılsa da çocuğu için", "güçlü kalan birine gönder."), "Arızanı yaz, Eşref Usta okusun · Mektup 2")
 
 
 def S(t0, t1, fn):

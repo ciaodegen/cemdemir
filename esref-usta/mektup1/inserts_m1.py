@@ -32,7 +32,7 @@ def paper(w, h, seed=1, lined=True, tint=(246, 241, 228)):
 
 
 @functools.lru_cache(None)
-def envelope_img():
+def envelope_img(ariza="Hâlâ özlüyorum."):
     w, h = 1060, 660
     e = paper(w, h, seed=4, lined=False, tint=(244, 236, 218))
     d = ImageDraw.Draw(e)
@@ -57,17 +57,17 @@ def envelope_img():
     fh = font(FONT_HAND, 104)
     d.text((140, 230), "Eşref Usta'ya", font=fh, fill=INK)
     d.text((170, 360), "Tamir Atölyesi", font=font(FONT_HAND, 60), fill=INK)
-    d.text((140, 470), "Arıza: Hâlâ özlüyorum.", font=font(FONT_HAND, 70), fill=RED_INK)
+    d.text((140, 470), "Arıza: " + ariza, font=font(FONT_HAND, 70), fill=RED_INK)
     return e.rotate(-4, expand=True, resample=Image.BICUBIC)
 
 
 @functools.lru_cache(maxsize=64)
-def envelope_plate(kq=20):
+def envelope_plate(kq=20, ariza="Hâlâ özlüyorum."):
     """kq 0..20: envelope slides in from the top and settles."""
     k = kq / 20
     img = ins.wood_top(23).copy()
     obj = Image.new("RGBA", (BW, BH), (0, 0, 0, 0))
-    e = envelope_img()
+    e = envelope_img(ariza)
     e2 = e.rotate(-14 * (1 - k), expand=True, resample=Image.BICUBIC) if k < 1 else e
     y = int(860 - 1900 * (1 - k) ** 3)
     obj.alpha_composite(e2, ((BW - e2.size[0]) // 2, y))
@@ -119,20 +119,20 @@ def _sheet(lines, reveal, ink, title=None, seed=1, size=96, pen=False):
 
 
 @functools.lru_cache(maxsize=256)
-def letter_plate(reveal):
+def letter_plate(reveal, lines=None):
     img = ins.wood_top(31).copy()
     obj = Image.new("RGBA", (BW, BH), (0, 0, 0, 0))
-    s = _sheet(LETTER, reveal, INK, seed=2).rotate(2, expand=True, resample=Image.BICUBIC)
+    s = _sheet(lines or LETTER, reveal, INK, seed=2).rotate(2, expand=True, resample=Image.BICUBIC)
     obj.alpha_composite(s, ((BW - s.size[0]) // 2, 360))
     ins.shadowed(img, obj, blur=28, off=(18, 30), alpha=160)
     return img
 
 
 @functools.lru_cache(maxsize=256)
-def reply_plate(reveal, pen=True):
+def reply_plate(reveal, pen=True, lines=None):
     img = ins.wood_top(37).copy()
     obj = Image.new("RGBA", (BW, BH), (0, 0, 0, 0))
-    s = _sheet(REPLY, reveal, INK_U, title="Cevap —", seed=5, size=88, pen=pen).rotate(-2, expand=True, resample=Image.BICUBIC)
+    s = _sheet(lines or REPLY, reveal, INK_U, title="Cevap —", seed=5, size=88, pen=pen).rotate(-2, expand=True, resample=Image.BICUBIC)
     obj.alpha_composite(s, ((BW - s.size[0]) // 2, 360))
     ins.shadowed(img, obj, blur=28, off=(18, 30), alpha=160)
     return img
