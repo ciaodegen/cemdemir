@@ -106,7 +106,7 @@ SHOTS = [
     S(18.6, 22.7, plate(lambda t: ins8.stmt(3, True, 0, 0), 18.6, 22.7, 1.05, 1.25, cy=0.55)),
     S(22.7, 25.3, lambda t: door(t, push(EMRE_MCU, t, 22.7, 25.3, 0.06), emre="R_sad", rope="paper", usta_back=USTA_BACK_OTS)),
     S(25.3, 30.5, lambda t: shop(t, push(USTA_CU, t, 25.3, 30.5, 0.1), usta="E_soft", rope="paper", bg_blur=9, deniz_blur=8, usta_blinks=False)),
-    S(30.5, 33.9, plate(lambda t: ins8.stmt(3, True, q((t - 30.8) / 0.6), q((t - 31.5) / 1.4)), 30.5, 33.9, 1.25, 1.35, cy=0.2)),
+    S(30.5, 33.9, plate(lambda t: ins8.stmt(3, True, q((t - 30.8) / 0.6), q((t - 31.5) / 1.4)), 30.5, 33.9, 1.25, 1.35, cx=0.92, cy=0.2)),
     S(33.9, 35.6, lambda t: door(t, push(EMRE_CU, t, 33.9, 35.6, 0.05), emre="R_soft", rope="none", emre_mouth=0.0)),
     S(35.6, 40.4, plate(lambda t: _ticket(round(min(1, max(0, (t - 35.8) / 3.2)) * 60) / 60, round(min(1, max(0, (t - 39.6) / 0.35)) * 8) / 8), 35.6, 40.4, 1.04, 1.0)),
     S(40.4, 43.2, plate(lambda t: _cta(), 40.4, 43.2, 1.0, 1.0)),
