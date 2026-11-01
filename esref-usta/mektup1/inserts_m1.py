@@ -82,7 +82,7 @@ REPLY = [("Özlemek arıza değil evlat.", 0), ("Dokuz yıl kolay sökülmez.", 
          ("Evlilik biter.", 3), ("Anne babalık bitmez.", 4)]
 
 
-def _sheet(lines, reveal, ink, title=None, seed=1, size=96, pen=False):
+def _sheet(lines, reveal, ink, title=None, seed=1, size=96, pen=False, pencil=False):
     w, h = 1240, 1820
     p = paper(w, h, seed=seed)
     d = ImageDraw.Draw(p)
@@ -111,10 +111,19 @@ def _sheet(lines, reveal, ink, title=None, seed=1, size=96, pen=False):
         tx, ty = tip
         def pt(u, v):
             return (tx + dx * u + nx * v, ty + dy * u + ny * v)
-        d.polygon([pt(0, 0), pt(90, -14), pt(90, 14)], fill=(200, 170, 90, 255))
-        d.polygon([pt(88, -16), pt(560, -18), pt(560, 18), pt(88, 16)], fill=(30, 30, 34, 255))
-        d.polygon([pt(150, -17), pt(180, -17), pt(180, 17), pt(150, 17)], fill=(196, 160, 80, 255))
-        d.line([pt(200, -8), pt(540, -9)], fill=(90, 90, 100, 255), width=4)
+        if pencil:   # the short, freshly sharpened yellow pencil stub
+            d.polygon([pt(0, 0), pt(26, -6), pt(26, 6)], fill=(60, 60, 64, 255))
+            d.polygon([pt(26, -6), pt(80, -20), pt(80, 20), pt(26, 6)], fill=(222, 186, 140, 255))
+            d.polygon([pt(80, -20), pt(230, -20), pt(230, 20), pt(80, 20)], fill=(236, 186, 40, 255))
+            d.line([pt(82, -7), pt(228, -7)], fill=(250, 214, 90, 255), width=5)
+            d.line([pt(82, 9), pt(228, 9)], fill=(200, 150, 20, 255), width=4)
+            d.polygon([pt(230, -21), pt(262, -21), pt(262, 21), pt(230, 21)], fill=(186, 188, 194, 255))
+            d.polygon([pt(262, -20), pt(300, -20), pt(300, 20), pt(262, 20)], fill=(236, 150, 160, 255))
+        else:
+            d.polygon([pt(0, 0), pt(90, -14), pt(90, 14)], fill=(200, 170, 90, 255))
+            d.polygon([pt(88, -16), pt(560, -18), pt(560, 18), pt(88, 16)], fill=(30, 30, 34, 255))
+            d.polygon([pt(150, -17), pt(180, -17), pt(180, 17), pt(150, 17)], fill=(196, 160, 80, 255))
+            d.line([pt(200, -8), pt(540, -9)], fill=(90, 90, 100, 255), width=4)
     return p
 
 
@@ -129,10 +138,10 @@ def letter_plate(reveal, lines=None):
 
 
 @functools.lru_cache(maxsize=256)
-def reply_plate(reveal, pen=True, lines=None):
+def reply_plate(reveal, pen=True, lines=None, ink=None, pencil=False):
     img = ins.wood_top(37).copy()
     obj = Image.new("RGBA", (BW, BH), (0, 0, 0, 0))
-    s = _sheet(lines or REPLY, reveal, INK_U, title="Cevap —", seed=5, size=88, pen=pen).rotate(-2, expand=True, resample=Image.BICUBIC)
+    s = _sheet(lines or REPLY, reveal, ink or INK_U, title="Cevap —", seed=5, size=88, pen=pen, pencil=pencil).rotate(-2, expand=True, resample=Image.BICUBIC)
     obj.alpha_composite(s, ((BW - s.size[0]) // 2, 360))
     ins.shadowed(img, obj, blur=28, off=(18, 30), alpha=160)
     return img

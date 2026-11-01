@@ -1,4 +1,4 @@
-"""Eşref Usta'ya Mektup 1 — "Gelecek Kaygısı" (~46 sn, sonda yorum çağrısı)."""
+"""Eşref Usta'ya Mektup 2 — "Gelecek Kaygısı" (~46 sn, sonda yorum çağrısı)."""
 import sys, subprocess, functools, math
 sys.path.insert(0, "/home/user/cemdemir/esref-usta/bolum1")
 sys.path.insert(0, "/home/user/cemdemir/esref-usta/mektup1")
@@ -83,12 +83,12 @@ def sub_at(t):
 
 @functools.lru_cache(None)
 def _ticket(progress, stamp):
-    return ins.ticket(progress, stamp, "M-01", FIELDS, "AYARLANDI")
+    return ins.ticket(progress, stamp, "M-02", FIELDS, "AYARLANDI")
 
 
 @functools.lru_cache(None)
 def _cta():
-    return ins.cta(("Geleceği düşünmekten", "bugünü kaçıran birine gönder."), "Eşref Usta'ya Mektup · 1")
+    return ins.cta(("Geleceği düşünmekten", "bugünü kaçıran birine gönder."), "Eşref Usta'ya Mektup · 2")
 
 
 def S(t0, t1, fn):
