@@ -90,6 +90,10 @@ def front_plate(rope="two", package=False):
     elif rope == "knot":
         draw_rope(front, [(330, 1810 + CY), (500, 1806 + CY), (680, 1810 + CY), (860, 1815 + CY)], 18, "flat", "flat", seed=2)
         ImageDraw.Draw(front).ellipse([585, 1794 + CY, 625, 1826 + CY], fill=(176, 140, 96, 255))
+    elif rope == "paper":
+        d = ImageDraw.Draw(front)
+        d.polygon([(560, 1800 + CY), (760, 1790 + CY), (770, 1816 + CY), (566, 1822 + CY)], fill=(240, 238, 230, 255))
+        d.polygon([(560, 1800 + CY), (760, 1790 + CY), (756, 1780 + CY), (572, 1786 + CY)], fill=(32, 52, 92, 255))
     elif rope == "pack":
         d = ImageDraw.Draw(front)
         d.rounded_rectangle([590, 1700 + CY, 690, 1812 + CY], radius=8, fill=(78, 70, 44, 255))
