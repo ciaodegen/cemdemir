@@ -169,7 +169,7 @@ CAT_X = 640
 
 def shop(t, cam, usta="E_front", deniz="D_listen", bg_blur=2, usta_blur=0, deniz_blur=2, show_deniz=True,
          rope="two", package=False, emre_back=None, usta_mouth=None, usta_blinks=True, cat=None, cat_mouth=None, cat_blur=0,
-         cat_dx=0.0, cat_dy=0.0):
+         cat_dx=0.0, cat_dy=0.0, overlay=None):
     world = back_plate("duvar", bg_blur).copy()
     if show_deniz:
         dn = pose_name(deniz, "D", t) if deniz.startswith("D_") else deniz
@@ -182,19 +182,23 @@ def shop(t, cam, usta="E_front", deniz="D_listen", bg_blur=2, usta_blur=0, deniz
         put(world, cn, CAT_X + cat_dx, S_USTA, blur=cat_blur, dy=breathe(t + 0.4, 2.2, 1.5) + cat_dy)
     world.alpha_composite(front_plate(rope, package))
     frame = crop(world, cam)
+    if overlay:
+        overlay(frame, cam)
     if emre_back:
         x, ytop, sc, bl = emre_back[:4]
         put_screen(frame, emre_back[4] if len(emre_back) > 4 else "M_back", x, ytop, sc, bl, 0.62)
     return frame
 
 
-def door(t, cam, emre="M_front", bg_blur=6, rope="two", package=False, usta_back=None, emre_mouth=None):
+def door(t, cam, emre="M_front", bg_blur=6, rope="two", package=False, usta_back=None, emre_mouth=None, overlay=None):
     world = back_plate("kapi", bg_blur).copy()
     world.alpha_composite(contact_shadow(800), (EMRE_X - 400, COUNTER_TOP - 950))
     en = pose_name(emre, "E", t, emre_mouth)
     put(world, en, EMRE_X, S_EMRE, dy=breathe(t + 0.7, 4.2, 3))
     world.alpha_composite(front_plate(rope, package))
     frame = crop(world, cam)
+    if overlay:
+        overlay(frame, cam)
     if usta_back:
         x, ytop, sc, bl = usta_back
         put_screen(frame, "E_back", x, ytop, sc, bl, 0.6)

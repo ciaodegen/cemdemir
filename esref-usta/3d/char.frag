@@ -981,6 +981,75 @@ vec2 cengizc(vec3 p){
 
 
 
+// ---------- Cengiz (genç) ----------
+vec2 cengizgc(vec3 p){
+  vec3 b = bodySpace(p);
+  vec2 res = vec2(1e9, 0.);
+  float torso = sdE(b - vec3(0., 0.25, 0.), vec3(0.23, 0.36, 0.155));
+  float sh = sdE(b - vec3(0., 0.5, -0.005), vec3(0.27, 0.115, 0.14));
+  float body = smin(torso, sh, 0.07);
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    float ua = sdC(b, vec3(sx * 0.24, 0.5, -0.005), vec3(sx * 0.29, 0.22, 0.05), 0.068);
+    float fa = sdC(b, vec3(sx * 0.29, 0.22, 0.05), vec3(sx * 0.2, 0.04, 0.22), 0.058);
+    body = smin(body, min(ua, fa), 0.03);
+    float hand = sdE(b - vec3(sx * 0.18, 0.01, 0.25), vec3(0.05, 0.037, 0.064));
+    res = U(res, vec2(hand, M_SKIN));
+  }
+  // collar
+  float collar = sdTz(rotX(-1.35) * (b - vec3(0., 0.58, 0.0)), 0.085, 0.03);
+  body = smin(body, collar, 0.02);
+  res = U(res, vec2(body, 54.0));
+  // black bomber jacket, white tee; the yellow-navy scarf only once he puts it on (uLoupe > 0.5)
+  float tee = body - 0.005;
+  tee = smax(tee, abs(b.x) - (0.025 + max(0.0, b.y - 0.05) * 0.16), 0.01);
+  tee = smax(tee, 0.04 - b.z, 0.01);
+  res = U(res, vec2(tee, 25.0));
+  res = U(res, vec2(sdC(b, vec3(0., 0.52, 0.0), vec3(0., 0.67, 0.01), 0.047), M_SKIN));
+  float cuffs = sdTz(rotX(-1.4) * (b - vec3(0., 0.585, 0.0)), 0.085, 0.018);
+  res = U(res, vec2(cuffs, 54.5));
+  if (uLoupe > 0.5) {
+    float scarf = sdTz(rotX(-1.4) * (b - vec3(0., 0.585, 0.005)), 0.086, 0.04);
+    vec3 sq = b - vec3(-0.07, 0.42, 0.15); sq.x += 0.012 * sin(sq.y * 22.0);
+    scarf = smin(scarf, sdBox(rotX(0.15) * sq, vec3(0.038, 0.14, 0.011)) - 0.01, 0.02);
+    vec3 sq2 = b - vec3(0.06, 0.45, 0.155); sq2.x -= 0.01 * sin(sq2.y * 20.0);
+    scarf = smin(scarf, sdBox(rotX(0.12) * sq2, vec3(0.036, 0.11, 0.011)) - 0.01, 0.02);
+    res = U(res, vec2(scarf, 51.0));
+  }
+  vec3 pivot = vec3(0., 0.62, 0.0);
+  vec3 h = headSpace(b, pivot);
+  vec2 hr = vec2(1e9, 0.);
+  vec3 hc = vec3(0., 0.8, 0.02);
+  float skull = sdE(h - hc, vec3(0.124, 0.142, 0.13));
+  float jaw = sdE(h - (hc + vec3(0., -0.072, 0.03)), vec3(0.1, 0.085, 0.1));
+  skull = smin(skull, jaw, 0.05);
+  float ears = min(sdE(h - (hc + vec3(-0.124, -0.01, -0.005)), vec3(0.02, 0.037, 0.024)), sdE(h - (hc + vec3(0.124, -0.01, -0.005)), vec3(0.02, 0.037, 0.024)));
+  skull = smin(skull, ears, 0.012);
+  vec3 mq = h - (hc + vec3(0., -0.085, 0.118));
+  mq.y += (5.0 - 16.0 * uSmile) * mq.x * mq.x;
+  float mouthCav = sdE(mq, vec3(0.029, 0.003 + 0.017 * uMouth, 0.05));
+  skull = smax(skull, -mouthCav, 0.005);
+  hr = U(hr, vec2(skull, M_SKIN + 0.4));
+  hr = U(hr, vec2(sdE(mq + vec3(0., 0., 0.016), vec3(0.027, 0.003 + 0.016 * uMouth, 0.03)), M_MOUTH));
+  hr = U(hr, vec2(sdE(h - (hc + vec3(0., -0.028, 0.13)), vec3(0.022, 0.036, 0.029)), M_SKIN));
+  hr = U(hr, eyes(h, hc, 0.05, 0.012, 0.097, 0.03, 0.019, true, 0.012));
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    float by = 0.055 + uBrow * 0.012;
+    float brow = sdC(h, hc + vec3(sx * 0.025, by + 0.004, 0.12), hc + vec3(sx * 0.08, by - 0.002, 0.103), 0.0065);
+    hr = U(hr, vec2(brow, M_BROW_D));
+  }
+  float hair = sdE(h - (hc + vec3(0., 0.03, -0.012)), vec3(0.133, 0.14, 0.138));
+  hair = smax(hair, (hc.y + 0.06) - h.y - 0.45 * max(0.0, -(h.z - hc.z)), 0.03);
+  hair = smin(hair, sdE(h - (hc + vec3(0.0, 0.13, 0.07)), vec3(0.085, 0.05, 0.06)), 0.03);
+  hair += 0.002 * curl(h, 120.);
+  hr = U(hr, vec2(hair, M_BLACKHAIR + 0.5));
+  res = U(res, vec2(hr.x * HS, hr.y));
+  return res;
+}
+
+
+
 vec2 map(vec3 p){
   if (uChar == 0) return esref(p);
   if (uChar == 1) return deniz(p);
@@ -993,6 +1062,7 @@ vec2 map(vec3 p){
   if (uChar == 9) return kemalc(p);
   if (uChar == 10) return hakanc(p);
   if (uChar == 11) return cengizc(p);
+  if (uChar == 12) return cengizgc(p);
   return emre(p);
 }
 
@@ -1025,7 +1095,7 @@ float ao(vec3 p, vec3 n){
 vec3 albedo(float id, vec3 p, vec3 n){
   vec3 b = bodySpace(p);
   if (id < 1.5) {
-    if ((uChar == 2 || uChar == 9 || uChar == 10 || uChar == 11) && id > 1.3) {
+    if ((uChar == 2 || uChar == 9 || uChar == 10 || uChar == 11 || uChar == 12) && id > 1.3) {
       // stubble on Emre's jaw
       vec3 h = headSpace(b, vec3(0., 0.62, 0.));
       float jawm = smoothstep(0.75, 0.70, h.y) * smoothstep(0.02, 0.07, h.z);
@@ -1116,7 +1186,9 @@ vec3 albedo(float id, vec3 p, vec3 n){
   if (id < 50.5) { float k = 0.5 + 0.5 * sin(b.x * 90.0 + b.y * 40.0); return mix(vec3(0.3, 0.18, 0.1), vec3(0.36, 0.22, 0.12), k * 0.5); }
   if (id < 51.5) { float st = step(0.5, fract(b.y * 18.0 + b.x * 2.0)); return mix(vec3(0.1, 0.13, 0.3), vec3(0.95, 0.78, 0.12), st); }
   if (id < 52.5) return vec3(0.16, 0.16, 0.18);
-  return vec3(0.62, 0.6, 0.58);
+  if (id < 53.5) return vec3(0.62, 0.6, 0.58);
+  if (id < 54.2) { float k = 0.5 + 0.5 * sin(b.y * 120.0 + b.x * 30.0); return mix(vec3(0.1, 0.1, 0.11), vec3(0.14, 0.14, 0.15), k * 0.6); }
+  return vec3(0.2, 0.2, 0.22);
 }
 
 void main(){
