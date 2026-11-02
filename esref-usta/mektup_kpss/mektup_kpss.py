@@ -1,4 +1,4 @@
-"""Eşref Usta'ya Mektup 1 — "Kısalmış Kalem" (KPSS) (~57 sn, sonda yorum çağrısı)."""
+"""Eşref Usta'ya Mektup 1 — "Kısalmış Kalem" (KPSS) (~53 sn, sonda yorum çağrısı)."""
 import sys, subprocess, functools
 sys.path.insert(0, "/home/user/cemdemir/esref-usta/bolum1")
 sys.path.insert(0, "/home/user/cemdemir/esref-usta/mektup1")
@@ -22,25 +22,24 @@ LINES = [  # file, speaker, subtitle (None = text on paper)
     ("03_U", "U", "Dur, bir bakalım…"),
     ("04b_U", "U", None),
     ("06_U", "U", "Dört yıldır aynı kapıya yürüyorsun evlat. Bak… kalem kısalmış. Ama kırılmamış."),
-    ("R_U", "U", None),
+    ("R2_U", "U", "Yorulmak bozulmak değil."),
     ("08_U", "U", "O kapı açıldığında, bu yolun hiçbir adımı boşa gitmemiş olacak."),
     ("09_U", "U", "Senin arızan ne? Yorumlara yaz. En çok beğenileni ben tamir edeceğim."),
 ]
-START = {0: 3.65, 1: 8.3, 2: 9.6, 3: 11.9, 4: 23.2, 5: 31.6, 6: 39.85, 7: 51.2}
+START = {0: 3.65, 1: 8.3, 2: 9.6, 3: 11.9, 4: 23.2, 5: 31.55, 6: 36.45, 7: 47.8}
 DUR = {i: duration(f"{REP}/{f}.mp3") for i, (f, _, _) in enumerate(LINES)}
-SUB_END = {}
-T_TICKET, T_CTA, T_END = 45.4, 49.0, 51.0
-TOTAL = 56.8
+SUB_END = {5: 33.4}   # second half of the reply is read off the paper
+T_TICKET, T_CTA, T_END = 42.0, 45.6, 47.6
+TOTAL = 53.4
 FIELDS = (("Arıza:", "4 yıldır atanamamak. Yorgunluk."),
           ("Yapılan işlem:", "Kalem açıldı."),
           ("Not:", "Kısaldın ama kırılmadın."))
 
 LETTER = (("Eşref Usta,", 0), ("2022'den beri KPSS'ye", 1), ("giriyorum.", 1),
           ("Artık atanmak istiyorum.", 2), ("Çok yoruldum.", 2), ("— Bir takipçin", 3))
-REPLY = (("Kalem kısalmış,", 0), ("ama kırılmamış.", 0), ("Yorulmak bozulmak değil.", 0),
-         ("Biraz dinlen,", 1), ("sonra yine yaz.", 2))
+REPLY = (("Yorulmak bozulmak değil.", 0), ("Biraz dinlen,", 1), ("sonra yine yaz.", 2))
 LETTER_SEG = [(0, 11.9, 12.68), (1, 13.35, 15.6), (2, 15.6, 16.29), (3, 16.88, 17.86), (4, 18.28, 18.85), (5, 19.66, 20.39)]
-REPLY_SEG = [(0, 31.6, 32.99), (1, 33.48, 34.43), (2, 35.14, 36.7), (3, 37.16, 37.81), (4, 38.44, 39.36)]
+REPLY_SEG = [(0, 31.64, 33.2), (1, 33.66, 34.31), (2, 34.94, 35.86)]
 
 
 def reveal(t, segs, lines):
@@ -61,7 +60,7 @@ def speaking(t, who):
 
 
 s3.speaking = speaking
-s3.BLINKS["U"] = [2.9, 11.0, 17.3, 24.4, 42.6, 52.6, 55.4]
+s3.BLINKS["U"] = [2.9, 11.0, 17.3, 24.4, 39.2, 49.4, 52.0]
 s3.BLINKS["D"] = [3.0, 6.6]
 
 
@@ -146,7 +145,7 @@ def sharpen(t):
 
 def reply_shot(t):
     """Usta writes the whole reply with the freshly sharpened pencil; the camera drifts down with the writing."""
-    t0, t1 = 31.4, 39.7
+    t0, t1 = 33.4, 36.3
     img = im.reply_plate(reveal(t, REPLY_SEG, RP), True, RP, GRAPHITE, True, True)
     k = smooth(k01(t, t0, t1))
     z = 1.2 + 0.1 * k
@@ -170,8 +169,9 @@ SHOTS = [
     S(23.1, 25.7, lambda t: shop(t, push(USTA_CU, t, 23.1, 25.7, 0.05), usta="E_soft", rope="envelope", bg_blur=9, deniz_blur=8, usta_blinks=False)),
     S(25.7, 29.6, plate(lambda t: ik.pencil_plate(0, 0, False, 0, True), 25.7, 29.6, 1.0, 1.16, 0.55, 0.5)),
     S(29.6, 31.4, plate(sharpen, 29.6, 31.4, 1.12, 1.2, 0.45, 0.55)),
-    S(31.4, 39.7, reply_shot),
-    S(39.7, T_TICKET, lambda t: shop(t, push(USTA_CU, t, 39.7, T_TICKET, 0.1), usta="E_soft", rope="envelope", bg_blur=9, deniz_blur=8, usta_blinks=False)),
+    S(31.4, 33.4, lambda t: shop(t, push(USTA_MCU, t, 31.4, 33.4, 0.05), usta="E_soft", rope="envelope", bg_blur=8, deniz_blur=6, usta_blinks=False)),
+    S(33.4, 36.3, reply_shot),
+    S(36.3, T_TICKET, lambda t: shop(t, push(USTA_CU, t, 36.3, T_TICKET, 0.1), usta="E_soft", rope="envelope", bg_blur=9, deniz_blur=8, usta_blinks=False)),
     S(T_TICKET, T_CTA, plate(lambda t: _ticket(round(k01(t, T_TICKET + 0.2, T_TICKET + 2.4) * 60) / 60, round(k01(t, T_CTA - 0.75, T_CTA - 0.4) * 8) / 8), T_TICKET, T_CTA, 1.04, 1.0)),
     S(T_CTA, T_END, plate(lambda t: _cta(), T_CTA, T_END, 1.0, 1.0)),
     S(T_END, TOTAL, shot_end),
@@ -214,7 +214,7 @@ def audio_mix(out):
         add(f"{SFX}/kagit_birakma.mp3", tt - 0.05, 0.8)
         add(f"{SFX}/damga.mp3", tt + 0.12, 0.25)
     add(f"{SFX}/kalemtiras.mp3", 29.75, 0.85, ",afade=t=out:st=1.0:d=0.3")
-    for (i, a, b) in REPLY_SEG:
+    for (i, a, b) in REPLY_SEG[1:]:
         add(f"{SFX}/kalem.mp3", a, 0.45, f",atrim=0:{b - a:.2f},afade=t=out:st={max(0, b - a - 0.2):.2f}:d=0.2")
     add(f"{SFX}/kalem.mp3", T_TICKET + 0.2, 0.7, ",atrim=0:2.2,afade=t=out:st=1.8:d=0.4")
     add(f"{SFX}/damga.mp3", T_CTA - 0.75, 0.8)
