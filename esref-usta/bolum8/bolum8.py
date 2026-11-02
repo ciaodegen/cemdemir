@@ -29,10 +29,10 @@ LINES = [  # file, speaker (E = Burak), subtitle (None = text on screen)
     ("11_D", "D", "Ben hâlâ erkek öder diyorum."),
     ("03_U", "U", "Deniz."),
 ]
-START = {0: 0.5, 1: 6.65, 2: 10.2, 3: 11.5, 4: 17.35, 5: 19.45, 6: 22.5, 7: 33.4, 8: 35.9, 9: 42.3, 10: 53.0, 11: 54.65}
+START = {0: 0.5, 1: 6.65, 2: 10.2, 3: 11.5, 4: 17.35, 5: 19.45, 6: 22.5, 7: 33.4, 8: 35.9, 9: 42.3, 10: 53.4, 11: 55.05}
 DUR = {i: duration(f"{REP}/{f}.mp3") for i, (f, _, _) in enumerate(LINES)}
-T_TICKET, T_CTA, T_END = 46.4, 50.4, 52.8
-TOTAL = 56.1
+T_TICKET, T_CTA, T_END = 46.8, 50.8, 53.2
+TOTAL = 56.5
 FIELDS = (("Arıza:", "\"Hep ben ödüyorum.\""),
           ("Yapılan işlem:", "Fiş ikiye bölünemedi."),
           ("Not:", "Sevgide kimse kasada durmaz."))
@@ -63,7 +63,7 @@ def speaking(t, who):
 s3.speaking = speaking
 s3.BLINKS["E"] = [34.3, 44.9]
 s3.BLINKS["U"] = [2.4, 12.4, 21.0, 38.4, 48.0]
-s3.BLINKS["D"] = [1.8, 8.0, 54.0]
+s3.BLINKS["D"] = [1.8, 8.0, 54.4]
 
 
 def sub_at(t):
@@ -220,7 +220,7 @@ def audio_mix(out):
         filters.append(f"[{idx}:a]aresample=44100,aformat=channel_layouts=stereo{extra},volume={vol},adelay={ms}|{ms}[a{idx}]")
         labels.append(f"[a{idx}]")
     for i, (f, sp, _) in enumerate(LINES):
-        add(f"{REP}/{f}.mp3", START[i], 1.35 if sp == "E" else 1.0)
+        add(f"{REP}/{f}.mp3", START[i], 1.1 if sp == "E" else 1.0)
     add(f"{SFX}/ortam.mp3", 0.0, 0.32, f",aloop=loop=4:size=2e6,atrim=0:{TOTAL},afade=t=out:st={TOTAL - 3}:d=2.5")
     add(f"{SFX}/cingirak.mp3", 0.0, 0.6)
     add(f"{SFX}/fis_carpma.mp3", 1.05, 0.9)
