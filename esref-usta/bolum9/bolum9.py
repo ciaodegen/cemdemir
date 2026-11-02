@@ -29,7 +29,7 @@ LINES = [  # file, speaker (E = customer), subtitle (None = text on screen)
 ]
 DUR = {i: duration(f"{REP}/{f}.mp3") for i, (f, _, _) in enumerate(LINES)}
 # segment offsets inside the audio files (seconds, after speed-up)
-NOTE_PARTS = [((0.0, 0.95), (1.32, 2.56)), ((2.80, 3.73), (4.15, 5.65)), ((5.94, 6.89), (7.42, 8.28))]
+NOTE_PARTS = [((0.0, 1.05), (1.05, 2.15)), ((2.48, 4.37), (4.59, 5.70)), ((5.96, 6.91), (7.31, 8.12))]
 SEG07 = {"harita": (0.0, 2.79), "sifir": (3.41, 4.21), "yol": (4.67, 7.86)}
 
 # ---- automatic layout ------------------------------------------------------------
@@ -43,8 +43,8 @@ START[1] = t + 0.05; T["deniz"] = (t, START[1] + DUR[1] + 0.1); t = T["deniz"][1
 START[2] = t + 0.1; T["deniz_tepki"] = (t, START[2] + DUR[2] + 0.15); t = T["deniz_tepki"][1]
 START[3] = t + 0.1; T["bakalim"] = (t, START[3] + DUR[3] + 0.6); t = T["bakalim"][1]
 T["loupe_in"] = T["bakalim"][1] - 0.6
-TICKET_T = tuple(round(t + 0.1 + 0.35 * i, 2) for i in range(5))
-START[4] = t + 2.0; T["biletler"] = (t, START[4] + DUR[4] + 0.6); t = T["biletler"][1]
+TICKET_T = tuple(round(t + 0.1 + 0.45 * i, 2) for i in range(3))
+START[4] = t + 1.7; T["biletler"] = (t, START[4] + DUR[4] + 0.6); t = T["biletler"][1]
 START[5] = t + 0.4; T["olcelim"] = (t, START[5] + DUR[5] + 0.3); t = T["olcelim"][1]
 T["metre"] = (t, t + 2.8); t = T["metre"][1]
 START[6] = t + 0.1
@@ -184,10 +184,10 @@ def shot_olcelim(t):
 def shot_tape(t):
     t0 = T["metre"][0]
     k = smooth(k01(t, t0 + 0.15, t0 + 1.4))
-    return ib.tickets_plate(5, (99, 99, 99), round(k, 2), ib.km_counter(round(k * 20) / 20))
+    return ib.tickets_plate(3, (99, 99, 99), round(k, 2), ib.km_counter(round(k * 20) / 20))
 
 
-HEART = (0.585, 0.60)     # customer's heart in the door MCU frame (fraction of W, H)
+HEART = (0.575, 0.615)     # customer's heart in the door MCU frame (fraction of W, H)
 
 
 def shot_kalp(t):
@@ -197,7 +197,7 @@ def shot_kalp(t):
     reach = smooth(k01(t, t0, t0 + 0.4))
     k = smooth(k01(t, t0 + 0.35, t0 + 0.8))
     counter = "0 cm" if k >= 1 else ib.km_counter(1 - k)
-    return ib.tape_to_point(img, (W * 1.02, H * 0.97), (W * HEART[0], H * HEART[1]), reach, counter, k)
+    return ib.tape_to_point(img, (W * 0.83, H * 0.86), (W * HEART[0], H * HEART[1]), reach, counter, k)
 
 
 @functools.lru_cache(None)

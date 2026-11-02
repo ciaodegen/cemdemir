@@ -12,11 +12,10 @@ BW, BH = 1440, 2560
 MONO = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
 MONO_B = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"
 INK = (34, 52, 140, 255)
-TICKETS = [("12.01", ("Doğum günü.", "Pastayı kucağımda taşıdım.")),
-           ("03.02", ("Sınavından önce.", "Sadece elini tutmaya geldim.")),
-           ("17.03", ("3 saat kalabildim.", "Yine de değdi.")),
-           ("28.04", ()), ("09.05", ())]
-SPOTS = [(700, 430, -3), (860, 900, 2), (700, 1370, -2), (860, 1840, 3), (700, 2290, -2)]
+TICKETS = [("12.01", ("Doğum gününde", "gittiğin bilet.")),
+           ("03.02", ("Sınavından önce, sadece", "elini tutmaya gittiğin.")),
+           ("17.03", ("3 saat kalmıştın,", "ama değmişti."))]
+SPOTS = [(700, 560, -3), (840, 1260, 2), (700, 1960, -2)]
 
 
 def ticket(date, note, note_n):
