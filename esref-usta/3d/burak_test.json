@@ -1,0 +1,2 @@
+[{"name":"bk_test","char":13,"w":800,"h":1040,"view":[0,0.625,0.725,4.0],"headYaw":0.06,"gaze":[0.1,0.0],"brow":0.4,"mouth":0.4,"force":true},
+ {"name":"bk_back","char":13,"w":800,"h":1040,"view":[0,0.625,0.725,4.0],"yaw":3.14159,"force":true}]

@@ -108,6 +108,11 @@ def front_plate(rope="two", package=False):
         d = ImageDraw.Draw(front)
         d.polygon([(560, 1800 + CY), (760, 1790 + CY), (770, 1816 + CY), (566, 1822 + CY)], fill=(240, 238, 230, 255))
         d.polygon([(560, 1800 + CY), (760, 1790 + CY), (756, 1780 + CY), (572, 1786 + CY)], fill=(32, 52, 92, 255))
+    elif rope == "receipt":
+        d = ImageDraw.Draw(front)
+        d.polygon([(600, 1800 + CY), (690, 1795 + CY), (696, 1816 + CY), (604, 1821 + CY)], fill=(248, 247, 242, 255))
+        for k in range(3):
+            d.line([(612, 1803 + CY + k * 5), (680, 1800 + CY + k * 5)], fill=(150, 150, 156, 255), width=2)
     elif rope == "envelope":
         d = ImageDraw.Draw(front)
         d.polygon([(560, 1798 + CY), (770, 1790 + CY), (778, 1814 + CY), (566, 1822 + CY)], fill=(244, 238, 222, 255))

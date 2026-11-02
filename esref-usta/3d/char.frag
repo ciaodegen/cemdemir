@@ -1049,6 +1049,66 @@ vec2 cengizgc(vec3 p){
 }
 
 
+vec2 burakc(vec3 p){
+  vec3 b = bodySpace(p);
+  vec2 res = vec2(1e9, 0.);
+  float torso = sdE(b - vec3(0., 0.25, 0.), vec3(0.23, 0.36, 0.155));
+  float sh = sdE(b - vec3(0., 0.5, -0.005), vec3(0.27, 0.115, 0.14));
+  float body = smin(torso, sh, 0.07);
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    float ua = sdC(b, vec3(sx * 0.24, 0.5, -0.005), vec3(sx * 0.29, 0.22, 0.05), 0.07);
+    float fa = sdC(b, vec3(sx * 0.29, 0.22, 0.05), vec3(sx * 0.2, 0.04, 0.22), 0.06);
+    body = smin(body, min(ua, fa), 0.03);
+    float hand = sdE(b - vec3(sx * 0.18, 0.01, 0.25), vec3(0.05, 0.037, 0.064));
+    res = U(res, vec2(hand, M_SKIN));
+  }
+  // camel knit crew-neck sweater
+  res = U(res, vec2(body, 55.0));
+  float collar = sdTz(rotX(-1.42) * (b - vec3(0., 0.585, 0.0)), 0.07, 0.022);
+  res = U(res, vec2(collar, 55.5));
+  res = U(res, vec2(sdC(b, vec3(0., 0.52, 0.0), vec3(0., 0.67, 0.01), 0.047), M_SKIN));
+  vec3 pivot = vec3(0., 0.62, 0.0);
+  vec3 h = headSpace(b, pivot);
+  vec2 hr = vec2(1e9, 0.);
+  vec3 hc = vec3(0., 0.8, 0.02);
+  float skull = sdE(h - hc, vec3(0.122, 0.142, 0.13));
+  float jaw = sdE(h - (hc + vec3(0., -0.07, 0.03)), vec3(0.1, 0.085, 0.1));
+  skull = smin(skull, jaw, 0.05);
+  float ears = min(sdE(h - (hc + vec3(-0.122, -0.01, -0.005)), vec3(0.02, 0.037, 0.024)), sdE(h - (hc + vec3(0.122, -0.01, -0.005)), vec3(0.02, 0.037, 0.024)));
+  skull = smin(skull, ears, 0.012);
+  vec3 mq = h - (hc + vec3(0., -0.085, 0.118));
+  mq.y += (5.0 - 16.0 * uSmile) * mq.x * mq.x;
+  float mouthCav = sdE(mq, vec3(0.029, 0.003 + 0.017 * uMouth, 0.05));
+  skull = smax(skull, -mouthCav, 0.005);
+  hr = U(hr, vec2(skull, M_SKIN));
+  hr = U(hr, vec2(sdE(mq + vec3(0., 0., 0.016), vec3(0.027, 0.003 + 0.016 * uMouth, 0.03)), M_MOUTH));
+  hr = U(hr, vec2(sdE(h - (hc + vec3(0., -0.026, 0.13)), vec3(0.023, 0.037, 0.03)), M_SKIN));
+  hr = U(hr, eyes(h, hc, 0.05, 0.012, 0.097, 0.03, 0.019, true, 0.012));
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    float by = 0.056 + uBrow * 0.012;
+    float brow = sdC(h, hc + vec3(sx * 0.024, by + 0.003, 0.121), hc + vec3(sx * 0.08, by + 0.001, 0.103), 0.008);
+    hr = U(hr, vec2(brow, 56.0));
+  }
+  // short full beard + moustache, keeping the mouth free
+  float beard = sdE(h - (hc + vec3(0., -0.078, 0.032)), vec3(0.112, 0.098, 0.108));
+  beard = smax(beard, h.y - (hc.y - 0.03) - 0.25 * max(0.0, abs(h.x) - 0.06), 0.02);
+  beard = smax(beard, (hc.z - 0.03) - h.z, 0.02);
+  beard = smax(beard, -sdE(mq, vec3(0.036, 0.009 + 0.018 * uMouth, 0.08)), 0.008);
+  beard += 0.0015 * curl(h, 160.);
+  float must = sdC(h, hc + vec3(-0.03, -0.068, 0.128), hc + vec3(0.03, -0.068, 0.128), 0.009);
+  beard = smin(beard, must, 0.01);
+  hr = U(hr, vec2(beard, 56.0));
+  // short side-parted hair
+  float hair = sdE(h - (hc + vec3(0., 0.03, -0.014)), vec3(0.132, 0.14, 0.138));
+  hair = smax(hair, (hc.y + 0.065) - h.y - 1.25 * max(0.0, 0.02 - (h.z - hc.z)), 0.03);
+  hair = smin(hair, sdE(h - (hc + vec3(0.035, 0.12, 0.06)), vec3(0.095, 0.045, 0.07)), 0.03);
+  hair += 0.001 * curl(h, 140.);
+  hr = U(hr, vec2(hair, 56.0));
+  res = U(res, vec2(hr.x * HS, hr.y));
+  return res;
+}
 
 vec2 map(vec3 p){
   if (uChar == 0) return esref(p);
@@ -1063,6 +1123,7 @@ vec2 map(vec3 p){
   if (uChar == 10) return hakanc(p);
   if (uChar == 11) return cengizc(p);
   if (uChar == 12) return cengizgc(p);
+  if (uChar == 13) return burakc(p);
   return emre(p);
 }
 
@@ -1188,6 +1249,10 @@ vec3 albedo(float id, vec3 p, vec3 n){
   if (id < 52.5) return vec3(0.16, 0.16, 0.18);
   if (id < 53.5) return vec3(0.62, 0.6, 0.58);
   if (id < 54.2) { float k = 0.5 + 0.5 * sin(b.y * 120.0 + b.x * 30.0); return mix(vec3(0.1, 0.1, 0.11), vec3(0.14, 0.14, 0.15), k * 0.6); }
+  if (id < 54.7) return vec3(0.2, 0.2, 0.22);
+  if (id < 55.3) { float k = step(0.5, fract(b.x * 55.0 + 0.3 * sin(b.y * 40.0))); return mix(vec3(0.6, 0.43, 0.26), vec3(0.55, 0.39, 0.235), k); }
+  if (id < 55.7) { float k = step(0.5, fract(atan(b.x, b.z) * 18.0)); return mix(vec3(0.5, 0.35, 0.21), vec3(0.44, 0.3, 0.18), k); }
+  if (id < 56.5) return vec3(0.16, 0.1, 0.06);
   return vec3(0.2, 0.2, 0.22);
 }
 
@@ -1230,7 +1295,7 @@ void main(){
   col += vec3(1.0, 0.75, 0.5) * rim * 0.28 * a;
   if (isSkin) col += vec3(0.25, 0.05, 0.02) * dk * 0.15;  // warm subsurface tint
   vec3 hv = normalize(keyDir - rd);
-  float specK = (hit.y > 26.5 && hit.y < 27.5) ? 1.2 : (hit.y > 25.5 && hit.y < 26.5) ? 0.12 : (hit.y > 32.7 && hit.y < 33.5) ? 0.22 : (hit.y > 40.5 && hit.y < 41.5) ? 0.9 : (hit.y > 3.5 && hit.y < 5.5) || (hit.y > 19.5 && hit.y < 20.5) || hit.y > 21.5 ? 0.9 : (hit.y > 10.5 && hit.y < 11.8 ? 0.12 : (hit.y > 17.5 && hit.y < 18.5 ? 0.6 : 0.1));
+  float specK = (hit.y > 54.8 && hit.y < 56.5) ? 0.08 : (hit.y > 26.5 && hit.y < 27.5) ? 1.2 : (hit.y > 25.5 && hit.y < 26.5) ? 0.12 : (hit.y > 32.7 && hit.y < 33.5) ? 0.22 : (hit.y > 40.5 && hit.y < 41.5) ? 0.9 : (hit.y > 3.5 && hit.y < 5.5) || (hit.y > 19.5 && hit.y < 20.5) || hit.y > 21.5 ? 0.9 : (hit.y > 10.5 && hit.y < 11.8 ? 0.12 : (hit.y > 17.5 && hit.y < 18.5 ? 0.6 : 0.1));
   col += vec3(1.0, 0.85, 0.7) * pow(clamp(dot(n, hv), 0.0, 1.0), 40.0) * specK * sh;
   if ((hit.y > 3.5 && hit.y < 4.5) || (hit.y > 17.5 && hit.y < 18.5) || (hit.y > 40.5 && hit.y < 41.5)) col += vec3(1.2) * pow(clamp(dot(n, normalize(vec3(-0.3, 0.4, 1.0) - rd)), 0.0, 1.0), 300.0);
   col = col / (1.0 + col * 0.25);
