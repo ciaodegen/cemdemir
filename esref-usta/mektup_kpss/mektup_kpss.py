@@ -1,4 +1,4 @@
-"""Eşref Usta'ya Mektup 1 — "Kısalmış Kalem" (KPSS) (~51 sn, sonda yorum çağrısı)."""
+"""Eşref Usta'ya Mektup 1 — "Kısalmış Kalem" (KPSS) (~57 sn, sonda yorum çağrısı)."""
 import sys, subprocess, functools
 sys.path.insert(0, "/home/user/cemdemir/esref-usta/bolum1")
 sys.path.insert(0, "/home/user/cemdemir/esref-usta/mektup1")
@@ -20,17 +20,17 @@ LINES = [  # file, speaker, subtitle (None = text on paper)
     ("01_D", "D", "Usta, KPSS'ymiş! Ben ehliyeti üçüncüde geçtim, ona bile ağladım!"),
     ("02_U", "U", "Deniz."),
     ("03_U", "U", "Dur, bir bakalım…"),
-    ("04_U", "U", None),
+    ("04b_U", "U", None),
     ("06_U", "U", "Dört yıldır aynı kapıya yürüyorsun evlat. Bak… kalem kısalmış. Ama kırılmamış."),
-    ("07_U", "U", "Yorulmak bozulmak değil."),
+    ("R_U", "U", None),
     ("08_U", "U", "O kapı açıldığında, bu yolun hiçbir adımı boşa gitmemiş olacak."),
     ("09_U", "U", "Senin arızan ne? Yorumlara yaz. En çok beğenileni ben tamir edeceğim."),
 ]
-START = {0: 3.75, 1: 8.4, 2: 9.7, 3: 12.0, 4: 22.3, 5: 29.0, 6: 34.05, 7: 45.8}
+START = {0: 3.65, 1: 8.3, 2: 9.6, 3: 11.9, 4: 23.2, 5: 31.6, 6: 39.85, 7: 51.2}
 DUR = {i: duration(f"{REP}/{f}.mp3") for i, (f, _, _) in enumerate(LINES)}
-SUB_END = {5: 30.7}     # 07_U: only the first sentence is a subtitle; the rest is written on paper
-T_TICKET, T_CTA, T_END = 39.6, 43.4, 45.6
-TOTAL = 51.4
+SUB_END = {}
+T_TICKET, T_CTA, T_END = 45.4, 49.0, 51.0
+TOTAL = 56.8
 FIELDS = (("Arıza:", "4 yıldır atanamamak. Yorgunluk."),
           ("Yapılan işlem:", "Kalem açıldı."),
           ("Not:", "Kısaldın ama kırılmadın."))
@@ -39,8 +39,8 @@ LETTER = (("Eşref Usta,", 0), ("2022'den beri KPSS'ye", 1), ("giriyorum.", 1),
           ("Artık atanmak istiyorum.", 2), ("Çok yoruldum.", 2), ("— Bir takipçin", 3))
 REPLY = (("Kalem kısalmış,", 0), ("ama kırılmamış.", 0), ("Yorulmak bozulmak değil.", 0),
          ("Biraz dinlen,", 1), ("sonra yine yaz.", 2))
-LETTER_SEG = [(0, 12.0, 12.97), (1, 13.8, 15.65), (2, 15.65, 16.4), (3, 17.22, 18.45), (4, 18.45, 19.16), (5, 19.1, 19.3)]
-REPLY_SEG = [(0, 0, .01), (1, 0, .01), (2, 0, .01), (3, 31.25, 32.02), (4, 32.59, 33.62)]
+LETTER_SEG = [(0, 11.9, 12.68), (1, 13.35, 15.6), (2, 15.6, 16.29), (3, 16.88, 17.86), (4, 18.28, 18.85), (5, 19.66, 20.39)]
+REPLY_SEG = [(0, 31.6, 32.99), (1, 33.48, 34.43), (2, 35.14, 36.7), (3, 37.16, 37.81), (4, 38.44, 39.36)]
 
 
 def reveal(t, segs, lines):
@@ -61,7 +61,7 @@ def speaking(t, who):
 
 
 s3.speaking = speaking
-s3.BLINKS["U"] = [2.9, 11.9, 23.4, 36.2, 47.6, 50.2]
+s3.BLINKS["U"] = [2.9, 11.0, 17.3, 24.4, 42.6, 52.6, 55.4]
 s3.BLINKS["D"] = [3.0, 6.6]
 
 
@@ -127,35 +127,52 @@ def shot_end(t):
     return img
 
 
+SLIP_T = (21.0, 21.5, 22.0, 22.5)
+
+
 def slips_n(t):
-    return sum(1 for tt in (19.5, 20.1, 20.7, 21.3) if t >= tt)
+    return sum(1 for tt in SLIP_T if t >= tt)
 
 
 def sharpen(t):
-    if t < 30.65:
-        ins_q = q20(smooth(k01(t, 28.85, 29.2)))
-        return ik.pencil_plate(0, q20(k01(t, 29.2, 30.6)), True, ins_q)
-    out = 1 - smooth(k01(t, 30.65, 30.95))
+    if t < 30.95:
+        ins_q = q20(smooth(k01(t, 29.65, 29.95)))
+        return ik.pencil_plate(0, q20(k01(t, 29.95, 30.9)), True, ins_q)
+    out = 1 - smooth(k01(t, 30.95, 31.2))
     if out > 0:
         return ik.pencil_plate(20, 20, True, q20(out))
     return ik.pencil_plate(20, 20, False, 0)
 
 
+def reply_shot(t):
+    """Usta writes the whole reply with the freshly sharpened pencil; the camera drifts down with the writing."""
+    t0, t1 = 31.4, 39.7
+    img = im.reply_plate(reveal(t, REPLY_SEG, RP), True, RP, GRAPHITE, True, True)
+    k = smooth(k01(t, t0, t1))
+    z = 1.2 + 0.1 * k
+    cw, chh = 1440 / z, 2560 / z
+    x0 = (1440 - cw) * (0.45 + 0.02 * k); y0 = (2560 - chh) * (0.02 + 0.1 * k)
+    return img.crop((int(x0), int(y0), int(x0 + cw), int(y0 + chh))).resize((W, H), Image.LANCZOS)
+
+
 LP, RP = LETTER, REPLY
+LETTER_PLATE = lambda t: im.letter_plate(reveal(t, LETTER_SEG, LP), LP)
 SHOTS = [
     S(0.0, 2.6, plate(lambda t: ik.envelope_plate(q20(smooth(k01(t, 0.1, 0.8))), q20(smooth(k01(t, 0.9, 1.7)))), 0.0, 2.6, 1.1, 1.18)),
-    S(2.6, 3.7, lambda t: shop(t, push(WIDE, t, 2.6, 3.7, 0.03), deniz="D_phone", rope="envelope")),
-    S(3.7, 8.3, lambda t: shop(t, push(DENIZ_MCU, t, 3.7, 8.3), deniz="D_phone", rope="envelope", deniz_blur=0, bg_blur=8, usta_blur=6)),
-    S(8.3, 9.6, lambda t: shop(t, push(USTA_MCU, t, 8.3, 9.6), usta="E_side", deniz="D_phone", rope="envelope", bg_blur=8, deniz_blur=6)),
-    S(9.6, 11.8, lambda t: shop(t, push(USTA_CU, t, 9.6, 11.8, 0.05), usta="E_front", rope="envelope", bg_blur=9, deniz_blur=8)),
-    S(11.8, 19.4, plate(lambda t: im.letter_plate(reveal(t, LETTER_SEG, LP), LP), 11.8, 19.4, 1.22, 1.3, 0.45, 0.02)),
-    S(19.4, 22.2, plate(lambda t: ik.slips_plate(slips_n(t)), 19.4, 22.2, 1.0, 1.06)),
-    S(22.2, 24.9, lambda t: shop(t, push(USTA_CU, t, 22.2, 24.9, 0.05), usta="E_soft", rope="envelope", bg_blur=9, deniz_blur=8, usta_blinks=False)),
-    S(24.9, 28.8, plate(lambda t: ik.pencil_plate(0, 0, False, 0, True), 24.9, 28.8, 1.0, 1.16, 0.55, 0.5)),
-    S(28.8, 31.2, plate(sharpen, 28.8, 31.2, 1.12, 1.2, 0.45, 0.55)),
-    S(31.2, 33.9, plate(lambda t: im.reply_plate(reveal(t, REPLY_SEG, RP), t < 33.7, RP, GRAPHITE, True), 31.2, 33.9, 1.22, 1.28, 0.45, 0.02)),
-    S(33.9, T_TICKET, lambda t: shop(t, push(USTA_CU, t, 33.9, T_TICKET, 0.1), usta="E_soft", rope="envelope", bg_blur=9, deniz_blur=8, usta_blinks=False)),
-    S(T_TICKET, T_CTA, plate(lambda t: _ticket(round(k01(t, T_TICKET + 0.2, T_TICKET + 2.7) * 60) / 60, round(k01(t, T_CTA - 0.75, T_CTA - 0.4) * 8) / 8), T_TICKET, T_CTA, 1.04, 1.0)),
+    S(2.6, 3.6, lambda t: shop(t, push(WIDE, t, 2.6, 3.6, 0.03), deniz="D_phone", rope="envelope")),
+    S(3.6, 8.2, lambda t: shop(t, push(DENIZ_MCU, t, 3.6, 8.2), deniz="D_phone", rope="envelope", deniz_blur=0, bg_blur=8, usta_blur=6)),
+    S(8.2, 9.5, lambda t: shop(t, push(USTA_MCU, t, 8.2, 9.5), usta="E_side", deniz="D_phone", rope="envelope", bg_blur=8, deniz_blur=6)),
+    S(9.5, 11.7, lambda t: shop(t, push(USTA_CU, t, 9.5, 11.7, 0.05), usta="E_front", rope="envelope", bg_blur=9, deniz_blur=8)),
+    S(11.7, 16.5, plate(LETTER_PLATE, 11.7, 16.5, 1.22, 1.27, 0.45, 0.02)),
+    S(16.5, 18.2, lambda t: shop(t, push(USTA_CU, t, 16.5, 18.2, 0.04), usta="E_read", rope="envelope", bg_blur=9, deniz_blur=8, usta_blinks=False)),
+    S(18.2, 20.9, plate(LETTER_PLATE, 18.2, 20.9, 1.27, 1.33, 0.45, 0.05)),
+    S(20.9, 23.1, plate(lambda t: ik.slips_plate(slips_n(t)), 20.9, 23.1, 1.0, 1.06)),
+    S(23.1, 25.7, lambda t: shop(t, push(USTA_CU, t, 23.1, 25.7, 0.05), usta="E_soft", rope="envelope", bg_blur=9, deniz_blur=8, usta_blinks=False)),
+    S(25.7, 29.6, plate(lambda t: ik.pencil_plate(0, 0, False, 0, True), 25.7, 29.6, 1.0, 1.16, 0.55, 0.5)),
+    S(29.6, 31.4, plate(sharpen, 29.6, 31.4, 1.12, 1.2, 0.45, 0.55)),
+    S(31.4, 39.7, reply_shot),
+    S(39.7, T_TICKET, lambda t: shop(t, push(USTA_CU, t, 39.7, T_TICKET, 0.1), usta="E_soft", rope="envelope", bg_blur=9, deniz_blur=8, usta_blinks=False)),
+    S(T_TICKET, T_CTA, plate(lambda t: _ticket(round(k01(t, T_TICKET + 0.2, T_TICKET + 2.4) * 60) / 60, round(k01(t, T_CTA - 0.75, T_CTA - 0.4) * 8) / 8), T_TICKET, T_CTA, 1.04, 1.0)),
     S(T_CTA, T_END, plate(lambda t: _cta(), T_CTA, T_END, 1.0, 1.0)),
     S(T_END, TOTAL, shot_end),
 ]
@@ -192,16 +209,16 @@ def audio_mix(out):
     add(f"{SFX}/ortam.mp3", 0.0, 0.32, f",aloop=loop=4:size=2e6,atrim=0:{TOTAL},afade=t=out:st={TOTAL - 3}:d=2.5")
     add(f"{SFX}/zarf_kayma.mp3", 0.05, 0.8)
     add(f"{SFX}/kalem_yuvarlanma.mp3", 0.9, 0.8)
-    add(f"{SFX}/kagit_acma.mp3", 11.75, 0.7)
-    for tt in (19.5, 20.1, 20.7, 21.3):
+    add(f"{SFX}/kagit_acma.mp3", 11.65, 0.7)
+    for tt in SLIP_T:
         add(f"{SFX}/kagit_birakma.mp3", tt - 0.05, 0.8)
         add(f"{SFX}/damga.mp3", tt + 0.12, 0.25)
-    add(f"{SFX}/kalemtiras.mp3", 29.15, 0.85, ",afade=t=out:st=1.3:d=0.3")
-    for (i, a, b) in REPLY_SEG[3:]:
+    add(f"{SFX}/kalemtiras.mp3", 29.75, 0.85, ",afade=t=out:st=1.0:d=0.3")
+    for (i, a, b) in REPLY_SEG:
         add(f"{SFX}/kalem.mp3", a, 0.45, f",atrim=0:{b - a:.2f},afade=t=out:st={max(0, b - a - 0.2):.2f}:d=0.2")
-    add(f"{SFX}/kalem.mp3", T_TICKET + 0.2, 0.7, ",atrim=0:2.5,afade=t=out:st=2.1:d=0.4")
+    add(f"{SFX}/kalem.mp3", T_TICKET + 0.2, 0.7, ",atrim=0:2.2,afade=t=out:st=1.8:d=0.4")
     add(f"{SFX}/damga.mp3", T_CTA - 0.75, 0.8)
-    add(f"{SFX}/muzik.mp3", 11.8, 0.24, f",afade=t=in:st=0:d=3.0,afade=t=out:st={TOTAL - 11.8 - 2.5}:d=2.5")
+    add(f"{SFX}/muzik.mp3", 11.7, 0.24, f",afade=t=in:st=0:d=3.0,afade=t=out:st={TOTAL - 11.7 - 2.5}:d=2.5")
     fc = ";".join(filters) + ";" + "".join(labels) + f"amix=inputs={len(labels)}:normalize=0:duration=longest,atrim=0:{TOTAL},alimiter=limit=0.95[out]"
     subprocess.run(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", fc, "-map", "[out]", "-c:a", "pcm_s16le", out], check=True)
 

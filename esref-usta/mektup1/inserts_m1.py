@@ -82,7 +82,7 @@ REPLY = [("Özlemek arıza değil evlat.", 0), ("Dokuz yıl kolay sökülmez.", 
          ("Evlilik biter.", 3), ("Anne babalık bitmez.", 4)]
 
 
-def _sheet(lines, reveal, ink, title=None, seed=1, size=96, pen=False, pencil=False):
+def _sheet(lines, reveal, ink, title=None, seed=1, size=96, pen=False, pencil=False, rest_pen=False):
     w, h = 1240, 1820
     p = paper(w, h, seed=seed)
     d = ImageDraw.Draw(p)
@@ -102,7 +102,7 @@ def _sheet(lines, reveal, ink, title=None, seed=1, size=96, pen=False, pencil=Fa
         base = 260 + 118 * (i + row0 + (1 if sig else 0))
         y = base - 0.8 * size
         d.text((x, y), s, font=f, fill=ink)
-        if n < len(txt):
+        if n < len(txt) or rest_pen:
             tip = (x + d.textlength(s, font=f), base - 8)
     if pen and tip:
         a = math.radians(58)
@@ -138,10 +138,10 @@ def letter_plate(reveal, lines=None):
 
 
 @functools.lru_cache(maxsize=256)
-def reply_plate(reveal, pen=True, lines=None, ink=None, pencil=False):
+def reply_plate(reveal, pen=True, lines=None, ink=None, pencil=False, rest_pen=False):
     img = ins.wood_top(37).copy()
     obj = Image.new("RGBA", (BW, BH), (0, 0, 0, 0))
-    s = _sheet(lines or REPLY, reveal, ink or INK_U, title="Cevap —", seed=5, size=88, pen=pen, pencil=pencil).rotate(-2, expand=True, resample=Image.BICUBIC)
+    s = _sheet(lines or REPLY, reveal, ink or INK_U, title="Cevap —", seed=5, size=88, pen=pen, pencil=pencil, rest_pen=rest_pen).rotate(-2, expand=True, resample=Image.BICUBIC)
     obj.alpha_composite(s, ((BW - s.size[0]) // 2, 360))
     ins.shadowed(img, obj, blur=28, off=(18, 30), alpha=160)
     return img
