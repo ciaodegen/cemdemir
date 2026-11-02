@@ -1057,6 +1057,21 @@ vec2 burakc(vec3 p){
   float body = smin(torso, sh, 0.07);
   for (int s = 0; s < 2; s++) {
     float sx = s == 0 ? -1.0 : 1.0;
+    if (uLoupe > 0.5 && s == 1) {
+      // phone call: forearm raised, hand + phone at the ear
+      vec3 el = vec3(0.34, 0.36, 0.13);
+      vec3 hp = vec3(0.205, 0.745, 0.075);
+      float ua = sdC(b, vec3(0.24, 0.5, -0.005), el, 0.07);
+      float fa = sdC(b, el, hp - vec3(0.02, 0.05, 0.0), 0.058);
+      body = smin(body, min(ua, fa), 0.03);
+      float hand = sdE(b - hp, vec3(0.046, 0.06, 0.05));
+      res = U(res, vec2(hand, M_SKIN));
+      vec3 pq = b - vec3(0.172, 0.79, 0.07);
+      pq.xy = mat2(cos(0.35), -sin(0.35), sin(0.35), cos(0.35)) * pq.xy;
+      float phone = sdBox(pq, vec3(0.013, 0.085, 0.042)) - 0.006;
+      res = U(res, vec2(phone, 52.0));
+      continue;
+    }
     float ua = sdC(b, vec3(sx * 0.24, 0.5, -0.005), vec3(sx * 0.29, 0.22, 0.05), 0.07);
     float fa = sdC(b, vec3(sx * 0.29, 0.22, 0.05), vec3(sx * 0.2, 0.04, 0.22), 0.06);
     body = smin(body, min(ua, fa), 0.03);

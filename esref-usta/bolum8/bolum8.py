@@ -1,4 +1,4 @@
-"""Bölüm 8 — "Hesabı Kim Öder?" (~51 sn)."""
+"""Bölüm 8 — "Hesabı Kim Öder?" (~56 sn)."""
 import sys, subprocess, functools
 sys.path.insert(0, "/home/user/cemdemir/esref-usta/bolum1")
 sys.path.insert(0, "/home/user/cemdemir/esref-usta/mektup1")
@@ -25,19 +25,20 @@ LINES = [  # file, speaker (E = Burak), subtitle (None = text on screen)
     ("07_U", "U", None),
     ("08_B", "E", "Bunları… hiç saymamıştım."),
     ("09_U", "U", "Bu hesap ikiye bölünmez evlat. Çünkü sevgide kimse kasada durmaz."),
-    ("10_B", "E", "Alo… Akşam yemeği benden. Tatlı da senden."),
+    ("10_B", "E", "Alo, aşkım… nasılsın? Akşam yemekleri benden. Tatlı da senden."),
     ("11_D", "D", "Ben hâlâ erkek öder diyorum."),
     ("03_U", "U", "Deniz."),
 ]
-START = {0: 0.3, 1: 4.95, 2: 8.5, 3: 9.8, 4: 15.65, 5: 17.75, 6: 20.8, 7: 29.8, 8: 32.3, 9: 38.7, 10: 47.9, 11: 49.55}
+START = {0: 0.5, 1: 6.65, 2: 10.2, 3: 11.5, 4: 17.35, 5: 19.45, 6: 22.5, 7: 33.4, 8: 35.9, 9: 42.3, 10: 53.0, 11: 54.65}
 DUR = {i: duration(f"{REP}/{f}.mp3") for i, (f, _, _) in enumerate(LINES)}
-T_TICKET, T_CTA, T_END = 41.3, 45.3, 47.7
-TOTAL = 51.0
+T_TICKET, T_CTA, T_END = 46.4, 50.4, 52.8
+TOTAL = 56.1
 FIELDS = (("Arıza:", "\"Hep ben ödüyorum.\""),
           ("Yapılan işlem:", "Fiş ikiye bölünemedi."),
           ("Not:", "Sevgide kimse kasada durmaz."))
 S7 = START[6]
-BACK_SEG = [((0, 1), S7, S7 + 2.73), ((3, 4), S7 + 3.11, S7 + 5.08), ((6, 7), S7 + 5.41, S7 + 7.76)]
+BACK_SEG = [((0, 1), S7, S7 + 3.16), ((3, 4), S7 + 3.51, S7 + 5.81), ((6, 7), S7 + 6.14, S7 + 9.4)]
+T_TOTAL_TXT = S7 + 9.4
 
 
 def back_reveal(t):
@@ -60,9 +61,9 @@ def speaking(t, who):
 
 
 s3.speaking = speaking
-s3.BLINKS["E"] = [30.5, 39.7]
-s3.BLINKS["U"] = [2.4, 10.9, 19.5, 34.9, 43.3]
-s3.BLINKS["D"] = [1.8, 6.5, 48.9]
+s3.BLINKS["E"] = [34.3, 44.9]
+s3.BLINKS["U"] = [2.4, 12.4, 21.0, 38.4, 48.0]
+s3.BLINKS["D"] = [1.8, 8.0, 54.0]
 
 
 def sub_at(t):
@@ -117,32 +118,32 @@ def cut_state(t, ts):
 
 
 def shot_cut(t):
-    ts = 12.6 if t < 14.15 else 14.2
+    ts = 14.3 if t < 15.85 else 15.9
     c, g, gl, sc, op = cut_state(t, ts)
     return ih.bill_plate(20, c, g, gl, sc, op)
 
 
 def shot_bakalim(t):
-    p = loupe_in(t, 11.65)
-    cam = push(USTA_CU, t, 9.7, 12.3, 0.06)
+    p = loupe_in(t, 13.35)
+    cam = push(USTA_CU, t, 11.4, 14.0, 0.06)
     if p is None:
         return shop(t, cam, usta="E_front", rope="receipt", bg_blur=9, deniz_blur=8)
     return shop(t, cam, usta=p, rope="receipt", bg_blur=9, deniz_blur=8, usta_blinks=False)
 
 
 def shot_arkasi(t):
-    cam = push(USTA_CU, t, 15.4, 20.3, 0.06)
-    if t < 17.5:
+    cam = push(USTA_CU, t, 17.1, 22.0, 0.06)
+    if t < 19.2:
         return shop(t, cam, usta="E_loupe", rope="receipt", bg_blur=9, deniz_blur=8, usta_blinks=False)
-    p = loupe_out(t, 17.5)
+    p = loupe_out(t, 19.2)
     if p is None:
         return shop(t, cam, usta="E_serious", rope="receipt", bg_blur=9, deniz_blur=8)
     return shop(t, cam, usta=p, usta_mouth=0, rope="receipt", bg_blur=9, deniz_blur=8)
 
 
 def shot_back(t):
-    flip = q(k01(t, 20.3, 20.7))
-    return ih.back_plate(flip, back_reveal(t), t >= 29.2)
+    flip = q(k01(t, 22.0, 22.4))
+    return ih.back_plate(flip, back_reveal(t), t >= T_TOTAL_TXT)
 
 
 @functools.lru_cache(None)
@@ -168,19 +169,24 @@ def shot_stinger(t):
     return img
 
 
+def shot_open(t):
+    """Usual opening: bell, Burak walks in with his back to us and slaps the receipt on the counter."""
+    return shop(t, push(WIDE, t, 0, 5.0, 0.04), deniz="D_phone", rope="receipt" if t >= 1.1 else "none",
+                emre_back=(120 - 220 * (1 - smooth(min(1.0, t / 1.0))), 560, 0.95, 5, "B_back", 0.85))
+
+
 SHOTS = [
-    S(0.0, 1.8, plate(lambda t: ih.bill_plate(q(smooth(k01(t, 0.0, 0.22)))), 0.0, 1.8, 1.3, 1.38, 0.5, 0.42)),
-    S(1.8, 4.9, lambda t: shop(t, push(WIDE, t, 1.8, 4.9, 0.04), deniz="D_phone", rope="receipt",
-                               emre_back=(120, 560, 0.95, 5, "B_back", 0.85))),
-    S(4.9, 8.4, lambda t: shop(t, push(DENIZ_MCU, t, 4.9, 8.4), deniz="D_sincere", rope="receipt", deniz_blur=0, bg_blur=8, usta_blur=6)),
-    S(8.4, 9.7, lambda t: shop(t, push(USTA_MCU, t, 8.4, 9.7), usta="E_side", deniz="D_sincere", rope="receipt", bg_blur=8, deniz_blur=6)),
-    S(9.7, 12.3, shot_bakalim),
-    S(12.3, 15.4, plate(shot_cut, 12.3, 15.4, 1.25, 1.32, 0.5, 0.42)),
-    S(15.4, 20.3, shot_arkasi),
-    S(20.3, 29.7, plate(shot_back, 20.3, 29.7, 1.32, 1.42, 0.5, 0.38)),
-    S(29.7, 32.2, lambda t: door(t, push(EMRE_CU, t, 29.7, 32.2, 0.04), emre="B_stun", rope="receipt", usta_back=USTA_BACK_OTS)),
-    S(32.2, 38.6, lambda t: shop(t, push(USTA_CU, t, 32.2, 38.6, 0.12), usta="E_soft", rope="receipt", bg_blur=9, deniz_blur=8, usta_blinks=False)),
-    S(38.6, T_TICKET, lambda t: door(t, push(EMRE_MCU, t, 38.6, T_TICKET, 0.06), emre="B_soft", rope="none")),
+    S(0.0, 5.0, shot_open),
+    S(5.0, 6.6, plate(lambda t: ih.bill_plate(20), 5.0, 6.6, 1.22, 1.34, 0.5, 0.42)),
+    S(6.6, 10.1, lambda t: shop(t, push(DENIZ_MCU, t, 6.6, 10.1), deniz="D_sincere", rope="receipt", deniz_blur=0, bg_blur=8, usta_blur=6)),
+    S(10.1, 11.4, lambda t: shop(t, push(USTA_MCU, t, 10.1, 11.4), usta="E_side", deniz="D_sincere", rope="receipt", bg_blur=8, deniz_blur=6)),
+    S(11.4, 14.0, shot_bakalim),
+    S(14.0, 17.1, plate(shot_cut, 14.0, 17.1, 1.25, 1.32, 0.5, 0.42)),
+    S(17.1, 22.0, shot_arkasi),
+    S(22.0, 33.3, plate(shot_back, 22.0, 33.3, 1.32, 1.44, 0.5, 0.38)),
+    S(33.3, 35.8, lambda t: door(t, push(EMRE_CU, t, 33.3, 35.8, 0.04), emre="B_stun", rope="receipt", usta_back=USTA_BACK_OTS)),
+    S(35.8, 42.2, lambda t: shop(t, push(USTA_CU, t, 35.8, 42.2, 0.12), usta="E_soft", rope="receipt", bg_blur=9, deniz_blur=8, usta_blinks=False)),
+    S(42.2, T_TICKET, lambda t: door(t, push(EMRE_MCU, t, 42.2, T_TICKET, 0.06), emre="B_call", rope="none")),
     S(T_TICKET, T_CTA, plate(lambda t: _ticket(round(k01(t, T_TICKET + 0.2, T_TICKET + 2.7) * 60) / 60, round(k01(t, T_CTA - 0.75, T_CTA - 0.4) * 8) / 8), T_TICKET, T_CTA, 1.04, 1.0)),
     S(T_CTA, T_END, plate(lambda t: _cta(), T_CTA, T_END, 1.0, 1.0)),
     S(T_END, TOTAL, shot_stinger),
@@ -196,7 +202,7 @@ def frame_at(t):
         img = Image.new("RGB", (W, H))
     img = finish(img, t, dust=False, grain=False)
     if t < T_TICKET or t >= T_END:
-        img = subtitle(img, sub_at(t), 0.62 if 1.8 <= t < 4.9 else 0.705)
+        img = subtitle(img, sub_at(t), 0.62 if t < 5.0 else 0.705)
     if t > TOTAL - 0.5:
         img = Image.eval(img, lambda v, k=(TOTAL - t) / 0.5: int(v * max(k, 0)))
     for tc in (T_CTA, T_END):
@@ -213,20 +219,21 @@ def audio_mix(out):
         ms = int(at * 1000)
         filters.append(f"[{idx}:a]aresample=44100,aformat=channel_layouts=stereo{extra},volume={vol},adelay={ms}|{ms}[a{idx}]")
         labels.append(f"[a{idx}]")
-    for i, (f, _, _) in enumerate(LINES):
-        add(f"{REP}/{f}.mp3", START[i], 1.0)
+    for i, (f, sp, _) in enumerate(LINES):
+        add(f"{REP}/{f}.mp3", START[i], 1.35 if sp == "E" else 1.0)
     add(f"{SFX}/ortam.mp3", 0.0, 0.32, f",aloop=loop=4:size=2e6,atrim=0:{TOTAL},afade=t=out:st={TOTAL - 3}:d=2.5")
-    add(f"{SFX}/fis_carpma.mp3", 0.12, 0.9)
-    add(f"{SFX}/loupe.mp3", 11.65, 0.5)
-    for ts in (12.6, 14.2):
+    add(f"{SFX}/cingirak.mp3", 0.0, 0.6)
+    add(f"{SFX}/fis_carpma.mp3", 1.05, 0.9)
+    add(f"{SFX}/loupe.mp3", 13.35, 0.5)
+    for ts in (14.3, 15.9):
         add(f"{SFX}/makas.mp3", ts - 0.05, 0.85)
         add(f"{SFX}/buyulu_geri.mp3", ts + 0.75, 0.7)
-    add(f"{SFX}/kagit_acma.mp3", 20.3, 0.6)
+    add(f"{SFX}/kagit_acma.mp3", 22.0, 0.6)
     for (_, a, b) in BACK_SEG:
         add(f"{SFX}/kalem.mp3", a, 0.3, f",atrim=0:{b - a:.2f},afade=t=out:st={max(0, b - a - 0.2):.2f}:d=0.2")
     add(f"{SFX}/kalem.mp3", T_TICKET + 0.2, 0.7, ",atrim=0:2.5,afade=t=out:st=2.1:d=0.4")
     add(f"{SFX}/damga.mp3", T_CTA - 0.75, 0.8)
-    add(f"{SFX}/muzik.mp3", 20.3, 0.26, f",afade=t=in:st=0:d=2.5,afade=t=out:st={T_END - 20.3 - 1.5}:d=1.5")
+    add(f"{SFX}/muzik.mp3", 22.0, 0.26, f",afade=t=in:st=0:d=2.5,afade=t=out:st={T_END - 22.0 - 1.5}:d=1.5")
     fc = ";".join(filters) + ";" + "".join(labels) + f"amix=inputs={len(labels)}:normalize=0:duration=longest,atrim=0:{TOTAL},alimiter=limit=0.95[out]"
     subprocess.run(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", fc, "-map", "[out]", "-c:a", "pcm_s16le", out], check=True)
 

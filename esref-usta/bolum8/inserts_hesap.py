@@ -13,7 +13,7 @@ MONO = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
 MONO_B = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"
 RW, RH = 760, 1560
 INK_BACK = (34, 52, 140, 255)
-BACK = ["Sınav gecen sabaha kadar", "seninle uyanık kaldı.", "",
+BACK = ["Sınav gecende sabaha kadar", "seninle uyanık kaldı.", "",
         "Annen hastayken her gün", "yemek götürdü.", "",
         "Kötü gününde 3 saat dinledi,", "bir kere saate bakmadı."]
 BACK_SEG = [(0, 1), (3, 4), (6, 7)]          # which lines belong to which spoken sentence
