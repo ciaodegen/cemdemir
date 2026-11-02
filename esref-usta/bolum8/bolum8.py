@@ -29,10 +29,10 @@ LINES = [  # file, speaker (E = Burak), subtitle (None = text on screen)
     ("11_D", "D", "Ben hâlâ erkek öder diyorum."),
     ("03_U", "U", "Deniz."),
 ]
-START = {0: 0.5, 1: 6.65, 2: 10.2, 3: 11.5, 4: 17.35, 5: 19.45, 6: 22.5, 7: 33.4, 8: 35.9, 9: 42.3, 10: 53.4, 11: 55.05}
+START = {0: 0.5, 1: 4.45, 2: 7.9, 3: 9.2, 4: 15.05, 5: 17.15, 6: 20.2, 7: 31.1, 8: 33.6, 9: 40.0, 10: 51.1, 11: 52.75}
 DUR = {i: duration(f"{REP}/{f}.mp3") for i, (f, _, _) in enumerate(LINES)}
-T_TICKET, T_CTA, T_END = 46.8, 50.8, 53.2
-TOTAL = 56.5
+T_TICKET, T_CTA, T_END = 44.5, 48.5, 50.9
+TOTAL = 54.2
 FIELDS = (("Arıza:", "\"Hep ben ödüyorum.\""),
           ("Yapılan işlem:", "Fiş ikiye bölünemedi."),
           ("Not:", "Sevgide kimse kasada durmaz."))
@@ -61,9 +61,9 @@ def speaking(t, who):
 
 
 s3.speaking = speaking
-s3.BLINKS["E"] = [34.3, 44.9]
-s3.BLINKS["U"] = [2.4, 12.4, 21.0, 38.4, 48.0]
-s3.BLINKS["D"] = [1.8, 8.0, 54.4]
+s3.BLINKS["E"] = [32.0, 42.6]
+s3.BLINKS["U"] = [2.4, 10.1, 18.7, 36.1, 45.7]
+s3.BLINKS["D"] = [1.8, 5.7, 52.1]
 
 
 def sub_at(t):
@@ -118,31 +118,31 @@ def cut_state(t, ts):
 
 
 def shot_cut(t):
-    ts = 14.3 if t < 15.85 else 15.9
+    ts = 12.0 if t < 13.55 else 13.6
     c, g, gl, sc, op = cut_state(t, ts)
     return ih.bill_plate(20, c, g, gl, sc, op)
 
 
 def shot_bakalim(t):
-    p = loupe_in(t, 13.35)
-    cam = push(USTA_CU, t, 11.4, 14.0, 0.06)
+    p = loupe_in(t, 11.05)
+    cam = push(USTA_CU, t, 9.1, 11.7, 0.06)
     if p is None:
         return shop(t, cam, usta="E_front", rope="receipt", bg_blur=9, deniz_blur=8)
     return shop(t, cam, usta=p, rope="receipt", bg_blur=9, deniz_blur=8, usta_blinks=False)
 
 
 def shot_arkasi(t):
-    cam = push(USTA_CU, t, 17.1, 22.0, 0.06)
-    if t < 19.2:
+    cam = push(USTA_CU, t, 14.8, 19.7, 0.06)
+    if t < 16.9:
         return shop(t, cam, usta="E_loupe", rope="receipt", bg_blur=9, deniz_blur=8, usta_blinks=False)
-    p = loupe_out(t, 19.2)
+    p = loupe_out(t, 16.9)
     if p is None:
         return shop(t, cam, usta="E_serious", rope="receipt", bg_blur=9, deniz_blur=8)
     return shop(t, cam, usta=p, usta_mouth=0, rope="receipt", bg_blur=9, deniz_blur=8)
 
 
 def shot_back(t):
-    flip = q(k01(t, 22.0, 22.4))
+    flip = q(k01(t, 19.7, 20.1))
     return ih.back_plate(flip, back_reveal(t), t >= T_TOTAL_TXT)
 
 
@@ -171,22 +171,21 @@ def shot_stinger(t):
 
 def shot_open(t):
     """Usual opening: bell, Burak walks in with his back to us and slaps the receipt on the counter."""
-    return shop(t, push(WIDE, t, 0, 4.3, 0.04), deniz="D_phone", rope="receipt" if t >= 1.1 else "none",
+    return shop(t, push(WIDE, t, 0, 4.4, 0.04), deniz="D_phone", rope="receipt" if t >= 1.1 else "none",
                 emre_back=(120 - 220 * (1 - smooth(min(1.0, t / 1.0))), 560, 0.95, 5, "B_back", 0.85))
 
 
 SHOTS = [
-    S(0.0, 4.3, shot_open),
-    S(4.3, 6.6, plate(lambda t: ih.bill_plate(20), 4.3, 6.6, 1.2, 1.36, 0.5, 0.42)),
-    S(6.6, 10.1, lambda t: shop(t, push(DENIZ_MCU, t, 6.6, 10.1), deniz="D_sincere", rope="receipt", deniz_blur=0, bg_blur=8, usta_blur=6)),
-    S(10.1, 11.4, lambda t: shop(t, push(USTA_MCU, t, 10.1, 11.4), usta="E_side", deniz="D_sincere", rope="receipt", bg_blur=8, deniz_blur=6)),
-    S(11.4, 14.0, shot_bakalim),
-    S(14.0, 17.1, plate(shot_cut, 14.0, 17.1, 1.25, 1.32, 0.5, 0.42)),
-    S(17.1, 22.0, shot_arkasi),
-    S(22.0, 33.3, plate(shot_back, 22.0, 33.3, 1.32, 1.44, 0.5, 0.38)),
-    S(33.3, 35.8, lambda t: door(t, push(EMRE_CU, t, 33.3, 35.8, 0.04), emre="B_stun", rope="receipt", usta_back=USTA_BACK_OTS)),
-    S(35.8, 42.2, lambda t: shop(t, push(USTA_CU, t, 35.8, 42.2, 0.12), usta="E_soft", rope="receipt", bg_blur=9, deniz_blur=8, usta_blinks=False)),
-    S(42.2, T_TICKET, lambda t: door(t, push(EMRE_MCU, t, 42.2, T_TICKET, 0.06), emre="B_call", rope="none")),
+    S(0.0, 4.4, shot_open),
+    S(4.4, 7.8, lambda t: shop(t, push(DENIZ_MCU, t, 4.4, 7.8), deniz="D_sincere", rope="receipt", deniz_blur=0, bg_blur=8, usta_blur=6)),
+    S(7.8, 9.1, lambda t: shop(t, push(USTA_MCU, t, 7.8, 9.1), usta="E_side", deniz="D_sincere", rope="receipt", bg_blur=8, deniz_blur=6)),
+    S(9.1, 11.7, shot_bakalim),
+    S(11.7, 14.8, plate(shot_cut, 11.7, 14.8, 1.25, 1.32, 0.5, 0.42)),
+    S(14.8, 19.7, shot_arkasi),
+    S(19.7, 31.0, plate(shot_back, 19.7, 31.0, 1.32, 1.44, 0.5, 0.38)),
+    S(31.0, 33.5, lambda t: door(t, push(EMRE_CU, t, 31.0, 33.5, 0.04), emre="B_stun", rope="receipt", usta_back=USTA_BACK_OTS)),
+    S(33.5, 39.9, lambda t: shop(t, push(USTA_CU, t, 33.5, 39.9, 0.12), usta="E_soft", rope="receipt", bg_blur=9, deniz_blur=8, usta_blinks=False)),
+    S(39.9, T_TICKET, lambda t: door(t, push(EMRE_MCU, t, 39.9, T_TICKET, 0.06), emre="B_call", rope="none")),
     S(T_TICKET, T_CTA, plate(lambda t: _ticket(round(k01(t, T_TICKET + 0.2, T_TICKET + 2.7) * 60) / 60, round(k01(t, T_CTA - 0.75, T_CTA - 0.4) * 8) / 8), T_TICKET, T_CTA, 1.04, 1.0)),
     S(T_CTA, T_END, plate(lambda t: _cta(), T_CTA, T_END, 1.0, 1.0)),
     S(T_END, TOTAL, shot_stinger),
@@ -202,7 +201,7 @@ def frame_at(t):
         img = Image.new("RGB", (W, H))
     img = finish(img, t, dust=False, grain=False)
     if t < T_TICKET or t >= T_END:
-        img = subtitle(img, sub_at(t), 0.62 if t < 4.3 else 0.705)
+        img = subtitle(img, sub_at(t), 0.62 if t < 4.4 else 0.705)
     if t > TOTAL - 0.5:
         img = Image.eval(img, lambda v, k=(TOTAL - t) / 0.5: int(v * max(k, 0)))
     for tc in (T_CTA, T_END):
@@ -224,16 +223,16 @@ def audio_mix(out):
     add(f"{SFX}/ortam.mp3", 0.0, 0.32, f",aloop=loop=4:size=2e6,atrim=0:{TOTAL},afade=t=out:st={TOTAL - 3}:d=2.5")
     add(f"{SFX}/cingirak.mp3", 0.0, 0.6)
     add(f"{SFX}/fis_carpma.mp3", 1.05, 0.9)
-    add(f"{SFX}/loupe.mp3", 13.35, 0.5)
-    for ts in (14.3, 15.9):
+    add(f"{SFX}/loupe.mp3", 11.05, 0.5)
+    for ts in (12.0, 13.6):
         add(f"{SFX}/makas.mp3", ts - 0.05, 0.85)
         add(f"{SFX}/buyulu_geri.mp3", ts + 0.75, 0.7)
-    add(f"{SFX}/kagit_acma.mp3", 22.0, 0.6)
+    add(f"{SFX}/kagit_acma.mp3", 19.7, 0.6)
     for (_, a, b) in BACK_SEG:
         add(f"{SFX}/kalem.mp3", a, 0.3, f",atrim=0:{b - a:.2f},afade=t=out:st={max(0, b - a - 0.2):.2f}:d=0.2")
     add(f"{SFX}/kalem.mp3", T_TICKET + 0.2, 0.7, ",atrim=0:2.5,afade=t=out:st=2.1:d=0.4")
     add(f"{SFX}/damga.mp3", T_CTA - 0.75, 0.8)
-    add(f"{SFX}/muzik.mp3", 22.0, 0.26, f",afade=t=in:st=0:d=2.5,afade=t=out:st={T_END - 22.0 - 1.5}:d=1.5")
+    add(f"{SFX}/muzik.mp3", 19.7, 0.26, f",afade=t=in:st=0:d=2.5,afade=t=out:st={T_END - 19.7 - 1.5}:d=1.5")
     fc = ";".join(filters) + ";" + "".join(labels) + f"amix=inputs={len(labels)}:normalize=0:duration=longest,atrim=0:{TOTAL},alimiter=limit=0.95[out]"
     subprocess.run(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", fc, "-map", "[out]", "-c:a", "pcm_s16le", out], check=True)
 
