@@ -16,7 +16,7 @@ REP = f"{ROOT}/bolum8/replikler_hizli"
 SFX = f"{ROOT}/efektler"
 
 LINES = [  # file, speaker (E = Burak), subtitle (None = text on screen)
-    ("01_B", "E", "Usta, hesabı kadın mı öder, erkek mi? Hep ben ödüyorum, yeter artık! Şunu ikiye böl."),
+    ("01_B", "E", "Usta, hesabı kadın mı öder, erkek mi? Hep ben ödüyorum, yeter artık!"),
     ("02_D", "D", "Erkek öder usta! Ben hep ödedim… şimdi bekârım."),
     ("03_U", "U", "Deniz."),
     ("04_U", "U", "Dur, bir bakalım…"),
@@ -171,13 +171,13 @@ def shot_stinger(t):
 
 def shot_open(t):
     """Usual opening: bell, Burak walks in with his back to us and slaps the receipt on the counter."""
-    return shop(t, push(WIDE, t, 0, 5.0, 0.04), deniz="D_phone", rope="receipt" if t >= 1.1 else "none",
+    return shop(t, push(WIDE, t, 0, 4.3, 0.04), deniz="D_phone", rope="receipt" if t >= 1.1 else "none",
                 emre_back=(120 - 220 * (1 - smooth(min(1.0, t / 1.0))), 560, 0.95, 5, "B_back", 0.85))
 
 
 SHOTS = [
-    S(0.0, 5.0, shot_open),
-    S(5.0, 6.6, plate(lambda t: ih.bill_plate(20), 5.0, 6.6, 1.22, 1.34, 0.5, 0.42)),
+    S(0.0, 4.3, shot_open),
+    S(4.3, 6.6, plate(lambda t: ih.bill_plate(20), 4.3, 6.6, 1.2, 1.36, 0.5, 0.42)),
     S(6.6, 10.1, lambda t: shop(t, push(DENIZ_MCU, t, 6.6, 10.1), deniz="D_sincere", rope="receipt", deniz_blur=0, bg_blur=8, usta_blur=6)),
     S(10.1, 11.4, lambda t: shop(t, push(USTA_MCU, t, 10.1, 11.4), usta="E_side", deniz="D_sincere", rope="receipt", bg_blur=8, deniz_blur=6)),
     S(11.4, 14.0, shot_bakalim),
@@ -202,7 +202,7 @@ def frame_at(t):
         img = Image.new("RGB", (W, H))
     img = finish(img, t, dust=False, grain=False)
     if t < T_TICKET or t >= T_END:
-        img = subtitle(img, sub_at(t), 0.62 if t < 5.0 else 0.705)
+        img = subtitle(img, sub_at(t), 0.62 if t < 4.3 else 0.705)
     if t > TOTAL - 0.5:
         img = Image.eval(img, lambda v, k=(TOTAL - t) / 0.5: int(v * max(k, 0)))
     for tc in (T_CTA, T_END):
