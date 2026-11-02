@@ -15,8 +15,8 @@ import inserts_bilet as ib
 REP = f"{ROOT}/bolum9/replikler_hizli"
 SFX = f"{ROOT}/efektler"
 
-LINES = [  # file, speaker (E = Burak), subtitle (None = text on screen)
-    ("01_B", "E", "Usta, uzak mesafe ilişkisi yürür mü? Ben İstanbul'dayım, o İzmir'de… Herkes 'bitecek' diyor!"),
+LINES = [  # file, speaker (E = customer), subtitle (None = text on screen)
+    ("01_B", "E", "Usta, uzak mesafe ilişkisi yürür mü? Herkes 'bitecek' diyor!"),
     ("02_D", "D", "Yürümez usta! Benimki Kadıköy–Üsküdar'dı, o bile yürümedi!"),
     ("03_U", "U", "Deniz."),
     ("04_U", "U", "Dur, bir bakalım…"),
@@ -27,25 +27,61 @@ LINES = [  # file, speaker (E = Burak), subtitle (None = text on screen)
     ("09_D", "D", "Ben yine de yürümez diyorum."),
     ("03_U", "U", "Deniz."),
 ]
-START = {0: 0.4, 1: 6.6, 2: 9.65, 3: 10.95, 4: 15.3, 5: 20.9, 6: 25.3, 7: 33.6, 8: 42.0, 9: 43.65}
 DUR = {i: duration(f"{REP}/{f}.mp3") for i, (f, _, _) in enumerate(LINES)}
-T_TICKET, T_CTA, T_END = 35.4, 39.4, 41.8
-TOTAL = 45.2
+# segment offsets inside the audio files (seconds, after speed-up)
+NOTE_PARTS = [((0.0, 0.95), (1.32, 2.56)), ((2.80, 3.73), (4.15, 5.65)), ((5.94, 6.89), (7.42, 8.28))]
+SEG07 = {"harita": (0.0, 2.79), "sifir": (3.41, 4.21), "yol": (4.67, 7.86)}
+
+# ---- automatic layout ------------------------------------------------------------
+T = {}
+START = {}
+t = 0.0
+START[0] = 0.4
+T["wide"] = (0.0, max(4.3, START[0] + DUR[0] + 0.15))
+t = T["wide"][1]
+START[1] = t + 0.05; T["deniz"] = (t, START[1] + DUR[1] + 0.1); t = T["deniz"][1]
+START[2] = t + 0.1; T["deniz_tepki"] = (t, START[2] + DUR[2] + 0.15); t = T["deniz_tepki"][1]
+START[3] = t + 0.1; T["bakalim"] = (t, START[3] + DUR[3] + 0.6); t = T["bakalim"][1]
+T["loupe_in"] = T["bakalim"][1] - 0.6
+TICKET_T = tuple(round(t + 0.1 + 0.35 * i, 2) for i in range(5))
+START[4] = t + 2.0; T["biletler"] = (t, START[4] + DUR[4] + 0.6); t = T["biletler"][1]
+START[5] = t + 0.4; T["olcelim"] = (t, START[5] + DUR[5] + 0.3); t = T["olcelim"][1]
+T["metre"] = (t, t + 2.8); t = T["metre"][1]
+START[6] = t + 0.1
+T["harita"] = (t, START[6] + SEG07["sifir"][0] - 0.1); t = T["harita"][1]
+T["kalp"] = (t, START[6] + SEG07["yol"][0] - 0.05); t = T["kalp"][1]
+T["yol"] = (t, START[6] + DUR[6] + 0.25); t = T["yol"][1]
+START[7] = t + 0.15; T["yolda"] = (t, START[7] + DUR[7] + 0.5); t = T["yolda"][1]
+T_TICKET = t; T_CTA = t + 4.0; T_END = T_CTA + 2.4
+START[8] = T_END + 0.2; START[9] = START[8] + DUR[8] + 0.15
+TOTAL = round(START[9] + DUR[9] + 0.4, 2)
 FIELDS = (("Arıza:", "İstanbul–İzmir, 480 km."),
           ("Yapılan işlem:", "Ölçüldü. Kalpte 0 cm."),
           ("Not:", "Yol uzunsa, sevgi kısa değil."))
 S5 = START[4]
-NOTE_SEG = [(0, S5, S5 + 0.86), (1, S5 + 1.49, S5 + 2.53), (2, S5 + 3.14, S5 + 4.7)]
-TICKET_T = (13.4, 13.8, 14.2, 14.6, 15.0)
 S7 = START[6]
 
 
 def notes_at(t):
     out = []
-    for (i, a, b) in NOTE_SEG:
-        n = len(ib.TICKETS[i][1])
-        out.append(n if t >= b else (0 if t < a else int(n * (t - a) / (b - a))))
+    for i, parts in enumerate(NOTE_PARTS):
+        lines = ib.TICKETS[i][1]
+        n = 0
+        for (a, b), line in zip(parts, lines):
+            a += S5; b += S5
+            n += len(line) if t >= b else (0 if t < a else int(len(line) * (t - a) / (b - a)))
+        out.append(n)
     return tuple(out)
+
+
+def note_focus(t):
+    """Which ticket the camera looks at while its note is read (None before reading)."""
+    if t < S5 - 0.3:
+        return None
+    for i in (2, 1, 0):
+        if t >= S5 + NOTE_PARTS[i][0][0] - 0.35:
+            return i
+    return 0
 
 
 def speaking(t, who):
@@ -58,7 +94,7 @@ def speaking(t, who):
 
 
 s3.speaking = speaking
-s3.BLINKS["E"] = [34.6]
+s3.BLINKS["E"] = []
 s3.BLINKS["U"] = [2.4, 12.0, 22.6, 31.5, 36.0]
 s3.BLINKS["D"] = [1.8, 7.9, 43.0]
 
@@ -98,13 +134,14 @@ def k01(t, a, b):
 
 
 def shot_open(t):
-    return shop(t, push(WIDE, t, 0, 6.5, 0.04), deniz="D_phone", rope="tickets" if t >= 1.1 else "none",
-                emre_back=(120 - 220 * (1 - smooth(min(1.0, t / 1.0))), 560, 0.95, 5, "B_back", 0.85))
+    return shop(t, push(WIDE, t, 0, T["wide"][1], 0.04), deniz="D_phone", rope="tickets" if t >= 1.1 else "none",
+                emre_back=(120 - 220 * (1 - smooth(min(1.0, t / 1.0))), 560, 0.95, 5, "A_back", 0.85))
 
 
 def shot_bakalim(t):
-    p = loupe_in(t, 12.8)
-    cam = push(USTA_CU, t, 10.85, 13.3, 0.06)
+    t0, t1 = T["bakalim"]
+    p = loupe_in(t, T["loupe_in"])
+    cam = push(USTA_CU, t, t0, t1, 0.06)
     if p is None:
         return shop(t, cam, usta="E_front", rope="tickets", bg_blur=9, deniz_blur=8)
     return shop(t, cam, usta=p, rope="tickets", bg_blur=9, deniz_blur=8, usta_blinks=False)
@@ -112,26 +149,55 @@ def shot_bakalim(t):
 
 def shot_tickets(t):
     n = sum(1 for tt in TICKET_T if t >= tt)
-    return ib.tickets_plate(n, notes_at(t))
+    img = ib.tickets_plate(n, notes_at(t))
+    # camera: overview while tickets fall, then glide to the ticket being read
+    t0 = T["biletler"][0]
+    over = (720, 1280, 1.06)
+    tgt = over
+    f = note_focus(t)
+    if f is not None:
+        x, y, _ = ib.SPOTS[f]
+        tgt = (x, y + 60, 1.45)
+    # smooth glide: blend from the previous target over 0.45 s
+    prev = over
+    tf = t0
+    if f is not None:
+        tf = S5 + NOTE_PARTS[f][0][0] - 0.35
+        if f > 0:
+            px, py, _ = ib.SPOTS[f - 1]; prev = (px, py + 60, 1.45)
+    k = smooth(min(1.0, max(0.0, (t - tf) / 0.45)))
+    cx = prev[0] + (tgt[0] - prev[0]) * k; cy = prev[1] + (tgt[1] - prev[1]) * k; z = prev[2] + (tgt[2] - prev[2]) * k
+    cw, chh = 1440 / z, 2560 / z
+    x0 = min(max(cx - cw / 2, 0), 1440 - cw); y0 = min(max(cy - chh / 2, 0), 2560 - chh)
+    return img.crop((int(x0), int(y0), int(x0 + cw), int(y0 + chh))).resize((W, H), Image.LANCZOS)
 
 
 def shot_olcelim(t):
-    p = loupe_out(t, 20.55)
-    cam = push(USTA_CU, t, 20.5, 22.4, 0.04)
+    t0, t1 = T["olcelim"]
+    p = loupe_out(t, t0 + 0.05)
+    cam = push(USTA_CU, t, t0, t1, 0.04)
     if p is None:
         return shop(t, cam, usta="E_serious", rope="tickets", bg_blur=9, deniz_blur=8)
     return shop(t, cam, usta=p, usta_mouth=0, rope="tickets", bg_blur=9, deniz_blur=8)
 
 
 def shot_tape(t):
-    k = smooth(k01(t, 22.55, 23.8))
+    t0 = T["metre"][0]
+    k = smooth(k01(t, t0 + 0.15, t0 + 1.4))
     return ib.tickets_plate(5, (99, 99, 99), round(k, 2), ib.km_counter(round(k * 20) / 20))
 
 
-def shot_chest(t):
-    k = smooth(k01(t, 28.7, 29.4))
+HEART = (0.585, 0.60)     # customer's heart in the door MCU frame (fraction of W, H)
+
+
+def shot_kalp(t):
+    """Usta's tape measure reaches the customer's heart; the counter rolls from 480 km to 0 cm."""
+    t0, t1 = T["kalp"]
+    img = door(t, push(EMRE_MCU, t, t0, t1, 0.05), emre="A_soft", rope="tickets", emre_mouth=0.0).convert("RGBA")
+    reach = smooth(k01(t, t0, t0 + 0.4))
+    k = smooth(k01(t, t0 + 0.35, t0 + 0.8))
     counter = "0 cm" if k >= 1 else ib.km_counter(1 - k)
-    return ib.chest_plate(counter, int(round(k * 20)))
+    return ib.tape_to_point(img, (W * 1.02, H * 0.97), (W * HEART[0], H * HEART[1]), reach, counter, k)
 
 
 @functools.lru_cache(None)
@@ -158,17 +224,17 @@ def shot_stinger(t):
 
 
 SHOTS = [
-    S(0.0, 6.5, shot_open),
-    S(6.5, 9.55, lambda t: shop(t, push(DENIZ_MCU, t, 6.5, 9.55), deniz="D_sincere", rope="tickets", deniz_blur=0, bg_blur=8, usta_blur=6)),
-    S(9.55, 10.85, lambda t: shop(t, push(USTA_MCU, t, 9.55, 10.85), usta="E_side", deniz="D_sincere", rope="tickets", bg_blur=8, deniz_blur=6)),
-    S(10.85, 13.3, shot_bakalim),
-    S(13.3, 20.5, plate(shot_tickets, 13.3, 20.5, 1.05, 1.18, 0.5, 0.3)),
-    S(20.5, 22.4, shot_olcelim),
-    S(22.4, 25.2, plate(shot_tape, 22.4, 25.2, 1.0, 1.04, 0.5, 0.5)),
-    S(25.2, 28.2, lambda t: shop(t, push(USTA_CU, t, 25.2, 28.2, 0.06), usta="E_soft", rope="tickets", bg_blur=9, deniz_blur=8, usta_blinks=False)),
-    S(28.2, 30.0, plate(shot_chest, 28.2, 30.0, 1.0, 1.08)),
-    S(30.0, 33.4, lambda t: shop(t, push(USTA_CU, t, 30.0, 33.4, 0.08), usta="E_soft", rope="tickets", bg_blur=9, deniz_blur=8, usta_blinks=False)),
-    S(33.4, T_TICKET, lambda t: door(t, push(EMRE_CU, t, 33.4, T_TICKET, 0.05), emre="B_soft", rope="tickets")),
+    S(*T["wide"], shot_open),
+    S(*T["deniz"], lambda t: shop(t, push(DENIZ_MCU, t, *T["deniz"]), deniz="D_sincere", rope="tickets", deniz_blur=0, bg_blur=8, usta_blur=6)),
+    S(*T["deniz_tepki"], lambda t: shop(t, push(USTA_MCU, t, *T["deniz_tepki"]), usta="E_side", deniz="D_sincere", rope="tickets", bg_blur=8, deniz_blur=6)),
+    S(*T["bakalim"], shot_bakalim),
+    S(*T["biletler"], shot_tickets),
+    S(*T["olcelim"], shot_olcelim),
+    S(*T["metre"], plate(shot_tape, *T["metre"], 1.0, 1.04, 0.5, 0.5)),
+    S(*T["harita"], lambda t: shop(t, push(USTA_CU, t, *T["harita"], 0.06), usta="E_soft", rope="tickets", bg_blur=9, deniz_blur=8, usta_blinks=False)),
+    S(*T["kalp"], shot_kalp),
+    S(*T["yol"], lambda t: shop(t, push(USTA_CU, t, *T["yol"], 0.08), usta="E_soft", rope="tickets", bg_blur=9, deniz_blur=8, usta_blinks=False)),
+    S(*T["yolda"], lambda t: door(t, push(EMRE_CU, t, *T["yolda"], 0.05), emre="A_soft", rope="tickets")),
     S(T_TICKET, T_CTA, plate(lambda t: _ticket(round(k01(t, T_TICKET + 0.2, T_TICKET + 2.7) * 60) / 60, round(k01(t, T_CTA - 0.75, T_CTA - 0.4) * 8) / 8), T_TICKET, T_CTA, 1.04, 1.0)),
     S(T_CTA, T_END, plate(lambda t: _cta(), T_CTA, T_END, 1.0, 1.0)),
     S(T_END, TOTAL, shot_stinger),
@@ -184,7 +250,7 @@ def frame_at(t):
         img = Image.new("RGB", (W, H))
     img = finish(img, t, dust=False, grain=False)
     if t < T_TICKET or t >= T_END:
-        img = subtitle(img, sub_at(t), 0.62 if t < 6.5 else 0.705)
+        img = subtitle(img, sub_at(t), 0.62 if t < T["wide"][1] else 0.705)
     if t > TOTAL - 0.5:
         img = Image.eval(img, lambda v, k=(TOTAL - t) / 0.5: int(v * max(k, 0)))
     for tc in (T_CTA, T_END):
@@ -206,16 +272,17 @@ def audio_mix(out):
     add(f"{SFX}/ortam.mp3", 0.0, 0.32, f",aloop=loop=4:size=2e6,atrim=0:{TOTAL},afade=t=out:st={TOTAL - 3}:d=2.5")
     add(f"{SFX}/cingirak.mp3", 0.0, 0.6)
     add(f"{SFX}/fis_carpma.mp3", 1.05, 0.8)
-    add(f"{SFX}/loupe.mp3", 12.8, 0.5)
+    add(f"{SFX}/loupe.mp3", T["loupe_in"], 0.5)
     for tt in TICKET_T:
         add(f"{SFX}/kagit_birakma.mp3", tt - 0.05, 0.7)
-    for (_, a, b) in NOTE_SEG:
-        add(f"{SFX}/kalem.mp3", a, 0.3, f",atrim=0:{b - a:.2f},afade=t=out:st={max(0, b - a - 0.2):.2f}:d=0.2")
-    add(f"{SFX}/serit_metre.mp3", 22.5, 0.85)
-    add(f"{SFX}/serit_geri.mp3", 28.65, 0.85)
+    for parts in NOTE_PARTS:
+        for (a, b) in parts:
+            add(f"{SFX}/kalem.mp3", S5 + a, 0.3, f",atrim=0:{b - a:.2f},afade=t=out:st={max(0, b - a - 0.2):.2f}:d=0.2")
+    add(f"{SFX}/serit_metre.mp3", T["metre"][0] + 0.1, 0.85)
+    add(f"{SFX}/serit_geri.mp3", T["kalp"][0] + 0.3, 0.85)
     add(f"{SFX}/kalem.mp3", T_TICKET + 0.2, 0.7, ",atrim=0:2.5,afade=t=out:st=2.1:d=0.4")
     add(f"{SFX}/damga.mp3", T_CTA - 0.75, 0.8)
-    add(f"{SFX}/muzik.mp3", 13.3, 0.24, f",afade=t=in:st=0:d=2.5,afade=t=out:st={T_END - 13.3 - 1.5}:d=1.5")
+    add(f"{SFX}/muzik.mp3", T["biletler"][0], 0.24, f",afade=t=in:st=0:d=2.5,afade=t=out:st={T_END - T['biletler'][0] - 1.5}:d=1.5")
     fc = ";".join(filters) + ";" + "".join(labels) + f"amix=inputs={len(labels)}:normalize=0:duration=longest,atrim=0:{TOTAL},alimiter=limit=0.95[out]"
     subprocess.run(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", fc, "-map", "[out]", "-c:a", "pcm_s16le", out], check=True)
 

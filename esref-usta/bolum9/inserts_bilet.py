@@ -12,13 +12,16 @@ BW, BH = 1440, 2560
 MONO = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
 MONO_B = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"
 INK = (34, 52, 140, 255)
-TICKETS = [("12.01", "Doğum günü"), ("03.02", "Sınavından önce"), ("17.03", "Sadece 3 saat kalabildim"),
-           ("28.04", ""), ("09.05", "")]
-SPOTS = [(700, 470, -3), (860, 890, 2), (700, 1310, -2), (860, 1730, 3), (700, 2150, -2)]
+TICKETS = [("12.01", ("Doğum günü.", "Pastayı kucağımda taşıdım.")),
+           ("03.02", ("Sınavından önce.", "Sadece elini tutmaya geldim.")),
+           ("17.03", ("3 saat kalabildim.", "Yine de değdi.")),
+           ("28.04", ()), ("09.05", ())]
+SPOTS = [(700, 430, -3), (860, 900, 2), (700, 1370, -2), (860, 1840, 3), (700, 2290, -2)]
 
 
 def ticket(date, note, note_n):
-    w, h = 900, 400
+    """note: tuple of lines; note_n: total chars revealed across the lines."""
+    w, h = 900, 440
     p = im.paper(w, h, seed=int(date.replace(".", "")), lined=False, tint=(250, 246, 236))
     d = ImageDraw.Draw(p)
     d.rectangle([0, 0, w, 74], fill=(170, 40, 46, 255))
@@ -31,8 +34,12 @@ def ticket(date, note, note_n):
         d.rectangle([x, 100, x + (3 if (x // 9) % 3 else 6), 200], fill=(30, 30, 36, 255))
     for x in range(20, w - 20, 24):
         d.line([(x, 232), (x + 12, 232)], fill=(150, 150, 156, 255), width=3)
-    if note and note_n > 0:
-        d.text((40, 262), note[:note_n], font=font(FONT_HAND, 76), fill=INK)
+    y = 250
+    for line in note:
+        if note_n <= 0:
+            break
+        d.text((40, y), line[:note_n], font=font(FONT_HAND, 66), fill=INK)
+        note_n -= len(line); y += 84
     return p
 
 
@@ -123,3 +130,27 @@ if __name__ == "__main__":
     for i, x in enumerate(ims):
         sheet.paste(x.convert("RGB").resize((270, 480)), (i * 270, 0))
     sheet.save(sys.argv[1])
+
+
+def tape_to_point(frame, start, end, reach, counter, glow):
+    """Draw the tape measure on a finished frame: blade from the casing (start) to the heart (end)."""
+    W_, H_ = frame.size
+    s = W_ / 1440
+    if glow > 0:
+        g = Image.new("RGBA", frame.size, (0, 0, 0, 0))
+        r = 150 * s
+        ImageDraw.Draw(g).ellipse([end[0] - r, end[1] - r, end[0] + r, end[1] + r], fill=(255, 70, 60, int(170 * glow)))
+        frame.alpha_composite(g.filter(ImageFilter.GaussianBlur(60 * s)))
+        # small heart drawn right where the tape touches
+        hh = Image.new("RGBA", frame.size, (0, 0, 0, 0))
+        pts = []
+        for i in range(60):
+            t = 2 * math.pi * i / 60
+            pts.append((end[0] + 3.2 * s * 16 * math.sin(t) ** 3,
+                        end[1] - 3.2 * s * (13 * math.cos(t) - 5 * math.cos(2 * t) - 2 * math.cos(3 * t) - math.cos(4 * t))))
+        ImageDraw.Draw(hh).polygon(pts, fill=(226, 40, 46, int(230 * glow)))
+        frame.alpha_composite(hh)
+    layer = Image.new("RGBA", frame.size, (0, 0, 0, 0))
+    _tape(layer, start, end, max(0.02, reach), counter, int(420 * s))
+    ins.shadowed(frame, layer, blur=int(10 * s), off=(int(8 * s), int(12 * s)), alpha=140)
+    return frame
