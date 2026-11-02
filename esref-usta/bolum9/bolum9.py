@@ -23,7 +23,7 @@ LINES = [  # file, speaker (E = customer), subtitle (None = text on screen)
     ("05_U", "U", None),
     ("06_U", "U", "Bakalım ne kadar uzak."),
     ("07_U", "U", "Haritada dört yüz seksen kilometre evlat. Burada sıfır. Yol uzunsa, sevgi kısa değil demektir."),
-    ("08_B", "E", "Cuma yine yoldayım."),
+    ("08_B", "E", "Usta… ben en iyisi cuma yine gideyim."),
     ("09_D", "D", "Ben yine de yürümez diyorum."),
     ("03_U", "U", "Deniz."),
 ]
