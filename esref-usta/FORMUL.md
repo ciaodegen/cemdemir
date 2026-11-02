@@ -19,3 +19,11 @@ Bölüm 5 ("Sigaranın Üstündeki Yazılar") diğerlerinden çok daha fazla izl
 7. **Yargılama yok:** Müşteri kötü adam değil, izleyici suçlanmış hissetmesin, paylaşmaktan çekinmesin.
 8. **Belirli birine gönder:** Kapanış kartı somut bir kişiyi tarif etsin.
 9. **Tek cümlelik konsept:** Bölüm tek bir cümleyle anlatılabilmeli.
+
+## Hook kuralı (Sigara 40 bin, Fenerbahçe ve Hesabı Kim Öder 50 bin sonrası)
+- **İlk cümle her zaman soru:** "Usta, …?" ile başlar.
+- **Konunun anahtar kelimesi ilk saniyede söylenir:** sigara, Fenerbahçe, hesap ödemek…
+- **İki tarafı olan konu:** İzleyici soruyu duyduğu an kafasında cevaplar ve yorumlara tarafını yazar.
+- **Müşteri taraf tutar, Usta tutmaz:** "Hep ben ödüyorum, yeter artık!" gibi kışkırtıcı ama bağırmayan bir cümle. Ters köşe iki tarafı da haklı ve duygulanmış bırakır.
+- **Açılış her zaman klasik:** zil çalar, müşteri sırtı dönük girer, nesneyi tezgâha koyar, soruyu geniş planda sorar. Nesnenin yakın planı sonra gelir.
+- **Kapanış:** Deniz'in taraf tutan kısa bir esprisi ve "Sizce …? Yorumlara yaz" etiketi.
