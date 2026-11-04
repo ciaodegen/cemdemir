@@ -16,7 +16,7 @@ REP = f"{ROOT}/bolum10/replikler_hizli"
 SFX = f"{ROOT}/efektler"
 
 LINES = [  # file, speaker (E = Hikmet Amca), subtitle (None = text on screen)
-    ("01_H", "E", "Usta, evlilikte aşk biter mi? Otuz yıllık yüzük… artık parmağımı sıkıyor. Çıkar şunu!"),
+    ("01_H", "E", "Usta, evlilikte aşk biter mi? Otuz yıllık yüzük… artık parmağımı sıkıyor."),
     ("02_D", "D", "Biter usta! Annemle babam yirmi yıldır kumanda kavgası yapıyor!"),
     ("03_U", "U", "Deniz."),
     ("04_D", "D", "Usta, sabun!"),
