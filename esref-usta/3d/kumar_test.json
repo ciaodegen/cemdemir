@@ -1,0 +1,2 @@
+[{"name":"km_test","char":16,"w":800,"h":1040,"view":[0,0.625,0.725,4.0],"headYaw":0.04,"gaze":[0.0,-0.3],"brow":0.8,"mouth":0.2,"force":true},
+ {"name":"km_back","char":16,"w":800,"h":1040,"view":[0,0.625,0.725,4.0],"yaw":3.14159,"force":true}]

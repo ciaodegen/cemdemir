@@ -108,6 +108,12 @@ def front_plate(rope="two", package=False):
         d = ImageDraw.Draw(front)
         d.polygon([(560, 1800 + CY), (760, 1790 + CY), (770, 1816 + CY), (566, 1822 + CY)], fill=(240, 238, 230, 255))
         d.polygon([(560, 1800 + CY), (760, 1790 + CY), (756, 1780 + CY), (572, 1786 + CY)], fill=(32, 52, 92, 255))
+    elif rope == "coupons":
+        d = ImageDraw.Draw(front)
+        for k in range(5):
+            dx, dy = (k % 2) * 8 - 4, -k * 4
+            d.polygon([(585 + dx, 1802 + CY + dy), (700 + dx, 1797 + CY + dy), (705 + dx, 1815 + CY + dy), (589 + dx, 1820 + CY + dy)], fill=(246, 246, 240, 255))
+            d.line([(587 + dx, 1803 + CY + dy), (700 + dx, 1798 + CY + dy)], fill=(40, 44, 52, 255), width=3)
     elif rope == "tickets":
         d = ImageDraw.Draw(front)
         for k in range(4):
