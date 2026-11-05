@@ -149,9 +149,9 @@ def shot_coupons(t):
     if f is None:
         prev = tgt = over; tf = T["kuponlar"][0]
     else:
-        x, y, _ = ik.SPOTS[f]; tgt = (x, y + 30, 1.5)
+        x, y, _ = ik.SPOTS[f]; tgt = (x, y + 30, 1.3)
         tf = S4 + READ[f][0] - 0.35
-        prev = over if f == 0 else (ik.SPOTS[f - 1][0], ik.SPOTS[f - 1][1] + 30, 1.5)
+        prev = over if f == 0 else (ik.SPOTS[f - 1][0], ik.SPOTS[f - 1][1] + 30, 1.3)
     k = smooth(min(1.0, max(0.0, (t - tf) / 0.45)))
     cx = prev[0] + (tgt[0] - prev[0]) * k; cy = prev[1] + (tgt[1] - prev[1]) * k; z = prev[2] + (tgt[2] - prev[2]) * k
     cw, chh = 1440 / z, 2560 / z
