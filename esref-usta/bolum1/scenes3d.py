@@ -108,6 +108,13 @@ def front_plate(rope="two", package=False):
         d = ImageDraw.Draw(front)
         d.polygon([(560, 1800 + CY), (760, 1790 + CY), (770, 1816 + CY), (566, 1822 + CY)], fill=(240, 238, 230, 255))
         d.polygon([(560, 1800 + CY), (760, 1790 + CY), (756, 1780 + CY), (572, 1786 + CY)], fill=(32, 52, 92, 255))
+    elif rope == "gloves":
+        d = ImageDraw.Draw(front)
+        for k, x0 in enumerate((590, 650)):
+            c = (116, 78, 46, 255) if k == 0 else (104, 70, 42, 255)
+            d.rounded_rectangle([x0, 1786 + CY - k * 4, x0 + 62, 1818 + CY - k * 4], radius=12, fill=c)
+            for f in range(4):
+                d.rounded_rectangle([x0 + 4 + f * 14, 1778 + CY - k * 4 - (f % 2) * 3, x0 + 14 + f * 14, 1796 + CY - k * 4], radius=4, fill=c)
     elif rope == "coupons":
         d = ImageDraw.Draw(front)
         for k in range(5):
