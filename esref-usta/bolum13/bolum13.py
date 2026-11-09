@@ -255,7 +255,7 @@ def audio_mix(out):
     for i, (f, sp, _) in enumerate(LINES):
         add(f"{REP}/{f}.mp3", START[i], 1.05 if sp == "E" else 1.0)
     add(f"{SFX}/ortam.mp3", 0.0, 0.32, f",aloop=loop=4:size=2e6,atrim=0:{TOTAL},afade=t=out:st={TOTAL - 3}:d=2.5")
-    add(f"{SFX}/cingirak.mp3", 0.0, 0.6)
+    add(f"{SFX}/cingirak.mp3", 0.0, 0.35, ",atrim=0:1.0,afade=t=out:st=0.3:d=0.7")   # short bell, fades before the hook
     add(f"{SFX}/kagit_birakma.mp3", 1.05, 0.6)
     add(f"{SFX}/loupe.mp3", T["loupe_in"], 0.5)
     for s in (SYNC1, SYNC2):
