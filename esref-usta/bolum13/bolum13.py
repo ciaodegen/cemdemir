@@ -21,7 +21,6 @@ LINES = [  # file, speaker (E = customer), subtitle (None = text on screen)
     ("03_U", "U", "Deniz."),
     ("04_U", "U", "Dur, bir bakalım…"),
     ("f05_U", "U", "Fotoğrafta bile uzaksınız…"),
-    ("06_U", "U", None),
     ("f07a_U", "U", "Fotoğraf bozuk değil kızım. Bak… ikiniz de giderken dönüp bakmışsınız."),
     ("f07b_U", "U", "Severek ayrılmak, giderken dönüp bakmaktır."),
     ("f08_N", "E", "Bu fotoğrafı saklayayım usta. Dönüp baktığımızı unutmamak için."),
@@ -29,9 +28,7 @@ LINES = [  # file, speaker (E = customer), subtitle (None = text on screen)
     ("03_U", "U", "Deniz."),
 ]
 DUR = {i: duration(f"{REP}/{f}.mp3") for i, (f, _, _) in enumerate(LINES)}
-# 06_U: (person, note index, start, end)
-READ = [("A", 0, 0.0, 2.05), ("B", 0, 2.34, 4.14), ("A", 1, 4.44, 5.54), ("B", 1, 5.82, 7.1)]
-SUBTIMES = {6: [(0.0, 1.68, "Fotoğraf bozuk değil kızım."), (1.68, 3.7, "Bak… ikiniz de giderken"), (3.7, 5.4, "dönüp bakmışsınız.")]}
+SUBTIMES = {5: [(0.0, 1.6, "Fotoğraf bozuk değil kızım."), (1.6, 4.0, "Bak… ikiniz de giderken"), (4.0, 5.6, "dönüp bakmışsınız.")]}
 
 T, START = {}, {}
 START[0] = 0.4
@@ -39,33 +36,19 @@ T["wide"] = (0.0, max(4.3, START[0] + DUR[0] + 0.15)); t = T["wide"][1]
 START[1] = t + 0.05; T["deniz"] = (t, START[1] + DUR[1] + 0.15); t = T["deniz"][1]
 START[2] = t + 0.1; T["tepki"] = (t, START[2] + DUR[2] + 0.2); t = T["tepki"][1]
 START[3] = t + 0.1; T["bakalim"] = (t, START[3] + DUR[3] + 0.6); T["loupe_in"] = T["bakalim"][1] - 0.55; t = T["bakalim"][1]
-START[4] = t + 0.7; T["foto"] = (t, START[4] + DUR[4] + 0.3); t = T["foto"][1]
-START[5] = t + 0.5; T["okuma"] = (t, START[5] + DUR[5] + 0.8); t = T["okuma"][1]
-T["yuz"] = (t, t + 1.3); t = T["yuz"][1]
-START[6] = t + 0.3; T["bozuk"] = (t, START[6] + 1.68); t = T["bozuk"][1]
-T["donup"] = (t, START[6] + DUR[6] + 1.0); t = T["donup"][1]
-S6 = START[6]; GAZE = (S6 + 4.2, S6 + 5.4)
-START[7] = t + 0.2; T["cevap"] = (t, START[7] + DUR[7] + 0.4); t = T["cevap"][1]
-START[8] = t + 0.15; T["final"] = (t, START[8] + DUR[8] + 0.8); t = T["final"][1]
+START[4] = t + 0.7; T["foto"] = (t, START[4] + DUR[4] + 1.6); t = T["foto"][1]
+T["yuz"] = (t, t + 1.5); t = T["yuz"][1]
+START[5] = t + 0.3; T["bozuk"] = (t, START[5] + 1.6); t = T["bozuk"][1]
+T["donup"] = (t, START[5] + DUR[5] + 1.0); t = T["donup"][1]
+S6 = START[5]; GAZE = (S6 + 4.5, S6 + 5.6)
+START[6] = t + 0.2; T["cevap"] = (t, START[6] + DUR[6] + 0.4); t = T["cevap"][1]
+START[7] = t + 0.15; T["final"] = (t, START[7] + DUR[7] + 0.8); t = T["final"][1]
 T_TICKET = t; T_CTA = t + 4.0; T_END = T_CTA + 2.4
-START[9] = T_END + 0.2; START[10] = START[9] + DUR[9] + 0.15
-TOTAL = round(START[10] + DUR[10] + 0.4, 2)
-S5 = START[5]
+START[8] = T_END + 0.2; START[9] = START[8] + DUR[8] + 0.15
+TOTAL = round(START[9] + DUR[9] + 0.4, 2)
 FIELDS = (("Arıza:", "\"Severek ayrıldık.\""),
           ("Yapılan işlem:", "Fotoğrafa büyüteçle bakıldı."),
           ("Not:", "Severek ayrılmak, giderken dönüp bakmaktır."))
-
-def lid_state(t):
-    shown = {"A": 0, "B": 0}; chars = {"A": 0, "B": 0}
-    for w, i, a, b in READ:
-        a += S5; b += S5
-        if t >= a:
-            l1, l2 = ifo.NOTES[w][i]
-            n = len(l1) + len(l2)
-            shown[w] = i + 1
-            chars[w] = n if t >= b else int(n * (t - a) / (b - a))
-    return shown, chars
-
 
 def k01(t, a, b):
     return min(1.0, max(0.0, (t - a) / (b - a)))
@@ -83,7 +66,7 @@ def speaking(t, who):
 s3.speaking = speaking
 s3.BLINKS["E"] = []
 s3.BLINKS["U"] = [2.4, T["cevap"][0] + 1.6]
-s3.BLINKS["D"] = [1.8, T["deniz"][0] + 1.2, START[9] + 0.7]
+s3.BLINKS["D"] = [1.8, T["deniz"][0] + 1.2, START[8] + 0.7]
 
 
 def sub_at(t):
@@ -157,25 +140,13 @@ def keycam(t, keys):
     return cx, cy, k[3]
 
 
-WHOLE = (600, 450, 1.12)
-HER_N, HIM_N = (300, 470, 1.95), (900, 470, 1.95)
+WHOLE = (600, 390, 1.12)
 
 
 def shot_foto(t):
     t0, t1 = T["foto"]
     img = ifo.photo_plate()
-    return crop(img, *keycam(t, [(t0, *WHOLE), (t1, 600, 450, 1.2)]))
-
-
-def shot_okuma(t):
-    sh, ch = lid_state(t)
-    img = ifo.photo_plate(sh["A"], ch["A"], sh["B"], ch["B"])
-    t0 = T["okuma"][0]
-    keys = [(t0, *WHOLE), (S5 - 0.05, *HER_N)]
-    for (w0, _, _, e0), (w1, _, s1, _) in zip(READ, READ[1:]):
-        keys += [(S5 + e0 - 0.05, *(HER_N if w0 == "A" else HIM_N)), (S5 + s1 + 0.2, *(HER_N if w1 == "A" else HIM_N))]
-    keys += [(T["okuma"][1] - 0.2, *HIM_N)]
-    return crop(img, *keycam(t, keys))
+    return crop(img, *keycam(t, [(t0, *WHOLE), (t1, 600, 380, 1.3)]))
 
 
 def shot_bozuk(t):
@@ -189,10 +160,10 @@ def shot_bozuk(t):
 
 def shot_donup(t):
     gq = int(round(smooth(k01(t, *GAZE)) * 20))
-    img = ifo.photo_plate(2, 99, 2, 99, gq)
+    img = ifo.photo_plate(gq)
     t0, t1 = T["donup"]
-    keys = [(t0, *WHOLE), (S6 + 2.4, *WHOLE), (S6 + 3.3, 268, 330, 2.5), (S6 + 3.75, 268, 330, 2.5),
-            (S6 + 4.4, 932, 330, 2.5), (S6 + 4.7, 932, 330, 2.5), (S6 + 5.6, 600, 400, 1.25), (t1, 600, 400, 1.3)]
+    keys = [(t0, *WHOLE), (S6 + 2.6, *WHOLE), (S6 + 3.4, 268, 330, 2.5), (S6 + 3.95, 268, 330, 2.5),
+            (S6 + 4.5, 932, 330, 2.5), (S6 + 4.8, 932, 330, 2.5), (S6 + 5.8, 600, 380, 1.25), (t1, 600, 380, 1.3)]
     return crop(img, *keycam(t, keys))
 
 
@@ -229,7 +200,6 @@ SHOTS = [
     S(*T["tepki"], lambda t: shop(t, push(USTA_MCU, t, *T["tepki"]), usta="E_side", deniz="D_sincere", rope="photo", bg_blur=8, deniz_blur=6)),
     S(*T["bakalim"], shot_bakalim),
     S(*T["foto"], shot_foto),
-    S(*T["okuma"], shot_okuma),
     S(*T["yuz"], lambda t: door(t, push(EMRE_CU, t, *T["yuz"], 0.05), emre="N_sad", rope="photo", emre_mouth=0.0)),
     S(*T["bozuk"], shot_bozuk),
     S(*T["donup"], shot_donup),
@@ -273,13 +243,11 @@ def audio_mix(out):
     add(f"{SFX}/cingirak.mp3", 0.0, 0.35, ",atrim=0:1.0,afade=t=out:st=0.3:d=0.7")   # short bell, fades before the hook
     add(f"{SFX}/kagit_birakma.mp3", 1.05, 0.6)
     add(f"{SFX}/loupe.mp3", T["loupe_in"], 0.5)
-    for (w, i, a, b) in READ:
-        add(f"{SFX}/kalem.mp3", S5 + a, 0.25, f",atrim=0:{b - a:.2f},afade=t=out:st={max(0, b - a - 0.2):.2f}:d=0.2")
     add(f"{SFX}/tin.mp3", GAZE[0], 0.45)
-    add(f"{SFX}/cingirak_cikis.mp3", START[8] + DUR[8] + 0.3, 0.35)
+    add(f"{SFX}/cingirak_cikis.mp3", START[7] + DUR[7] + 0.3, 0.35)
     add(f"{SFX}/kalem.mp3", T_TICKET + 0.2, 0.7, ",atrim=0:2.5,afade=t=out:st=2.1:d=0.4")
     add(f"{SFX}/damga.mp3", T_CTA - 0.75, 0.8)
-    m0 = T["okuma"][0]
+    m0 = T["foto"][0] + 1.0
     add(f"{SFX}/muzik.mp3", m0, 0.26, f",afade=t=in:st=0:d=2.5,afade=t=out:st={T_END - m0 - 1.5}:d=1.5")
     fc = ";".join(filters) + ";" + "".join(labels) + f"amix=inputs={len(labels)}:normalize=0:duration=longest,atrim=0:{TOTAL},alimiter=limit=0.95[out]"
     subprocess.run(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", fc, "-map", "[out]", "-c:a", "pcm_s16le", out], check=True)

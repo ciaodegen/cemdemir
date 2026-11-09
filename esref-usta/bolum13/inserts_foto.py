@@ -1,4 +1,4 @@
-"""Bölüm 13 (Severek Ayrılınır mı?) fotoğraf çekimleri: Boğaz kıyısında birbirinden uzak iki kişi, ikisi de dönüp birbirine bakıyor."""
+"""Bölüm 13 (Severek Ayrılınır mı?) fotoğraf çekimleri: Boğaz kıyısında birbirinden uzak iki kişi, ikisi de giderken dönüp birbirine bakıyor."""
 import sys, math, functools
 sys.path.insert(0, "/home/user/cemdemir/esref-usta/bolum1")
 sys.path.insert(0, "/home/user/cemdemir/esref-usta/mektup1")
@@ -8,15 +8,11 @@ from engine import font, FONT_HAND
 import inserts as ins
 
 BW, BH = 1440, 2560
-PW, PH = 1200, 900                  # photo (inside the white border)
+PW, PH = 1200, 780                  # photo (inside the white border)
 PX, PY = (BW - PW) // 2, 1280 - PH // 2
 GROUND = 620                         # promenade line inside the photo
 HER = (270, GROUND)                  # feet positions inside the photo
 HIM = (930, GROUND)
-NOTES = {"A": [("Berlin'de iş", "teklifi aldım."), ("Hemen evlenmek", "istiyorum.")],
-         "B": [("Annem hasta,", "onu bırakamam."), ("Önce kendimi", "bulmalıyım.")]}
-NOTE_X = {"A": 60, "B": 700}
-NOTE_Y = 648
 
 
 def _scene():
@@ -134,23 +130,8 @@ def _photo_base():
     return ph
 
 
-def photo(shownA=0, charsA=0, shownB=0, charsB=0, gaze=0.0):
+def photo(gaze=0.0):
     ph = _photo_base().copy()
-    d = ImageDraw.Draw(ph)
-    f = font(FONT_HAND, 44)
-    for w, shown, chars in (("A", shownA, charsA), ("B", shownB, charsB)):
-        x0 = NOTE_X[w]
-        y = NOTE_Y
-        for i, (l1, l2) in enumerate(NOTES[w][:shown]):
-            n = len(l1) + len(l2) if i < shown - 1 else chars
-            for line in (l1, l2):
-                if n <= 0:
-                    break
-                s = line[:n]; n -= len(line)
-                d.text((x0 + 2, y + 2), s, font=f, fill=(40, 30, 40, 160))
-                d.text((x0, y), s, font=f, fill=(255, 250, 240, 255))
-                y += 50
-            y += 12
     if gaze > 0:   # a soft golden line between the two gazes
         g = Image.new("RGBA", ph.size, (0, 0, 0, 0))
         gd = ImageDraw.Draw(g)
@@ -169,10 +150,10 @@ def photo(shownA=0, charsA=0, shownB=0, charsB=0, gaze=0.0):
 
 
 @functools.lru_cache(maxsize=128)
-def photo_plate(shownA=0, charsA=0, shownB=0, charsB=0, gaze_q=0):
+def photo_plate(gaze_q=0):
     img = ins.wood_top(161).copy()
     obj = Image.new("RGBA", (BW, BH), (0, 0, 0, 0))
-    p = photo(shownA, charsA, shownB, charsB, gaze_q / 20).rotate(-2, expand=True, resample=Image.BICUBIC)
+    p = photo(gaze_q / 20).rotate(-2, expand=True, resample=Image.BICUBIC)
     obj.alpha_composite(p, ((BW - p.size[0]) // 2, 1280 - p.size[1] // 2))
     ins.shadowed(img, obj, blur=26, off=(16, 28), alpha=160)
     return img
@@ -184,7 +165,7 @@ def photo_point(px, py):
 
 
 if __name__ == "__main__":
-    ims = [photo_plate(), photo_plate(2, 40, 2, 40), photo_plate(2, 40, 2, 40, 20)]
+    ims = [photo_plate(), photo_plate(20)]
     sheet = Image.new("RGB", (360 * len(ims), 640))
     for i, x in enumerate(ims):
         sheet.paste(x.convert("RGB").resize((360, 640)), (i * 360, 0))
