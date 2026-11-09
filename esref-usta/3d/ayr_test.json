@@ -1,0 +1,2 @@
+[{"name":"ay_test","char":18,"w":800,"h":1040,"view":[0,0.625,0.725,4.0],"headYaw":0.06,"gaze":[0.05,-0.15],"brow":0.6,"mouth":0.2,"force":true},
+ {"name":"ay_back","char":18,"w":800,"h":1040,"view":[0,0.625,0.725,4.0],"yaw":3.14159,"force":true}]
