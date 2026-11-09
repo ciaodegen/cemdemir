@@ -114,6 +114,13 @@ def front_plate(rope="two", package=False):
             d.ellipse([x0, 1798 + CY, x0 + 56, 1816 + CY], fill=c)
             d.ellipse([x0 + 8, 1800 + CY, x0 + 48, 1808 + CY], fill=(246, 240, 226, 255))
         d.line([(656, 1810 + CY), (668, 1810 + CY)], fill=(196, 30, 40, 255), width=6)
+    elif rope == "photo":
+        d = ImageDraw.Draw(front)
+        d.polygon([(592, 1800 + CY), (712, 1794 + CY), (718, 1820 + CY), (596, 1826 + CY)], fill=(246, 242, 234, 255))
+        d.polygon([(598, 1802 + CY), (706, 1797 + CY), (708, 1810 + CY), (600, 1814 + CY)], fill=(232, 150, 110, 255))
+        d.polygon([(600, 1814 + CY), (708, 1810 + CY), (711, 1817 + CY), (602, 1821 + CY)], fill=(118, 102, 94, 255))
+        d.line([(618, 1806 + CY), (619, 1816 + CY)], fill=(196, 170, 124, 255), width=4)
+        d.line([(690, 1802 + CY), (691, 1813 + CY)], fill=(46, 58, 86, 255), width=4)
     elif rope == "gloves":
         d = ImageDraw.Draw(front)
         for k, x0 in enumerate((590, 650)):
