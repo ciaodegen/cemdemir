@@ -1567,7 +1567,7 @@ vec2 borcc(vec3 p){
     float sx = s == 0 ? -1.0 : 1.0;
     float by = 0.054 + uBrow * 0.014;
     // thick, slightly raised inner ends when worried
-    float brow = sdC(h, hc + vec3(sx * 0.022, by + 0.004 + uBrow * 0.006, 0.122), hc + vec3(sx * 0.082, by - 0.002, 0.103), 0.0085);
+    float brow = sdC(h, hc + vec3(sx * 0.022, by + 0.004 + max(uBrow, 0.0) * 0.006 + min(uBrow, 0.0) * 0.016, 0.123), hc + vec3(sx * 0.082, by - 0.002 - min(uBrow, 0.0) * 0.012, 0.103), 0.0085);
     hr = U(hr, vec2(brow, 69.0));
   }
   // short beard + mustache

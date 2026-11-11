@@ -1,0 +1,11 @@
+[["02b_T","T","[a bit hurt, showing the napkin] Peçeteye yazdı bak: Ay sonu veririm, söz!",0.5],
+ ["03b_U","U","[calm, warm] Hangi ay sonu?",1.0],
+ ["04b_T","T","[counting on fingers, frustrated but not shouting] Önce ay sonu dedi. Sonra bayramdan sonra. Şimdi de… kanka, aramızda para mı konuşulur?",0.5],
+ ["05b_T","T","[annoyed, disbelief] Dün de yeni telefon almış, story atmış!",0.5],
+ ["06b_D","D","[curious, cheeky] Kamerası iyi mi bari abi?",0.5],
+ ["10b_T","T","[annoyed, disbelief, not shouting] Pizzalar ondanmış usta! Pizzalar!",0.5],
+ ["11b_U","U","[calm, warm, a little sly] Yaz bakalım. Gelirim kanka. Pizzalar senden… beş bin de senden.",1.0],
+ ["12b_T","T","[deflated, quiet] Görüldü attı usta…",0.5],
+ ["13b_U","U","[calm, warm] Cevap bu evladım.",1.0],
+ ["14b_U","U","[calm, warm] Peçeteyi sakla. Bazı sözler tamir edilmez.",1.0],
+ ["15b_D","D","[casual, cheeky] Ben olsam pizzaya giderdim abi.",0.5]]
