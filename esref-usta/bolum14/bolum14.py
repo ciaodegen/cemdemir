@@ -16,8 +16,8 @@ SFX = f"{ROOT}/efektler"
 
 LINES = [  # file, speaker (E = customer), subtitle
     ("01_T", "E", "Usta, borç verdiğim parayı geri istemek ayıp mı?"),
-    ("04b_T", "E", "Önce \"ay sonu\" dedi. Sonra \"bayramdan sonra\". Şimdi de… \"Kanka, aramızda para mı konuşulur?\""),
-    ("05b_T", "E", "Dün de yeni telefon almış, story atmış!"),
+    ("04c_T", "E", "İki ay önce \"vereceğim\" dedi. Geçen ay tatile gitti…"),
+    ("05c_T", "E", "Bu ay da yeni telefon almış!"),
     ("06b_D", "D", "Kamerası iyi mi bari abi?"),
     ("04_U", "U", "Deniz."),
     ("05_U", "U", "Dur, bir bakalım…"),
@@ -31,14 +31,14 @@ LINES = [  # file, speaker (E = customer), subtitle
     ("04_U", "U", "Deniz."),
 ]
 DUR = {i: duration(f"{REP}/{f}.mp3") for i, (f, _, _) in enumerate(LINES)}
-SUBTIMES = {1: [(0.0, 1.45, "Önce \"ay sonu\" dedi."), (1.45, 3.4, "Sonra \"bayramdan sonra\"."), (3.4, 9, "Şimdi de… \"Kanka, aramızda para mı konuşulur?\"")],
+SUBTIMES = {1: [(0.0, 1.55, "İki ay önce \"vereceğim\" dedi."), (1.55, 9, "Geçen ay tatile gitti…")],
             7: [(0.0, 1.15, "Yaz bakalım:"), (1.15, 2.3, "\"Gelirim kanka.\""), (2.3, 3.7, "\"Pizzalar senden…\""), (3.7, 9, "\"…beş bin de senden.\"")],
             10: [(0.0, 1.75, "Geri istemek ayıp değil."), (1.75, 9, "Ayıp olan… istetmektir.")]}
 
 T, START = {}, {}
 START[0] = 0.35; T["wide"] = (0.0, max(4.0, START[0] + DUR[0] + 0.2)); PUT = 1.1; t = T["wide"][1]
-START[1] = t + 0.15; T["bahA"] = (t, START[1] + 3.0); T["bahB"] = (T["bahA"][1], START[1] + 3.75); T["bahC"] = (T["bahB"][1], START[1] + DUR[1] + 0.2); t = T["bahC"][1]
-START[2] = t + 0.1; T["sinir1"] = (t, START[2] + 1.0); T["story"] = (T["sinir1"][1], START[2] + DUR[2] + 0.9); t = T["story"][1]
+START[1] = t + 0.15; T["bahA"] = (t, START[1] + DUR[1] + 0.15); T["bahB"] = (T["bahA"][1], T["bahA"][1] + 0.75); t = T["bahB"][1]
+START[2] = t + 0.05; T["sinir1"] = (t, START[2] + 0.75); T["story"] = (T["sinir1"][1], START[2] + DUR[2] + 1.3); t = T["story"][1]
 START[3] = t + 0.1; T["deniz"] = (t, START[3] + DUR[3] + 0.15); t = T["deniz"][1]
 START[4] = t + 0.1; T["tepki"] = (t, START[4] + DUR[4] + 0.2); t = T["tepki"][1]
 START[5] = t + 0.1; T["bakalim"] = (t, START[5] + DUR[5] + 0.6); T["loupe_in"] = T["bakalim"][1] - 0.55; t = T["bakalim"][1]
@@ -229,7 +229,6 @@ SHOTS = [
     S(*T["wide"], shot_wide),
     cu("T_ask", "bahA"),
     S(*T["bahB"], lambda t: shop(t, push(USTA_MCU, t, *T["bahB"], 0.03), usta="E_side", deniz="D_listen", rope="phone", bg_blur=8, deniz_blur=6, usta_mouth=0)),
-    cu("T_angry", "bahC", 0.08, cam=EMRE_MCU),
     cu("T_angry", "sinir1", 0.05),
     S(*T["story"], shot_story),
     S(*T["deniz"], lambda t: shop(t, push(DENIZ_MCU, t, *T["deniz"]), deniz="D_phone", rope="phone", deniz_blur=0, bg_blur=8, usta_blur=6)),

@@ -12,7 +12,7 @@ BOX = (370, 560, 1070, 2040)
 SCR = (BOX[0] + 26, BOX[1] + 26, BOX[2] - 26, BOX[3] - 26)
 SW, SH = SCR[2] - SCR[0], SCR[3] - SCR[1]
 
-OLD = [("out", "Kanka şu 5 bin?", "Mart"), ("in", "Bayramdan sonra kanka", "Nisan"), ("out", "Kanka?", "Haziran")]
+OLD = [("out", "Kanka şu 5 bin?", "Eylül"), ("in", "Ay sonu veriyorum kanka", "Eylül"), ("out", "Kanka?", "Ekim")]
 INVITE = "Kanka akşam maç var, bize gel. Pizzalar benden!"
 REPLY = "Gelirim kanka. Pizzalar senden… beş bin de senden."
 
