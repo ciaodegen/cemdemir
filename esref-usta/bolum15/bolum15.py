@@ -16,24 +16,23 @@ REP = f"{ROOT}/bolum15/replikler_hizli"
 SFX = f"{ROOT}/efektler"
 
 LINES = [  # file, speaker (E = customer), subtitle
-    ("01_Z", "E", "Usta, üniversite okumaya değer mi? Diplomam var, işim yok!"),
-    ("02_Z", "E", "Dört yıl okudum, iki yıl sınava hazırlandım, yüz on iki yere başvurdum… Hepsi \"en az üç yıl deneyim\" istiyor! Deneyimi nerede kazanacağım?!"),
-    ("03_Z", "E", "Yüz on üç…"),
+    ("01v_Z", "E", "Usta, üniversite okumaya değer mi? Diplomam var, işim yok!"),
+    ("02v_Z", "E", "Yüz on iki başvuru… hepsi \"deneyim\" istiyor!"),
+    ("03v_Z", "E", "Yüz on üç…"),
     ("04_D", "D", "Abla, diplomayı çerçeveletelim, en azından duvarda bir işe yarasın."),
     ("04_U", "U", "Deniz."),
     ("05_U", "U", "Dur, bir bakalım…"),
     ("08_U", "U", "Diploma kapıyı gösterir evladım… kapıyı açan, elindeki iştir."),
     ("09_U", "U", "Şu tabela otuz yıldır aynı. Yenisini sen çizer misin?"),
-    ("10_Z", "E", "Ciddi misiniz usta?"),
+    ("10v_Z", "E", "Ciddi misiniz usta?"),
     ("11_U", "U", "İlk deneyimin benden. Gerisi senin elinde."),
-    ("12_Z", "E", "O zaman CV'me ilk satırı yazıyorum: \"Eşref Usta Tamir Atölyesi!\""),
+    ("12v_Z", "E", "O zaman CV'me ilk satırı yazıyorum: \"Eşref Usta Tamir Atölyesi!\""),
     ("13_D", "D", "Ben hiç okumadım abi, ustanın yanında öğrendim. Bence değmez."),
     ("04_U", "U", "Deniz."),
 ]
 DUR = {i: duration(f"{REP}/{f}.mp3") for i, (f, _, _) in enumerate(LINES)}
 # subtitle chunks per line; their timing is snapped to the pauses measured in each audio file
-CHUNKS = {1: ["Dört yıl okudum, iki yıl sınava hazırlandım,", "yüz on iki yere başvurdum…", "Hepsi \"en az üç yıl deneyim\" istiyor!", "Deneyimi nerede kazanacağım?!"],
-          3: ["Abla, diplomayı çerçeveletelim,", "en azından duvarda bir işe yarasın."],
+CHUNKS = {3: ["Abla, diplomayı çerçeveletelim,", "en azından duvarda bir işe yarasın."],
           6: ["Diploma kapıyı gösterir evladım…", "…kapıyı açan, elindeki iştir."],
           7: ["Şu tabela otuz yıldır aynı.", "Yenisini sen çizer misin?"],
           9: ["İlk deneyimin benden.", "Gerisi senin elinde."],
@@ -76,7 +75,7 @@ def chunk_times(i):
 
 T, START = {}, {}
 START[0] = 0.35; T["wide"] = (0.0, max(4.0, START[0] + DUR[0] + 0.2)); PUT = 1.1; t = T["wide"][1]
-START[1] = t + 0.15; T["dertA"] = (t, START[1] + 4.3); T["dertB"] = (T["dertA"][1], START[1] + DUR[1] + 0.15); t = T["dertB"][1]
+START[1] = t + 0.15; T["dert"] = (t, START[1] + DUR[1] + 0.2); t = T["dert"][1]
 T["mail"] = (t, t + 2.6); BUZZ = t - 0.2; NEWMAIL = t + 0.5; t = T["mail"][1]
 START[2] = t + 0.3; T["uzgun"] = (t, START[2] + DUR[2] + 0.6); t = T["uzgun"][1]
 START[3] = t + 0.1; T["deniz"] = (t, START[3] + DUR[3] + 0.15); t = T["deniz"][1]
@@ -110,7 +109,7 @@ def speaking(t, who):
 
 
 s3.speaking = speaking
-s3.BLINKS["E"] = [T["dertA"][0] + 1.8, T["uzgun"][0] + 0.9, T["final"][0] + 1.5]
+s3.BLINKS["E"] = [T["dert"][0] + 1.6, T["uzgun"][0] + 0.9, T["final"][0] + 1.5]
 s3.BLINKS["U"] = [T["tepki"][0] + 0.9, T["cevap"][0] + 2.6, T["ilk"][0] + 1.4]
 s3.BLINKS["D"] = [T["deniz"][0] + 1.4, START[11] + 0.9]
 
@@ -237,8 +236,7 @@ def cu(name, key, push_amt=0.06, mouth=None, cam=EMRE_CU, rope="diploma"):
 
 SHOTS = [
     S(*T["wide"], shot_wide),
-    cu("Z_front", "dertA", 0.05, cam=EMRE_MCU),
-    cu("Z_front", "dertB", 0.1),
+    cu("Z_front", "dert", 0.1),
     S(*T["mail"], shot_mail),
     cu("Z_sad", "uzgun", 0.08),
     S(*T["deniz"], lambda t: shop(t, push(DENIZ_MCU, t, *T["deniz"]), deniz="D_sincere", rope="diploma", deniz_blur=0, bg_blur=8, usta_blur=6)),
