@@ -1,5 +1,5 @@
 """Bölüm 14 — "Borç Geri İstenir mi?" (~55 sn). Klasik açılış + hikâye: bahaneler, story, pizza daveti, Usta'nın yazdırdığı cevap, "Görüldü"."""
-import sys, subprocess, functools
+import sys, re, subprocess, functools
 sys.path.insert(0, "/home/user/cemdemir/esref-usta/bolum1")
 sys.path.insert(0, "/home/user/cemdemir/esref-usta/mektup1")
 sys.path.insert(0, "/home/user/cemdemir/esref-usta/bolum14")
@@ -25,13 +25,52 @@ LINES = [  # file, speaker (E = customer), subtitle
     ("04_Y", "E", "Görüldü attı usta…"),
     ("13b_U", "U", "Cevap bu evladım."),
     ("07_U", "U", "Geri istemek ayıp değil. Ayıp olan… istetmektir."),
-    ("05_Y", "E", "O zaman bu videoyu ona atıyorum usta."),
+    ("16_Y", "E", "Beş bine bir arkadaş kaybettim usta…"),
+    ("17_U", "U", "Kaybetmedin evladım… tanıdın."),
     ("15c_D", "D", "Ben olsam atardım abi, arkadaş sonuçta."),
     ("04_U", "U", "Deniz."),
 ]
 DUR = {i: duration(f"{REP}/{f}.mp3") for i, (f, _, _) in enumerate(LINES)}
-SUBTIMES = {1: [(0.0, 2.45, "İki ay önce \"vereceğim\" dedi,"), (2.45, 4.6, "geçen ay telefon aldı, hem de son model!"), (4.6, 9, "Şimdi de tatilde… Bodrum'da!")],
-            9: [(0.0, 1.75, "Geri istemek ayıp değil."), (1.75, 9, "Ayıp olan… istetmektir.")]}
+# subtitle chunks per line; their timing is snapped to the pauses measured in each audio file
+CHUNKS = {1: ["İki ay önce \"vereceğim\" dedi,", "geçen ay telefon aldı, hem de son model!", "Şimdi de tatilde… Bodrum'da!"],
+          6: ["Yaz bakalım:", "\"Atarım kanka.", "Önce beş bini gönder…", "…bini hemen geri atarım.\""],
+          9: ["Geri istemek ayıp değil.", "Ayıp olan… istetmektir."]}
+
+
+CUTS = {1: [0.0, 2.46, 3.95]}   # measured by hand from the energy dips of 02_Y (one pause is too short for the detector)
+
+
+@functools.lru_cache(None)
+def pauses(path):
+    """Midpoints of the short silences inside a line (candidate subtitle cut points)."""
+    o = subprocess.run(["ffmpeg", "-i", path, "-af", "silencedetect=n=-35dB:d=0.07", "-f", "null", "-"], capture_output=True, text=True).stderr
+    st = [float(x) for x in re.findall(r"silence_start: ([0-9.]+)", o)]
+    en = [float(x) for x in re.findall(r"silence_end: ([0-9.]+)", o)]
+    return [(a + b) / 2 for a, b in zip(st, en) if a > 0.05]
+
+
+@functools.lru_cache(None)
+def chunk_times(i):
+    """Start offset of each subtitle chunk of line i: proportional to text length, snapped to the nearest real pause."""
+    if i in CUTS:
+        return CUTS[i]
+    parts = CHUNKS[i]
+    L = [len(p) for p in parts]
+    cand = pauses(f"{REP}/{LINES[i][0]}.mp3")
+    out, used, acc = [0.0], -1, 0
+    for l in L[:-1]:
+        acc += l
+        p = acc / sum(L) * DUR[i]
+        best = None
+        for j, c in enumerate(cand):
+            if j > used and abs(c - p) < 0.8 and (best is None or abs(c - p) < abs(cand[best] - p)):
+                best = j
+        if best is not None:
+            used = best; out.append(cand[best])
+        else:
+            out.append(p)
+    return out
+
 
 T, START = {}, {}
 START[0] = 0.35; T["wide"] = (0.0, max(4.0, START[0] + DUR[0] + 0.2)); PUT = 1.1; t = T["wide"][1]
@@ -48,10 +87,11 @@ SENT = S10 + DUR[6] + 0.25; TYPING = (SENT + 0.6, SENT + 1.8); SEEN = SENT + 2.1
 T["yazma"] = (T["yaz"][1], SEEN + 1.1); t = T["yazma"][1]
 START[7] = t + 0.1; T["gorduldu"] = (t, START[7] + DUR[7] + 0.25); t = T["gorduldu"][1]
 START[8] = t + 0.15; START[9] = START[8] + DUR[8] + 0.25; T["cevap"] = (t, START[9] + DUR[9] + 0.35); t = T["cevap"][1]
-START[10] = t + 0.15; T["final"] = (t, START[10] + DUR[10] + 0.7); t = T["final"][1]
+START[10] = t + 0.15; T["final"] = (t, START[10] + DUR[10] + 0.3); t = T["final"][1]
+START[11] = t + 0.2; T["kapanis"] = (t, START[11] + DUR[11] + 0.8); t = T["kapanis"][1]
 T_TICKET = t; T_CTA = t + 4.0; T_END = T_CTA + 2.4
-START[11] = T_END + 0.25; START[12] = START[11] + DUR[11] + 0.15
-TOTAL = round(START[12] + DUR[12] + 1.6, 2)
+START[12] = T_END + 0.25; START[13] = START[12] + DUR[12] + 0.15
+TOTAL = round(START[13] + DUR[13] + 1.6, 2)
 # typed characters of the reply, synced to Usta's dictation (offsets inside 11c_U)
 _N1 = len("Atarım kanka."); _N2 = len("Atarım kanka. Önce beş bini gönder…")
 TYPE_KEYS = [(1.2, 0), (1.97, _N1), (2.57, _N1), (3.58, _N2), (3.92, _N2), (5.0, len(itl.REPLY))]
@@ -75,28 +115,18 @@ def speaking(t, who):
 
 s3.speaking = speaking
 s3.BLINKS["E"] = [T["bahA"][0] + 1.6, T["gorduldu"][0] + 0.9, T["final"][0] + 1.2]
-s3.BLINKS["U"] = [T["tepki"][0] + 0.9, T["cevap"][0] + 2.2]
-s3.BLINKS["D"] = [T["deniz"][0] + 1.1, START[11] + 0.9]
+s3.BLINKS["U"] = [T["tepki"][0] + 0.9, T["cevap"][0] + 2.2, T["kapanis"][0] + 0.6]
+s3.BLINKS["D"] = [T["deniz"][0] + 1.1, START[12] + 0.9]
 
 
 def sub_at(t):
     for i, (f, s, txt) in enumerate(LINES):
         if txt and START[i] - 0.05 <= t < START[i] + DUR[i] + 0.2:
-            if i in SUBTIMES:
-                for a, b, p in SUBTIMES[i]:
-                    if t - START[i] < b:
-                        return p
-                return SUBTIMES[i][-1][2]
-            parts = split_sub(txt)
-            if len(parts) == 1:
-                return txt
-            k = (t - START[i]) / max(DUR[i], 0.1)
-            L = [len(p) for p in parts]; acc = 0
-            for p, l in zip(parts, L):
-                acc += l / sum(L)
-                if k < acc:
-                    return p
-            return parts[-1]
+            if i in CHUNKS:
+                ts = chunk_times(i); u = t - START[i]
+                k = max(j for j, c in enumerate(ts) if u >= c - 0.05) if u >= -0.05 else 0
+                return CHUNKS[i][k]
+            return txt
     return ""
 
 
@@ -140,7 +170,7 @@ HOOK = ("BORÇ VERDİĞİN PARAYI", "İSTEMEK AYIP MI?!")
 def shot_wide(t):
     img = shop(t, push(WIDE, t, *T["wide"], 0.04), deniz="D_phone", rope="phone" if t >= PUT else "none",
                emre_back=(120 - 220 * (1 - smooth(min(1.0, t / 1.0))), 560, 0.95, 5, "B_back", 0.85))
-    return with_banner(img, _banner(*HOOK), k=1 - k01(t, T["wide"][1] - 0.5, T["wide"][1] - 0.1))
+    return img
 
 
 def pcrop(img, keys, t):
@@ -219,7 +249,7 @@ def _cta():
 
 def shot_stinger(t):
     img = shop(t, push((s3.DENIZ_X - 30, 1450, 740), t, T_END, TOTAL, 0.05), deniz="D_whisper", rope="none", deniz_blur=0, bg_blur=8, usta_blur=6)
-    return with_banner(img, _banner("SEN OLSAN", "NE YAZARDIN?", "Yorumlara yaz"), 0.1, smooth(k01(t, START[11] + 0.4, START[11] + 0.9)))
+    return with_banner(img, _banner("SEN OLSAN", "NE YAZARDIN?", "Yorumlara yaz"), 0.1, smooth(k01(t, START[12] + 0.4, START[12] + 0.9)))
 
 
 def cu(name, key, push_amt=0.06, mouth=None, cam=EMRE_CU):
@@ -241,7 +271,8 @@ SHOTS = [
     S(*T["yazma"], shot_yazma),
     cu("B_front", "gorduldu", 0.05),
     S(*T["cevap"], shot_cevap),
-    S(*T["final"], lambda t: door(t, push(EMRE_CU, t, *T["final"], 0.05), emre="B_soft", rope="none")),
+    S(*T["final"], lambda t: door(t, push(EMRE_CU, t, *T["final"], 0.06), emre="B_front", rope="phone")),
+    S(*T["kapanis"], lambda t: shop(t, push(USTA_CU, t, *T["kapanis"], 0.08), usta="E_soft", rope="phone", bg_blur=9, deniz_blur=8)),
     S(T_TICKET, T_CTA, plate(lambda t: _ticket(round(k01(t, T_TICKET + 0.2, T_TICKET + 2.7) * 60) / 60, round(k01(t, T_CTA - 0.75, T_CTA - 0.4) * 8) / 8), T_TICKET, T_CTA, 1.04, 1.0)),
     S(T_CTA, T_END, plate(lambda t: _cta(), T_CTA, T_END, 1.0, 1.0)),
     S(T_END, TOTAL, shot_stinger),
@@ -260,7 +291,7 @@ def frame_at(t):
         img = Image.new("RGB", (W, H))
     img = finish(img, t, dust=False, grain=False)
     inn = lambda keys: any(T[k][0] <= t < T[k][1] for k in keys)
-    yf = 0.62 if inn(("wide",)) else 0.89 if inn(PAPER) else 0.115 if inn(PHONE) else 0.705
+    yf = 0.705
     txt = sub_at(t)
     if inn(("yazma",)):
         txt = ""          # the typed message on screen is the subtitle
@@ -296,7 +327,7 @@ def audio_mix(out):
     add(f"{SFX}/tin.mp3", INVITE + 1.0, 0.35)
     add(f"{SFX}/telefon_tus.mp3", S10 + 1.28, 0.35, f",atrim=0:{4.72 - 1.28:.2f},afade=t=out:st={4.72 - 1.28 - 0.2:.2f}:d=0.2")
     add(f"{SFX}/tin.mp3", SENT, 0.3)
-    add(f"{SFX}/cingirak_cikis.mp3", START[10] + DUR[10] + 0.25, 0.35)
+    add(f"{SFX}/cingirak_cikis.mp3", T["kapanis"][1] - 0.3, 0.3)
     add(f"{SFX}/kalem.mp3", T_TICKET + 0.2, 0.7, ",atrim=0:2.5,afade=t=out:st=2.1:d=0.4")
     add(f"{SFX}/damga.mp3", T_CTA - 0.75, 0.8)
     m0 = T["chat1"][0]
