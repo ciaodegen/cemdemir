@@ -16,17 +16,17 @@ REP = f"{ROOT}/bolum15/replikler_hizli"
 SFX = f"{ROOT}/efektler"
 
 LINES = [  # file, speaker (E = customer), subtitle
-    ("01v_Z", "E", "Usta, üniversite okumaya değer mi? Diplomam var, işim yok!"),
-    ("02v_Z", "E", "Yüz on iki başvuru… hepsi \"deneyim\" istiyor!"),
-    ("03v_Z", "E", "Yüz on üç…"),
+    ("01d_Z", "E", "Usta, üniversite okumaya değer mi? Diplomam var, işim yok!"),
+    ("02d_Z", "E", "Yüz on iki başvuru… hepsi \"deneyim\" istiyor!"),
+    ("03d_Z", "E", "Yüz on üç…"),
     ("04_D", "D", "Abla, diplomayı çerçeveletelim, en azından duvarda bir işe yarasın."),
     ("04_U", "U", "Deniz."),
     ("05_U", "U", "Dur, bir bakalım…"),
     ("08_U", "U", "Diploma kapıyı gösterir evladım… kapıyı açan, elindeki iştir."),
     ("09_U", "U", "Şu tabela otuz yıldır aynı. Yenisini sen çizer misin?"),
-    ("10v_Z", "E", "Ciddi misiniz usta?"),
+    ("10d_Z", "E", "Ciddi misiniz usta?"),
     ("11_U", "U", "İlk deneyimin benden. Gerisi senin elinde."),
-    ("12v_Z", "E", "O zaman CV'me ilk satırı yazıyorum: \"Eşref Usta Tamir Atölyesi!\""),
+    ("12d_Z", "E", "O zaman CV'me ilk satırı yazıyorum: \"Eşref Usta Tamir Atölyesi!\""),
     ("13_D", "D", "Ben hiç okumadım abi, ustanın yanında öğrendim. Bence değmez."),
     ("04_U", "U", "Deniz."),
 ]
@@ -38,13 +38,13 @@ CHUNKS = {3: ["Abla, diplomayı çerçeveletelim,", "en azından duvarda bir iş
           9: ["İlk deneyimin benden.", "Gerisi senin elinde."],
           10: ["O zaman CV'me ilk satırı yazıyorum:", "\"Eşref Usta Tamir Atölyesi!\""],
           11: ["Ben hiç okumadım abi, ustanın yanında öğrendim.", "Bence değmez."]}
-CUTS = {}
+CUTS = {3: [0.0, 1.45]}   # Deniz line: the comma after "Abla" is the only detected pause
 
 
 @functools.lru_cache(None)
 def pauses(path):
     """Midpoints of the short silences inside a line (candidate subtitle cut points)."""
-    o = subprocess.run(["ffmpeg", "-i", path, "-af", "silencedetect=n=-35dB:d=0.07", "-f", "null", "-"], capture_output=True, text=True).stderr
+    o = subprocess.run(["ffmpeg", "-i", path, "-af", "silencedetect=n=-30dB:d=0.07", "-f", "null", "-"], capture_output=True, text=True).stderr
     st = [float(x) for x in re.findall(r"silence_start: ([0-9.]+)", o)]
     en = [float(x) for x in re.findall(r"silence_end: ([0-9.]+)", o)]
     return [(a + b) / 2 for a, b in zip(st, en) if a > 0.05]
