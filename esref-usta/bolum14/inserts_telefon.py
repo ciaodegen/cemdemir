@@ -90,20 +90,27 @@ def chat_screen(invite=0.0, typed=0, sent=False, typing=False, seen=False):
     for yy in range(240, SH, 90):
         for xx in range((yy // 90 % 2) * 45, SW, 90):
             d.ellipse([xx - 3, yy - 3, xx + 3, yy + 3], fill=(228, 218, 200, 255))
-    _header(d, "yazıyor…" if typing else "çevrimiçi")
+    # messages are laid out on a tall layer, then scrolled so the newest one sits above the input bar
+    lay = Image.new("RGBA", (SW, 3000), (0, 0, 0, 0))
+    ld = ImageDraw.Draw(lay)
     y = 250
     for side, text, date in OLD:
-        y = _bubble(scr, d, side, text, y, extra=date)
+        y = _bubble(lay, ld, side, text, y, extra=date)
     if invite > 0:
-        y = _bubble(scr, d, "in", INVITE, y + 10, extra="21:46", pop=min(1.0, invite), emoji_tail="🍕")
+        y = _bubble(lay, ld, "in", INVITE, y + 10, extra="21:46", pop=min(1.0, invite), emoji_tail="🍕")
     if sent:
-        y = _bubble(scr, d, "out", REPLY, y, extra="21:47 ✓✓" if not seen else "21:47 ✓✓")
+        y = _bubble(lay, ld, "out", REPLY, y, extra="21:47 ✓✓")
         if typing:
-            y = _bubble(scr, d, "in", "yazıyor…", y)
+            y = _bubble(lay, ld, "in", "yazıyor…", y)
         if seen:
             f = font(FONT_BOLD, 42)
             t = "Görüldü"
-            d.text((SW - 40 - d.textlength(t, font=f), y - 12), t, font=f, fill=(52, 120, 220, 255))
+            ld.text((SW - 40 - ld.textlength(t, font=f), y - 12), t, font=f, fill=(52, 120, 220, 255))
+            y += 50
+    off = max(0, y - (SH - 170))
+    scr.alpha_composite(lay.crop((0, off, SW, off + SH)))
+    d = ImageDraw.Draw(scr)
+    _header(d, "yazıyor…" if typing else "çevrimiçi")
     # input bar
     d.rectangle([0, SH - 150, SW, SH], fill=(246, 240, 228, 255))
     d.rounded_rectangle([24, SH - 128, SW - 130, SH - 30], radius=48, fill=(255, 255, 255, 255), outline=(214, 204, 188, 255), width=2)

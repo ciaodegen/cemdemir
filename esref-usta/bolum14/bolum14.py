@@ -140,7 +140,7 @@ HOOK = ("BORÇ VERDİĞİN PARAYI", "GERİ İSTEMEK AYIP MI?")
 
 def shot_wide(t):
     img = shop(t, push(WIDE, t, *T["wide"], 0.04), deniz="D_phone", rope="phone" if t >= PUT else "none",
-               emre_back=(120 - 220 * (1 - smooth(min(1.0, t / 1.0))), 560, 0.95, 5, "T_back", 0.85))
+               emre_back=(120 - 220 * (1 - smooth(min(1.0, t / 1.0))), 560, 0.95, 5, "B_back", 0.85))
     return with_banner(img, _banner(*HOOK), k=1 - k01(t, T["wide"][1] - 0.5, T["wide"][1] - 0.1))
 
 
@@ -227,21 +227,21 @@ def cu(name, key, push_amt=0.06, mouth=None, cam=EMRE_CU):
 
 SHOTS = [
     S(*T["wide"], shot_wide),
-    cu("T_ask", "bahA"),
+    cu("B_front", "bahA"),
     S(*T["bahB"], lambda t: shop(t, push(USTA_MCU, t, *T["bahB"], 0.03), usta="E_side", deniz="D_listen", rope="phone", bg_blur=8, deniz_blur=6, usta_mouth=0)),
-    cu("T_angry", "sinir1", 0.05),
+    cu("B_stun", "sinir1", 0.05),
     S(*T["story"], shot_story),
     S(*T["deniz"], lambda t: shop(t, push(DENIZ_MCU, t, *T["deniz"]), deniz="D_phone", rope="phone", deniz_blur=0, bg_blur=8, usta_blur=6)),
     S(*T["tepki"], lambda t: shop(t, push(USTA_MCU, t, *T["tepki"]), usta="E_side", deniz="D_sincere", rope="phone", bg_blur=8, deniz_blur=6)),
     S(*T["bakalim"], shot_bakalim),
-    cu("T_ask", "buzz", 0.04, mouth=0.0),
+    cu("B_front", "buzz", 0.04, mouth=0.0),
     S(*T["chat1"], shot_chat1),
-    cu("T_angry", "sinir2", 0.08),
+    cu("B_stun", "sinir2", 0.08),
     S(*T["yaz"], shot_yaz),
     S(*T["yazma"], shot_yazma),
-    cu("T_ask", "gorduldu", 0.05),
+    cu("B_front", "gorduldu", 0.05),
     S(*T["cevap"], shot_cevap),
-    S(*T["final"], lambda t: door(t, push(EMRE_CU, t, *T["final"], 0.05), emre="T_smile", rope="none")),
+    S(*T["final"], lambda t: door(t, push(EMRE_CU, t, *T["final"], 0.05), emre="B_soft", rope="none")),
     S(T_TICKET, T_CTA, plate(lambda t: _ticket(round(k01(t, T_TICKET + 0.2, T_TICKET + 2.7) * 60) / 60, round(k01(t, T_CTA - 0.75, T_CTA - 0.4) * 8) / 8), T_TICKET, T_CTA, 1.04, 1.0)),
     S(T_CTA, T_END, plate(lambda t: _cta(), T_CTA, T_END, 1.0, 1.0)),
     S(T_END, TOTAL, shot_stinger),
