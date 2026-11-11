@@ -126,6 +126,10 @@ def front_plate(rope="two", package=False):
         d.polygon([(600, 1798 + CY), (700, 1793 + CY), (706, 1820 + CY), (604, 1825 + CY)], fill=(250, 249, 244, 255))
         for k in range(3):
             d.line([(618, 1802 + CY + k * 6), (684 - k * 10, 1799 + CY + k * 6)], fill=(60, 74, 150, 255), width=2)
+    elif rope == "phone":
+        d = ImageDraw.Draw(front)
+        d.polygon([(606, 1802 + CY), (700, 1797 + CY), (704, 1818 + CY), (609, 1823 + CY)], fill=(22, 22, 26, 255))
+        d.polygon([(612, 1803 + CY), (694, 1799 + CY), (697, 1814 + CY), (614, 1818 + CY)], fill=(40, 56, 74, 255))
     elif rope == "gloves":
         d = ImageDraw.Draw(front)
         for k, x0 in enumerate((590, 650)):
