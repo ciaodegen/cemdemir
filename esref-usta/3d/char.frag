@@ -1572,11 +1572,9 @@ vec2 borcc(vec3 p){
   }
   // short beard + mustache
   float beard = sdE(h - (hc + vec3(0., -0.075, 0.03)), vec3(0.108, 0.092, 0.102));
-  beard = smax(beard, (h.y - (hc.y - 0.035)), 0.02);
+  beard = smax(beard, (h.y - (hc.y - 0.045)), 0.02);
   beard = smax(beard, -sdE(mq, vec3(0.034, 0.012 + 0.017 * uMouth, 0.08)), 0.006);
   beard = smax(beard, -(h.z - hc.z - 0.0), 0.02);
-  float must = sdC(h, hc + vec3(-0.036, -0.06, 0.124), hc + vec3(0.036, -0.06, 0.124), 0.012);
-  beard = smin(beard, must, 0.01);
   beard += 0.0015 * curl(h, 160.);
   hr = U(hr, vec2(beard, 69.0));
   // wavy brown hair: short sides, volume on top swept to one side
