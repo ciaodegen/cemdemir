@@ -1,4 +1,4 @@
-"""Bölüm 14 (Borç) telefon çekimleri: arkadaşın yeni telefon story'si ve mesajlaşma (pizza daveti, Usta'nın yazdırdığı cevap, "Görüldü")."""
+"""Bölüm 14 (Borç) telefon çekimleri: arkadaşın Bodrum story'si ve mesajlaşma (tatilden borç isteği, Usta'nın yazdırdığı cevap, "Görüldü")."""
 import sys, functools
 sys.path.insert(0, "/home/user/cemdemir/esref-usta/bolum1")
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
@@ -13,8 +13,8 @@ SCR = (BOX[0] + 26, BOX[1] + 26, BOX[2] - 26, BOX[3] - 26)
 SW, SH = SCR[2] - SCR[0], SCR[3] - SCR[1]
 
 OLD = [("out", "Kanka şu 5 bin?", "Eylül"), ("in", "Ay sonu veriyorum kanka", "Eylül"), ("out", "Kanka?", "Ekim")]
-INVITE = "Kanka akşam maç var, bize gel. Pizzalar benden!"
-REPLY = "Gelirim kanka. Pizzalar senden… beş bin de senden."
+INVITE = "Kanka bin lira atabilir misin? Ay sonu toplu veririm"
+REPLY = "Atarım kanka. Önce beş bini gönder… bini hemen geri atarım."
 
 
 @functools.lru_cache(None)
@@ -83,6 +83,55 @@ def _bubble(img, d, side, text, y, extra=None, pop=1.0, emoji_tail=None):
     return y + bh + 26
 
 
+@functools.lru_cache(None)
+def _beach(w, h, label=True):
+    """Small holiday photo: sky, sea, sun, a boat, sand, and a pin label."""
+    im = Image.new("RGBA", (w, h), (0, 0, 0, 255))
+    d = ImageDraw.Draw(im)
+    for i in range(h):
+        k = i / h
+        if k < 0.5:
+            c = (int(120 + 100 * k), int(190 + 40 * k), 245)
+        elif k < 0.78:
+            c = (30, int(130 + 40 * (k - 0.5)), 190)
+        else:
+            c = (236, 214, 160)
+        d.line([(0, i), (w, i)], fill=c + (255,))
+    r = min(w, h) * 0.08
+    d.ellipse([w * 0.76 - r, h * 0.2 - r, w * 0.76 + r, h * 0.2 + r], fill=(255, 236, 140, 255))
+    d.polygon([(w * 0.25, h * 0.6), (w * 0.42, h * 0.6), (w * 0.39, h * 0.66), (w * 0.28, h * 0.66)], fill=(250, 250, 250, 255))
+    d.line([(w * 0.33, h * 0.6), (w * 0.33, h * 0.42)], fill=(250, 250, 250, 255), width=3)
+    d.polygon([(w * 0.335, h * 0.43), (w * 0.335, h * 0.58), (w * 0.43, h * 0.58)], fill=(250, 250, 250, 255))
+    for x0 in (0.12, 0.62):   # umbrellas
+        d.pieslice([w * x0, h * 0.7, w * (x0 + 0.2), h * 0.86], 180, 360, fill=(230, 70, 60, 255))
+        d.line([(w * (x0 + 0.1), h * 0.78), (w * (x0 + 0.1), h * 0.95)], fill=(90, 70, 50, 255), width=3)
+    if not label:
+        return im
+    f = font(FONT_BOLD, max(14, h // 9))
+    t = "Bodrum"
+    tw = d.textlength(t, font=f)
+    d.rounded_rectangle([w / 2 - tw / 2 - 40, h * 0.06, w / 2 + tw / 2 + 16, h * 0.06 + h // 7], radius=10, fill=(255, 255, 255, 230))
+    d.ellipse([w / 2 - tw / 2 - 30, h * 0.06 + h // 28, w / 2 - tw / 2 - 12, h * 0.06 + h // 28 + 18], fill=(220, 50, 60, 255))
+    d.text((w / 2 - tw / 2 - 4, h * 0.06 + 2), t, font=f, fill=(30, 26, 24, 255))
+    return im
+
+
+def _photo_bubble(img, y, pop=1.0):
+    pw, ph = 380, 290
+    b = Image.new("RGBA", (pw + 24, ph + 24), (0, 0, 0, 0))
+    ImageDraw.Draw(b).rounded_rectangle([0, 0, pw + 23, ph + 23], radius=28, fill=(255, 255, 255, 255), outline=(214, 204, 188, 255), width=2)
+    m = Image.new("L", (pw, ph), 0)
+    ImageDraw.Draw(m).rounded_rectangle([0, 0, pw - 1, ph - 1], radius=20, fill=255)
+    b.paste(_beach(pw, ph), (12, 12), m)
+    if pop < 1:
+        s = 0.6 + 0.4 * pop
+        b = b.resize((max(1, int(b.size[0] * s)), max(1, int(b.size[1] * s))), Image.LANCZOS)
+        b.putalpha(b.split()[3].point(lambda v: int(v * pop)))
+    if pop > 0:
+        img.alpha_composite(b, (30, int(y)))
+    return y + ph + 24 + 20
+
+
 def chat_screen(invite=0.0, typed=0, sent=False, typing=False, seen=False):
     scr = Image.new("RGBA", (SW, SH), (238, 230, 214, 255))
     d = ImageDraw.Draw(scr)
@@ -97,7 +146,9 @@ def chat_screen(invite=0.0, typed=0, sent=False, typing=False, seen=False):
     for side, text, date in OLD:
         y = _bubble(lay, ld, side, text, y, extra=date)
     if invite > 0:
-        y = _bubble(lay, ld, "in", INVITE, y + 10, extra="21:46", pop=min(1.0, invite), emoji_tail="🍕")
+        y = _photo_bubble(lay, y + 10, pop=min(1.0, invite * 1.6))
+        if invite > 0.35:
+            y = _bubble(lay, ld, "in", INVITE, y, extra="21:46", pop=min(1.0, (invite - 0.35) / 0.65), emoji_tail="🙏")
     if sent:
         y = _bubble(lay, ld, "out", REPLY, y, extra="21:47 ✓✓")
         if typing:
@@ -130,35 +181,31 @@ def chat_screen(invite=0.0, typed=0, sent=False, typing=False, seen=False):
 
 
 def story_screen(progress=1.0):
-    scr = Image.new("RGBA", (SW, SH), (0, 0, 0, 255))
+    scr = _beach(SW, SH, label=False).copy()
     d = ImageDraw.Draw(scr)
-    for i in range(SH):   # warm gradient
-        k = i / SH
-        d.line([(0, i), (SW, i)], fill=(int(250 - 60 * k), int(170 - 90 * k), int(110 + 40 * k), 255))
+    scr.alpha_composite(Image.new("RGBA", (SW, 190), (0, 0, 0, 60)))
+    d = ImageDraw.Draw(scr)
     d.rounded_rectangle([24, 30, SW - 24, 38], radius=4, fill=(255, 255, 255, 110))
     d.rounded_rectangle([24, 30, 24 + (SW - 48) * progress, 38], radius=4, fill=(255, 255, 255, 255))
     d.ellipse([30, 66, 114, 150], fill=(120, 150, 196, 255))
     d.text((58, 80), "K", font=font(FONT_BOLD, 48), fill=(255, 255, 255, 255))
     d.text((132, 82), "kerem", font=font(FONT_BOLD, 38), fill=(255, 255, 255, 255))
-    d.text((132, 122), "dün", font=font(FONT_REG, 28), fill=(255, 240, 230, 255))
-    # unboxing: box + brand-new phone
-    cx, cy = SW // 2, SH // 2 + 40
-    d.rounded_rectangle([cx - 230, cy - 60, cx + 230, cy + 340], radius=26, fill=(250, 248, 244, 255))
-    d.rounded_rectangle([cx - 200, cy - 30, cx + 200, cy + 310], radius=20, fill=(236, 232, 226, 255))
-    d.rounded_rectangle([cx - 150, cy - 420, cx + 150, cy + 200], radius=46, fill=(30, 30, 36, 255))
-    d.rounded_rectangle([cx - 132, cy - 402, cx + 132, cy + 182], radius=36, fill=(110, 80, 190, 255))
-    g = Image.new("RGBA", scr.size, (0, 0, 0, 0))
-    ImageDraw.Draw(g).ellipse([cx - 120, cy - 380, cx + 140, cy - 80], fill=(255, 150, 200, 200))
-    scr.alpha_composite(g.filter(ImageFilter.GaussianBlur(50)))
-    d = ImageDraw.Draw(scr)
-    for k, ox in enumerate((-80, -10)):
-        d.rounded_rectangle([cx + ox - 30, cy - 390, cx + ox + 30, cy - 330], radius=30, fill=(20, 20, 24, 255))
-    f = font(FONT_BOLD, 64)
-    t = "Yeni bebeğim"
+    d.text((132, 122), "2 sa", font=font(FONT_REG, 28), fill=(255, 240, 230, 255))
+    # drink on the sand + caption sticker
+    cx, cy = SW // 2 + 120, int(SH * 0.86)
+    d.polygon([(cx - 60, cy - 150), (cx + 60, cy - 150), (cx + 30, cy), (cx - 30, cy)], fill=(255, 150, 90, 230))
+    d.line([(cx + 10, cy - 150), (cx + 50, cy - 230)], fill=(240, 240, 240, 255), width=8)
+    d.ellipse([cx - 70, cy - 175, cx - 20, cy - 125], fill=(250, 220, 60, 255))
+    f = font(FONT_BOLD, 60)
+    t = "Kafa dinliyoruz"
     tw = d.textlength(t, font=f)
-    d.rounded_rectangle([cx - tw / 2 - 64, 196, cx + tw / 2 + 66, 296], radius=20, fill=(255, 255, 255, 235))
-    d.text((cx - tw / 2 - 34, 208), t, font=f, fill=(30, 26, 24, 255))
-    scr.alpha_composite(emoji("😍", 64), (int(cx + tw / 2 - 22), 214))
+    d.rounded_rectangle([SW / 2 - tw / 2 - 30, SH * 0.42, SW / 2 + tw / 2 + 30, SH * 0.42 + 96], radius=20, fill=(255, 255, 255, 235))
+    d.text((SW / 2 - tw / 2, SH * 0.42 + 12), t, font=f, fill=(30, 26, 24, 255))
+    scr.alpha_composite(emoji("😎", 80), (int(SW / 2 - 40), int(SH * 0.42 + 110)))
+    f = font(FONT_BOLD, 50); t = "Bodrum"; tw = d.textlength(t, font=f)
+    d.rounded_rectangle([SW / 2 - tw / 2 - 56, SH * 0.3, SW / 2 + tw / 2 + 26, SH * 0.3 + 80], radius=16, fill=(255, 255, 255, 235))
+    d.ellipse([SW / 2 - tw / 2 - 42, SH * 0.3 + 26, SW / 2 - tw / 2 - 14, SH * 0.3 + 54], fill=(220, 50, 60, 255))
+    d.text((SW / 2 - tw / 2, SH * 0.3 + 10), t, font=f, fill=(30, 26, 24, 255))
     return scr
 
 

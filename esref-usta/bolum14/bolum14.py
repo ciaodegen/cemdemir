@@ -15,47 +15,46 @@ REP = f"{ROOT}/bolum14/replikler_hizli"
 SFX = f"{ROOT}/efektler"
 
 LINES = [  # file, speaker (E = customer), subtitle
-    ("01_T", "E", "Usta, borç verdiğim parayı geri istemek ayıp mı?"),
-    ("04c_T", "E", "İki ay önce \"vereceğim\" dedi. Geçen ay tatile gitti…"),
-    ("05c_T", "E", "Bu ay da yeni telefon almış!"),
+    ("01_Y", "E", "Usta, arkadaşıma borç verdiğim parayı istemek ayıp mı?!"),
+    ("02_Y", "E", "İki ay önce \"vereceğim\" dedi, geçen ay telefon aldı, hem de son model! Şimdi de tatilde… Bodrum'da!"),
     ("06b_D", "D", "Kamerası iyi mi bari abi?"),
     ("04_U", "U", "Deniz."),
     ("05_U", "U", "Dur, bir bakalım…"),
-    ("10b_T", "E", "Pizzalar ondanmış usta! Pizzalar!"),
-    ("11b_U", "U", "Yaz bakalım: \"Gelirim kanka. Pizzalar senden… beş bin de senden.\""),
-    ("12b_T", "E", "Görüldü attı usta…"),
+    ("03_Y", "E", "Bir de Bodrum'dan borç istiyor usta!"),
+    ("11c_U", "U", "Yaz bakalım: \"Atarım kanka. Önce beş bini gönder… bini hemen geri atarım.\""),
+    ("04_Y", "E", "Görüldü attı usta…"),
     ("13b_U", "U", "Cevap bu evladım."),
     ("07_U", "U", "Geri istemek ayıp değil. Ayıp olan… istetmektir."),
-    ("08_T", "E", "O zaman bu videoyu ona atıyorum usta."),
-    ("15b_D", "D", "Ben olsam pizzaya giderdim abi."),
+    ("05_Y", "E", "O zaman bu videoyu ona atıyorum usta."),
+    ("15c_D", "D", "Ben olsam atardım abi, arkadaş sonuçta."),
     ("04_U", "U", "Deniz."),
 ]
 DUR = {i: duration(f"{REP}/{f}.mp3") for i, (f, _, _) in enumerate(LINES)}
-SUBTIMES = {1: [(0.0, 1.55, "İki ay önce \"vereceğim\" dedi."), (1.55, 9, "Geçen ay tatile gitti…")],
-            7: [(0.0, 1.15, "Yaz bakalım:"), (1.15, 2.3, "\"Gelirim kanka.\""), (2.3, 3.7, "\"Pizzalar senden…\""), (3.7, 9, "\"…beş bin de senden.\"")],
-            10: [(0.0, 1.75, "Geri istemek ayıp değil."), (1.75, 9, "Ayıp olan… istetmektir.")]}
+SUBTIMES = {1: [(0.0, 2.45, "İki ay önce \"vereceğim\" dedi,"), (2.45, 4.6, "geçen ay telefon aldı, hem de son model!"), (4.6, 9, "Şimdi de tatilde… Bodrum'da!")],
+            9: [(0.0, 1.75, "Geri istemek ayıp değil."), (1.75, 9, "Ayıp olan… istetmektir.")]}
 
 T, START = {}, {}
 START[0] = 0.35; T["wide"] = (0.0, max(4.0, START[0] + DUR[0] + 0.2)); PUT = 1.1; t = T["wide"][1]
-START[1] = t + 0.15; T["bahA"] = (t, START[1] + DUR[1] + 0.15); T["bahB"] = (T["bahA"][1], T["bahA"][1] + 0.75); t = T["bahB"][1]
-START[2] = t + 0.05; T["sinir1"] = (t, START[2] + 0.75); T["story"] = (T["sinir1"][1], START[2] + DUR[2] + 1.3); t = T["story"][1]
-START[3] = t + 0.1; T["deniz"] = (t, START[3] + DUR[3] + 0.15); t = T["deniz"][1]
-START[4] = t + 0.1; T["tepki"] = (t, START[4] + DUR[4] + 0.2); t = T["tepki"][1]
-START[5] = t + 0.1; T["bakalim"] = (t, START[5] + DUR[5] + 0.6); T["loupe_in"] = T["bakalim"][1] - 0.55; t = T["bakalim"][1]
+START[1] = t + 0.15; T["bahA"] = (t, START[1] + 2.45); T["bahB"] = (T["bahA"][1], START[1] + DUR[1] + 0.1); t = T["bahB"][1]
+T["story"] = (t, t + 2.3); t = T["story"][1]
+START[2] = t + 0.1; T["deniz"] = (t, START[2] + DUR[2] + 0.15); t = T["deniz"][1]
+START[3] = t + 0.1; T["tepki"] = (t, START[3] + DUR[3] + 0.2); t = T["tepki"][1]
+START[4] = t + 0.1; T["bakalim"] = (t, START[4] + DUR[4] + 0.6); T["loupe_in"] = T["bakalim"][1] - 0.55; t = T["bakalim"][1]
 T["buzz"] = (t, t + 0.9); BUZZ = t - 0.25; t = T["buzz"][1]
-T["chat1"] = (t, t + 3.0); INVITE = t + 0.3; t = T["chat1"][1]
-START[6] = t + 0.1; T["sinir2"] = (t, START[6] + DUR[6] + 0.25); t = T["sinir2"][1]
-START[7] = t + 0.15; S10 = START[7]; T["yaz"] = (t, S10 + 1.15)
-SENT = S10 + DUR[7] + 0.25; TYPING = (SENT + 0.6, SENT + 1.8); SEEN = SENT + 2.1
+T["chat1"] = (t, t + 3.6); INVITE = t + 0.3; t = T["chat1"][1]
+START[5] = t + 0.1; T["sinir2"] = (t, START[5] + DUR[5] + 0.3); t = T["sinir2"][1]
+START[6] = t + 0.15; S10 = START[6]; T["yaz"] = (t, S10 + 1.1)
+SENT = S10 + DUR[6] + 0.25; TYPING = (SENT + 0.6, SENT + 1.8); SEEN = SENT + 2.1
 T["yazma"] = (T["yaz"][1], SEEN + 1.1); t = T["yazma"][1]
-START[8] = t + 0.1; T["gorduldu"] = (t, START[8] + DUR[8] + 0.25); t = T["gorduldu"][1]
-START[9] = t + 0.15; START[10] = START[9] + DUR[9] + 0.25; T["cevap"] = (t, START[10] + DUR[10] + 0.35); t = T["cevap"][1]
-START[11] = t + 0.15; T["final"] = (t, START[11] + DUR[11] + 0.7); t = T["final"][1]
+START[7] = t + 0.1; T["gorduldu"] = (t, START[7] + DUR[7] + 0.25); t = T["gorduldu"][1]
+START[8] = t + 0.15; START[9] = START[8] + DUR[8] + 0.25; T["cevap"] = (t, START[9] + DUR[9] + 0.35); t = T["cevap"][1]
+START[10] = t + 0.15; T["final"] = (t, START[10] + DUR[10] + 0.7); t = T["final"][1]
 T_TICKET = t; T_CTA = t + 4.0; T_END = T_CTA + 2.4
-START[12] = T_END + 0.25; START[13] = START[12] + DUR[12] + 0.15
-TOTAL = round(START[13] + DUR[13] + 1.6, 2)
-# typed characters of the reply, synced to Usta's dictation (offsets inside 11b_U)
-TYPE_KEYS = [(1.28, 0), (2.12, 14), (2.46, 14), (3.4, 31), (3.93, 31), (4.72, len(itl.REPLY))]
+START[11] = T_END + 0.25; START[12] = START[11] + DUR[11] + 0.15
+TOTAL = round(START[12] + DUR[12] + 1.6, 2)
+# typed characters of the reply, synced to Usta's dictation (offsets inside 11c_U)
+_N1 = len("Atarım kanka."); _N2 = len("Atarım kanka. Önce beş bini gönder…")
+TYPE_KEYS = [(1.2, 0), (1.97, _N1), (2.57, _N1), (3.58, _N2), (3.92, _N2), (5.0, len(itl.REPLY))]
 FIELDS = (("Arıza:", "\"Borcum geri gelmiyor.\""),
           ("Yapılan işlem:", "Mesaj yazıldı. Görüldü atıldı."),
           ("Not:", "Geri istemek ayıp değil; ayıp olan istetmektir."))
@@ -76,8 +75,8 @@ def speaking(t, who):
 
 s3.speaking = speaking
 s3.BLINKS["E"] = [T["bahA"][0] + 1.6, T["gorduldu"][0] + 0.9, T["final"][0] + 1.2]
-s3.BLINKS["U"] = [T["bahB"][0] + 0.4, T["tepki"][0] + 0.9, T["cevap"][0] + 2.2]
-s3.BLINKS["D"] = [T["deniz"][0] + 1.1, START[12] + 0.9]
+s3.BLINKS["U"] = [T["tepki"][0] + 0.9, T["cevap"][0] + 2.2]
+s3.BLINKS["D"] = [T["deniz"][0] + 1.1, START[11] + 0.9]
 
 
 def sub_at(t):
@@ -135,7 +134,7 @@ def with_banner(img, tag, y=0.075, k=1.0):
     return img
 
 
-HOOK = ("BORÇ VERDİĞİN PARAYI", "GERİ İSTEMEK AYIP MI?")
+HOOK = ("BORÇ VERDİĞİN PARAYI", "İSTEMEK AYIP MI?!")
 
 
 def shot_wide(t):
@@ -172,7 +171,9 @@ def shot_story(t):
 
 def shot_chat1(t):
     t0, t1 = T["chat1"]
-    iq = int(round(min(1.0, max(0.0, (t - INVITE) / 0.25)) * 10))
+    # photo pops first, the request lands a second later
+    k = 0.35 * k01(t, INVITE, INVITE + 0.25) + 0.65 * k01(t, INVITE + 1.0, INVITE + 1.25)
+    iq = int(round(k * 10))
     img = itl.chat_plate(iq)
     return pcrop(img, [(t0, 720, 1300, 1.5), (INVITE + 0.2, 720, 1300, 1.5), (t1, 720, 1360, 1.95)], t)
 
@@ -218,7 +219,7 @@ def _cta():
 
 def shot_stinger(t):
     img = shop(t, push((s3.DENIZ_X - 30, 1450, 740), t, T_END, TOTAL, 0.05), deniz="D_whisper", rope="none", deniz_blur=0, bg_blur=8, usta_blur=6)
-    return with_banner(img, _banner("SEN OLSAN", "NE YAZARDIN?", "Yorumlara yaz"), 0.1, smooth(k01(t, START[12] + 0.4, START[12] + 0.9)))
+    return with_banner(img, _banner("SEN OLSAN", "NE YAZARDIN?", "Yorumlara yaz"), 0.1, smooth(k01(t, START[11] + 0.4, START[11] + 0.9)))
 
 
 def cu(name, key, push_amt=0.06, mouth=None, cam=EMRE_CU):
@@ -227,16 +228,15 @@ def cu(name, key, push_amt=0.06, mouth=None, cam=EMRE_CU):
 
 SHOTS = [
     S(*T["wide"], shot_wide),
-    cu("B_front", "bahA"),
-    S(*T["bahB"], lambda t: shop(t, push(USTA_MCU, t, *T["bahB"], 0.03), usta="E_side", deniz="D_listen", rope="phone", bg_blur=8, deniz_blur=6, usta_mouth=0)),
-    cu("B_stun", "sinir1", 0.05),
+    cu("B_front", "bahA", 0.05, cam=EMRE_MCU),
+    cu("B_angry", "bahB", 0.1),
     S(*T["story"], shot_story),
     S(*T["deniz"], lambda t: shop(t, push(DENIZ_MCU, t, *T["deniz"]), deniz="D_phone", rope="phone", deniz_blur=0, bg_blur=8, usta_blur=6)),
     S(*T["tepki"], lambda t: shop(t, push(USTA_MCU, t, *T["tepki"]), usta="E_side", deniz="D_sincere", rope="phone", bg_blur=8, deniz_blur=6)),
     S(*T["bakalim"], shot_bakalim),
     cu("B_front", "buzz", 0.04, mouth=0.0),
     S(*T["chat1"], shot_chat1),
-    cu("B_stun", "sinir2", 0.08),
+    cu("B_angry", "sinir2", 0.1),
     S(*T["yaz"], shot_yaz),
     S(*T["yazma"], shot_yazma),
     cu("B_front", "gorduldu", 0.05),
@@ -293,9 +293,10 @@ def audio_mix(out):
     add(f"{SFX}/loupe.mp3", T["loupe_in"], 0.5)
     add(f"{SFX}/telefon.mp3", BUZZ, 0.5, ",atrim=0:1.2,afade=t=out:st=0.9:d=0.3")
     add(f"{SFX}/tin.mp3", INVITE, 0.35)
+    add(f"{SFX}/tin.mp3", INVITE + 1.0, 0.35)
     add(f"{SFX}/telefon_tus.mp3", S10 + 1.28, 0.35, f",atrim=0:{4.72 - 1.28:.2f},afade=t=out:st={4.72 - 1.28 - 0.2:.2f}:d=0.2")
     add(f"{SFX}/tin.mp3", SENT, 0.3)
-    add(f"{SFX}/cingirak_cikis.mp3", START[11] + DUR[11] + 0.25, 0.35)
+    add(f"{SFX}/cingirak_cikis.mp3", START[10] + DUR[10] + 0.25, 0.35)
     add(f"{SFX}/kalem.mp3", T_TICKET + 0.2, 0.7, ",atrim=0:2.5,afade=t=out:st=2.1:d=0.4")
     add(f"{SFX}/damga.mp3", T_CTA - 0.75, 0.8)
     m0 = T["chat1"][0]

@@ -1103,7 +1103,7 @@ vec2 burakc(vec3 p){
   for (int s = 0; s < 2; s++) {
     float sx = s == 0 ? -1.0 : 1.0;
     float by = 0.056 + uBrow * 0.012;
-    float brow = sdC(h, hc + vec3(sx * 0.024, by + 0.003, 0.121), hc + vec3(sx * 0.08, by + 0.001, 0.103), 0.008);
+    float brow = sdC(h, hc + vec3(sx * 0.024, by + 0.003 + min(uBrow, 0.0) * 0.016, 0.122), hc + vec3(sx * 0.08, by + 0.001 - min(uBrow, 0.0) * 0.012, 0.103), 0.008);
     hr = U(hr, vec2(brow, 56.0));
   }
   // short full beard + moustache, keeping the mouth free
