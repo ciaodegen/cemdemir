@@ -1,0 +1,7 @@
+[["01_T","T","[worried, hesitant] Usta, borç verdiğim parayı geri istemek ayıp mı?",0.5],
+ ["02_T","T","[sighs, a bit hurt] En yakın arkadaşım. Sekiz ay oldu… dün tatil fotoğrafı attı.",0.5],
+ ["03_D","D","[curious, cheeky] Fotoğrafı beğendin mi bari abi?",0.5],
+ ["06_U","U","[calm, warm] Bu kâğıtta sadece para yazmıyor evladım… söz yazıyor.",1.0],
+ ["07_U","U","[calm, warm] Geri istemek ayıp değil. Ayıp olan… istetmektir.",1.0],
+ ["08_T","T","[relieved, small smile] O zaman bu videoyu ona atıyorum usta.",0.5],
+ ["09_D","D","[casual, shrugging] Ben olsam istemezdim abi, arkadaşlık bozulur.",0.5]]

@@ -1,0 +1,2 @@
+[{"name":"tb_test","char":19,"w":600,"h":780,"view":[0,0.625,0.725,4.0],"headYaw":0.05,"gaze":[0.05,-0.1],"brow":0.7,"mouth":0.4,"force":true},
+ {"name":"tb_back","char":19,"w":400,"h":520,"view":[0,0.625,0.725,4.0],"yaw":3.14159,"force":true}]

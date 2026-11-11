@@ -1517,6 +1517,80 @@ vec2 ayrilikc(vec3 p){
   return res;
 }
 
+vec2 borcc(vec3 p){
+  vec3 b = bodySpace(p);
+  vec2 res = vec2(1e9, 0.);
+  float torso = sdE(b - vec3(0., 0.25, 0.), vec3(0.225, 0.35, 0.155));
+  float sh = sdE(b - vec3(0., 0.49, -0.005), vec3(0.26, 0.11, 0.14));
+  float body = smin(torso, sh, 0.07);
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    float ua = sdC(b, vec3(sx * 0.235, 0.49, -0.005), vec3(sx * 0.285, 0.22, 0.05), 0.072);
+    float fa = sdC(b, vec3(sx * 0.285, 0.22, 0.05), vec3(sx * 0.2, 0.05, 0.21), 0.062);
+    body = smin(body, min(ua, fa), 0.03);
+    float cuff = sdC(b, vec3(sx * 0.215, 0.075, 0.18), vec3(sx * 0.2, 0.055, 0.205), 0.064);
+    res = U(res, vec2(cuff, 68.5));
+    float hand = sdE(b - vec3(sx * 0.18, 0.015, 0.245), vec3(0.05, 0.037, 0.064));
+    res = U(res, vec2(hand, M_SKIN));
+    // hoodie drawstrings
+    float str = sdC(b, vec3(sx * 0.045, 0.55, 0.11), vec3(sx * 0.05, 0.36, 0.165), 0.008);
+    res = U(res, vec2(str, 25.0));
+    res = U(res, vec2(length(b - vec3(sx * 0.05, 0.355, 0.168)) - 0.013, 25.0));
+  }
+  // mustard hoodie: kangaroo pocket, ribbed hem, hood folded behind the neck
+  res = U(res, vec2(body, 68.0));
+  float pocket = sdBox(b - vec3(0., 0.08, 0.15), vec3(0.13, 0.07, 0.012)) - 0.008;
+  pocket = smax(pocket, -(b.z - 0.11), 0.004);
+  res = U(res, vec2(pocket, 68.5));
+  float hood = sdE(b - vec3(0., 0.6, -0.07), vec3(0.17, 0.08, 0.11));
+  hood = smax(hood, -sdC(b, vec3(0., 0.5, 0.0), vec3(0., 0.7, 0.01), 0.06), 0.02);
+  res = U(res, vec2(hood, 68.5));
+  res = U(res, vec2(sdC(b, vec3(0., 0.52, 0.0), vec3(0., 0.67, 0.01), 0.048), M_SKIN));
+  vec3 pivot = vec3(0., 0.62, 0.0);
+  vec3 h = headSpace(b, pivot);
+  vec2 hr = vec2(1e9, 0.);
+  vec3 hc = vec3(0., 0.8, 0.02);
+  float skull = sdE(h - hc, vec3(0.125, 0.14, 0.13));
+  float jaw = sdE(h - (hc + vec3(0., -0.07, 0.03)), vec3(0.104, 0.088, 0.1));
+  skull = smin(skull, jaw, 0.05);
+  float ears = min(sdE(h - (hc + vec3(-0.125, -0.01, -0.005)), vec3(0.02, 0.037, 0.024)), sdE(h - (hc + vec3(0.125, -0.01, -0.005)), vec3(0.02, 0.037, 0.024)));
+  skull = smin(skull, ears, 0.012);
+  vec3 mq = h - (hc + vec3(0., -0.086, 0.12));
+  mq.y += (4.0 - 16.0 * uSmile) * mq.x * mq.x;
+  float mouthCav = sdE(mq, vec3(0.03, 0.003 + 0.017 * uMouth, 0.05));
+  skull = smax(skull, -mouthCav, 0.005);
+  hr = U(hr, vec2(skull, M_SKIN + 0.4));
+  hr = U(hr, vec2(sdE(mq + vec3(0., 0., 0.016), vec3(0.028, 0.003 + 0.016 * uMouth, 0.03)), M_MOUTH));
+  hr = U(hr, vec2(sdE(h - (hc + vec3(0., -0.024, 0.132)), vec3(0.025, 0.04, 0.032)), M_SKIN));
+  hr = U(hr, eyes(h, hc, 0.05, 0.012, 0.098, 0.03, 0.019, true, 0.012));
+  for (int s = 0; s < 2; s++) {
+    float sx = s == 0 ? -1.0 : 1.0;
+    float by = 0.054 + uBrow * 0.014;
+    // thick, slightly raised inner ends when worried
+    float brow = sdC(h, hc + vec3(sx * 0.022, by + 0.004 + uBrow * 0.006, 0.122), hc + vec3(sx * 0.082, by - 0.002, 0.103), 0.0085);
+    hr = U(hr, vec2(brow, 69.0));
+  }
+  // short beard + mustache
+  float beard = sdE(h - (hc + vec3(0., -0.075, 0.03)), vec3(0.108, 0.092, 0.102));
+  beard = smax(beard, (h.y - (hc.y - 0.035)), 0.02);
+  beard = smax(beard, -sdE(mq, vec3(0.034, 0.012 + 0.017 * uMouth, 0.08)), 0.006);
+  beard = smax(beard, -(h.z - hc.z - 0.0), 0.02);
+  float must = sdC(h, hc + vec3(-0.036, -0.06, 0.124), hc + vec3(0.036, -0.06, 0.124), 0.012);
+  beard = smin(beard, must, 0.01);
+  beard += 0.0015 * curl(h, 160.);
+  hr = U(hr, vec2(beard, 69.0));
+  // wavy brown hair: short sides, volume on top swept to one side
+  float hair = sdE(h - (hc + vec3(0., 0.03, -0.014)), vec3(0.132, 0.14, 0.138));
+  hair = smax(hair, (hc.y + 0.06) - h.y - 1.25 * max(0.0, 0.02 - (h.z - hc.z)), 0.03);
+  vec3 tq = h - (hc + vec3(-0.015, 0.12, 0.04));
+  tq.xy = mat2(cos(0.2), -sin(0.2), sin(0.2), cos(0.2)) * tq.xy;
+  hair = smin(hair, sdE(tq, vec3(0.11, 0.05, 0.1)), 0.04);
+  hair += 0.005 * curl(h, 60.);
+  hr = U(hr, vec2(hair, 69.0));
+  res = U(res, vec2(hr.x * HS, hr.y));
+  return res;
+}
+
 vec2 map(vec3 p){
   if (uChar == 0) return esref(p);
   if (uChar == 1) return deniz(p);
@@ -1536,6 +1610,7 @@ vec2 map(vec3 p){
   if (uChar == 16) return kumarc(p);
   if (uChar == 17) return kuryec(p);
   if (uChar == 18) return ayrilikc(p);
+  if (uChar == 19) return borcc(p);
   return emre(p);
 }
 
@@ -1568,7 +1643,7 @@ float ao(vec3 p, vec3 n){
 vec3 albedo(float id, vec3 p, vec3 n){
   vec3 b = bodySpace(p);
   if (id < 1.5) {
-    if ((uChar == 2 || uChar == 9 || uChar == 10 || uChar == 11 || uChar == 12 || uChar == 16 || uChar == 17) && id > 1.3) {
+    if ((uChar == 2 || uChar == 9 || uChar == 10 || uChar == 11 || uChar == 12 || uChar == 16 || uChar == 17 || uChar == 19) && id > 1.3) {
       // stubble on Emre's jaw
       vec3 h = headSpace(b, vec3(0., 0.62, 0.));
       float jawm = smoothstep(0.75, 0.70, h.y) * smoothstep(0.02, 0.07, h.z);
@@ -1677,6 +1752,9 @@ vec3 albedo(float id, vec3 p, vec3 n){
   if (id < 66.3 && id > 65.7) { float k = step(0.5, fract(b.y * 70.0)); return mix(vec3(0.9, 0.86, 0.78), vec3(0.84, 0.8, 0.72), k); }
   if (id < 66.7 && id > 66.3) return vec3(0.84, 0.8, 0.72);
   if (id < 67.3 && id > 66.7) return vec3(0.17, 0.1, 0.06);
+  if (id < 68.3 && id > 67.7) { float k = 0.5 + 0.5 * sin(b.y * 160.0 + b.x * 30.0); return mix(vec3(0.64, 0.45, 0.13), vec3(0.59, 0.41, 0.12), k * 0.5); }
+  if (id < 68.7 && id > 68.3) { float k = step(0.5, fract(b.y * 90.0)); return mix(vec3(0.55, 0.38, 0.1), vec3(0.5, 0.34, 0.09), k * 0.6); }
+  if (id < 69.3 && id > 68.7) return vec3(0.27, 0.17, 0.1);
   if (id < 64.3 && id > 63.7) { float sh = smoothstep(0.43, 0.47, b.y + 0.08 * abs(b.x)); float st = step(abs(b.y - 0.2), 0.018); vec3 c = mix(vec3(0.5, 0.07, 0.07), vec3(0.08, 0.08, 0.09), sh); return mix(c, vec3(0.82, 0.84, 0.86), st); }
   if (id < 64.7 && id > 64.3) return vec3(0.08, 0.08, 0.09);
   if (id < 63.5 && id > 62.5) { float k = 0.5 + 0.5 * sin(b.y * 140.0 + b.x * 20.0); return mix(vec3(0.3, 0.29, 0.2), vec3(0.27, 0.26, 0.18), k * 0.6); }
@@ -1723,7 +1801,7 @@ void main(){
   col += vec3(1.0, 0.75, 0.5) * rim * 0.28 * a;
   if (isSkin) col += vec3(0.25, 0.05, 0.02) * dk * 0.15;  // warm subsurface tint
   vec3 hv = normalize(keyDir - rd);
-  float specK = (hit.y > 54.8 && hit.y < 67.8) ? 0.1 : (hit.y > 26.5 && hit.y < 27.5) ? 1.2 : (hit.y > 25.5 && hit.y < 26.5) ? 0.12 : (hit.y > 32.7 && hit.y < 33.5) ? 0.22 : (hit.y > 40.5 && hit.y < 41.5) ? 0.9 : (hit.y > 3.5 && hit.y < 5.5) || (hit.y > 19.5 && hit.y < 20.5) || hit.y > 21.5 ? 0.9 : (hit.y > 10.5 && hit.y < 11.8 ? 0.12 : (hit.y > 17.5 && hit.y < 18.5 ? 0.6 : 0.1));
+  float specK = (hit.y > 54.8 && hit.y < 69.8) ? 0.1 : (hit.y > 26.5 && hit.y < 27.5) ? 1.2 : (hit.y > 25.5 && hit.y < 26.5) ? 0.12 : (hit.y > 32.7 && hit.y < 33.5) ? 0.22 : (hit.y > 40.5 && hit.y < 41.5) ? 0.9 : (hit.y > 3.5 && hit.y < 5.5) || (hit.y > 19.5 && hit.y < 20.5) || hit.y > 21.5 ? 0.9 : (hit.y > 10.5 && hit.y < 11.8 ? 0.12 : (hit.y > 17.5 && hit.y < 18.5 ? 0.6 : 0.1));
   col += vec3(1.0, 0.85, 0.7) * pow(clamp(dot(n, hv), 0.0, 1.0), 40.0) * specK * sh;
   if ((hit.y > 3.5 && hit.y < 4.5) || (hit.y > 17.5 && hit.y < 18.5) || (hit.y > 40.5 && hit.y < 41.5)) col += vec3(1.2) * pow(clamp(dot(n, normalize(vec3(-0.3, 0.4, 1.0) - rd)), 0.0, 1.0), 300.0);
   col = col / (1.0 + col * 0.25);
